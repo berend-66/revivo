@@ -1,0 +1,59 @@
+---
+import type { SiteConfig } from "~/types/site-config";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+
+/* Mild rotation per cell for that hand-pinned photo-wall vibe. */
+const rotations = ["rotate-[-2deg]", "rotate-[1.5deg]", "rotate-[-1deg]", "rotate-[2deg]", "rotate-[-2.5deg]", "rotate-[1deg]"];
+---
+
+<section id="gallery" class="neon-section overflow-hidden">
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+    <div>
+      <span class="neon-label" style="color: var(--color-primary);">— Het werk</span>
+      <h2
+        class="font-display text-5xl md:text-7xl font-bold mt-6 text-ink leading-[0.95]"
+        style="letter-spacing: -0.03em;"
+      >
+        Recente projecten.
+      </h2>
+    </div>
+    {
+      config.contact.instagram && (
+        <a
+          href={`https://instagram.com/${config.contact.instagram}`}
+          target="_blank"
+          rel="noopener"
+          class="neon-label hover:text-primary transition-colors"
+        >
+          → meer op @{config.contact.instagram}
+        </a>
+      )
+    }
+  </div>
+
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+    {
+      config.gallery.map((g, i) => (
+        <figure
+          class={`${rotations[i % rotations.length]} hover:rotate-0 transition-transform duration-500`}
+          style={i % 2 === 0 ? "margin-top: 1.5rem;" : ""}
+        >
+          <div class="overflow-hidden rounded-2xl shadow-md">
+            <img
+              src={g.url}
+              alt={g.caption ?? ""}
+              loading="lazy"
+              class="w-full aspect-[4/5] object-cover hover:scale-105 transition-transform duration-700"
+            />
+          </div>
+          {g.caption && (
+            <figcaption class="neon-label text-ink-soft mt-3 px-2">{g.caption}</figcaption>
+          )}
+        </figure>
+      ))
+    }
+  </div>
+</section>

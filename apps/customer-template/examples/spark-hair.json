@@ -1,0 +1,110 @@
+{
+  "slug": "spark-hair",
+  "layout": "neon",
+  "brand": {
+    "name": "Spark Hair Co.",
+    "tagline": "Rotterdam · 010",
+    "colors": {
+      "primary": "#1f3bff",
+      "accent": "#ffe53b",
+      "ink": "#0a0a0a",
+      "surface": "#f5f1ea"
+    }
+  },
+  "hero": {
+    "headline": "Nieuw haar?\nNieuw jij.",
+    "subheadline": "Een knip- en kleurstudio in de Coolsingel, voor mensen die durven kiezen. Same-day walk-ins waar mogelijk, anders boek je gewoon online — vooraf is fijner.",
+    "images": [
+      "https://picsum.photos/seed/spark-hero-1/1400/1800",
+      "https://picsum.photos/seed/spark-hero-2/900/900"
+    ]
+  },
+  "about": {
+    "heading": "Een studio met lef.",
+    "body": [
+      "Spark is opgericht in 2022 door drie vriendinnen die genoeg hadden van standaard salons. We werken met een klein team, draaien zonder receptie, en houden de muziek goed.",
+      "We zijn niet voor iedereen — en dat is prima. Onze klanten weten wat ze willen, of zijn juist op zoek naar verandering die ze nog niet konden benoemen.",
+      "Bookings lopen via Salonized. Voor styling-shoots en samenwerkingen kun je ons direct mailen."
+    ],
+    "stats": [
+      { "label": "Opgericht", "value": "'22" },
+      { "label": "Stylisten", "value": "5" },
+      { "label": "Walk-ins / wk", "value": "12" },
+      { "label": "IG volgers", "value": "8.4k" }
+    ]
+  },
+  "services": [
+    {
+      "category": "Knippen",
+      "items": [
+        { "name": "Studio knipbeurt — kort", "price": 52, "durationMin": 60 },
+        { "name": "Studio knipbeurt — lang", "price": 68, "durationMin": 75 },
+        { "name": "Pony / contour", "price": 18, "durationMin": 15 },
+        { "name": "Clipper finish (m/v/x)", "price": 35, "durationMin": 30 }
+      ]
+    },
+    {
+      "category": "Kleur",
+      "items": [
+        { "name": "Full bleach + toner", "description": "Voor wie all-in wil gaan.", "price": 175, "durationMin": 195 },
+        { "name": "Money piece highlights", "price": 89, "durationMin": 90 },
+        { "name": "Creative color — block / dip", "description": "Eén signature kleurvlak. Echte statement.", "price": 145, "durationMin": 150 },
+        { "name": "Toner refresh", "price": 38, "durationMin": 30 }
+      ]
+    },
+    {
+      "category": "Care",
+      "items": [
+        { "name": "K18 herstelbehandeling", "price": 28, "durationMin": 25 },
+        { "name": "Scalp reset massage", "price": 24, "durationMin": 25 }
+      ]
+    }
+  ],
+  "gallery": [
+    { "url": "https://picsum.photos/seed/spark-g1/900/1100", "caption": "Pixie + warm blonde" },
+    { "url": "https://picsum.photos/seed/spark-g2/900/1100", "caption": "Block color slate" },
+    { "url": "https://picsum.photos/seed/spark-g3/900/1100", "caption": "Wavy bob" },
+    { "url": "https://picsum.photos/seed/spark-g4/900/1100", "caption": "Money piece" },
+    { "url": "https://picsum.photos/seed/spark-g5/900/1100", "caption": "Soft mullet" },
+    { "url": "https://picsum.photos/seed/spark-g6/900/1100", "caption": "Sun-kissed balayage" }
+  ],
+  "hours": [
+    { "day": "Ma", "closed": true },
+    { "day": "Di", "open": "11:00", "close": "20:00" },
+    { "day": "Wo", "open": "11:00", "close": "20:00" },
+    { "day": "Do", "open": "11:00", "close": "21:00" },
+    { "day": "Vr", "open": "11:00", "close": "20:00" },
+    { "day": "Za", "open": "10:00", "close": "18:00" },
+    { "day": "Zo", "open": "12:00", "close": "17:00" }
+  ],
+  "location": {
+    "address": "Coolsingel 104",
+    "postcode": "3011 AG",
+    "city": "Rotterdam",
+    "country": "Nederland",
+    "lat": 51.9233,
+    "lng": 4.4798,
+    "transitNotes": "Metro Beurs, 2 min lopen. Fiets stalt fijn voor de deur."
+  },
+  "booking": {
+    "provider": "salonized",
+    "iframeUrl": "https://book.salonized.com/spark-hair/widget",
+    "externalUrl": "https://book.salonized.com/spark-hair",
+    "label": "Reserveer een stoel"
+  },
+  "contact": {
+    "phone": "+31 10 222 1188",
+    "whatsapp": "+31 6 2222 1188",
+    "email": "studio@sparkhair.nl",
+    "instagram": "sparkhair.rdam"
+  },
+  "legal": {
+    "kvk": "85221177",
+    "btw": "NL864123987B01"
+  },
+  "meta": {
+    "title": "Spark Hair Co. — Studio in Rotterdam",
+    "description": "Een knip- en kleurstudio in de Coolsingel. Voor mensen die durven kiezen.",
+    "locale": "nl-NL"
+  }
+}

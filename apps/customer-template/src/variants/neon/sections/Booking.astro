@@ -1,0 +1,48 @@
+---
+import type { SiteConfig } from "~/types/site-config";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+const bookingHref = config.booking.externalUrl ?? config.booking.iframeUrl ?? "#";
+const ctaLabel = config.booking.label ?? "Boek nu";
+---
+
+<section id="booking" class="neon-section text-center bg-paper">
+  <div class="max-w-3xl mx-auto">
+    <span class="neon-label" style="color: var(--color-primary);">— Klaar?</span>
+
+    <h2
+      class="font-display text-6xl md:text-8xl lg:text-9xl font-bold mt-6 leading-[0.92] text-ink"
+      style="letter-spacing: -0.04em;"
+    >
+      Boek een stoel.
+    </h2>
+
+    <p class="text-lg md:text-xl text-ink-soft mt-8 max-w-xl mx-auto">
+      Online boeken via {config.booking.provider}. Voor speciale wensen — gewoon mailen of bellen.
+    </p>
+
+    <div class="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a
+        href={bookingHref}
+        class="inline-flex items-center gap-3 px-10 py-5 rounded-full text-on-primary font-medium text-lg hover:scale-[1.03] transition-transform"
+        style="background-color: var(--color-primary);"
+      >
+        <span>{ctaLabel}</span>
+        <span class="text-xl">→</span>
+      </a>
+
+      {
+        config.contact.email && (
+          <a
+            href={`mailto:${config.contact.email}`}
+            class="neon-label px-8 py-5 rounded-full border border-ink/20 text-ink hover:bg-ink hover:text-on-primary transition-colors"
+          >
+            of mail ons
+          </a>
+        )
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,29 @@
+---
+import type { SiteConfig } from "~/types/site-config";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+---
+
+<header class="sticky top-0 z-30 bg-surface/90 backdrop-blur border-b border-ink/10">
+  <div class="flex items-center justify-between px-5 md:px-8 h-16">
+    <a href="#top" class="font-display text-xl md:text-2xl font-bold text-ink leading-none">
+      {config.brand.name}
+    </a>
+
+    <nav class="hidden md:flex items-center gap-8 neon-label">
+      <a href="#about" class="hover:text-primary transition-colors">Studio</a>
+      <a href="#services" class="hover:text-primary transition-colors">Services</a>
+      <a href="#visit" class="hover:text-primary transition-colors">Bezoek</a>
+    </nav>
+
+    <a
+      href="#booking"
+      class="neon-label inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-medium text-on-primary"
+      style="background-color: var(--color-primary);"
+    >
+      Boek →
+    </a>
+  </div>
+</header>

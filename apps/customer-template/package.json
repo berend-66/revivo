@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "dev:atelier": "REVIVO_CONFIG=examples/lume-atelier.json astro dev",
-    "dev:studio": "REVIVO_CONFIG=examples/mast-studio.json astro dev"
+    "dev:studio": "REVIVO_CONFIG=examples/mast-studio.json astro dev",
+    "dev:neon": "REVIVO_CONFIG=examples/spark-hair.json astro dev"
   },
   "dependencies": {
     "astro": "^5.0.0",

@@ -1,0 +1,95 @@
+---
+import type { SiteConfig } from "~/types/site-config";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+const heroImg = config.hero.images[0];
+const secondaryImg = config.hero.images[1];
+const headlineLines = config.hero.headline.split("\n");
+---
+
+<section id="top" class="relative overflow-hidden neon-section pt-20 md:pt-28 pb-32 md:pb-40">
+  <div class="grid grid-cols-12 gap-4 md:gap-6 items-start">
+    <div class="col-span-12 lg:col-span-7">
+      <div class="neon-label mb-8 flex items-center gap-3 text-ink-soft">
+        <span class="w-3 h-3 rounded-full" style="background-color: var(--color-primary);"></span>
+        {config.location.city} — {config.brand.tagline ?? "Studio"}
+      </div>
+
+      <h1
+        class="font-display text-[3rem] sm:text-[4.5rem] md:text-[5.5rem] lg:text-[7rem] leading-[0.95] text-ink font-bold"
+        style="letter-spacing: -0.03em;"
+      >
+        {
+          headlineLines.length > 1 ? (
+            headlineLines.map((line, i) => (
+              <span class="block" style={i % 2 === 1 ? `color: var(--color-primary);` : ""}>{line}</span>
+            ))
+          ) : (
+            <span>
+              {config.hero.headline}
+            </span>
+          )
+        }
+      </h1>
+
+      {
+        config.hero.subheadline && (
+          <p class="text-lg md:text-xl text-ink-soft leading-snug mt-10 max-w-xl">
+            {config.hero.subheadline}
+          </p>
+        )
+      }
+
+      <div class="mt-12 flex flex-wrap items-center gap-4">
+        <a
+          href="#booking"
+          class="inline-flex items-center gap-3 px-8 py-4 rounded-full text-on-primary font-medium text-base hover:scale-[1.02] transition-transform"
+          style="background-color: var(--color-primary);"
+        >
+          <span>{config.hero.cta?.label ?? "Boek je afspraak"}</span>
+          <span class="text-lg">→</span>
+        </a>
+        {
+          config.contact.phone && (
+            <a
+              href={`tel:${config.contact.phone.replace(/\s/g, "")}`}
+              class="neon-label text-ink-soft hover:text-ink transition-colors"
+            >
+              of bel {config.contact.phone}
+            </a>
+          )
+        }
+      </div>
+    </div>
+
+    <div class="col-span-12 lg:col-span-5 relative mt-10 lg:mt-0 lg:pl-8">
+      <figure class="relative">
+        <div
+          class="absolute inset-0 -z-10 rounded-3xl translate-x-4 translate-y-4"
+          style="background-color: var(--color-primary);"
+        ></div>
+        <img
+          src={heroImg}
+          alt=""
+          class="w-full aspect-[4/5] object-cover rounded-3xl rotate-[-2deg]"
+          loading="eager"
+        />
+      </figure>
+
+      {
+        secondaryImg && (
+          <figure class="absolute -bottom-16 -left-10 hidden md:block w-44">
+            <img
+              src={secondaryImg}
+              alt=""
+              class="w-full aspect-square object-cover rounded-2xl rotate-[6deg] shadow-xl"
+              loading="eager"
+            />
+          </figure>
+        )
+      }
+    </div>
+  </div>
+</section>

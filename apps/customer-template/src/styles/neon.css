@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+/* Neon — contemporary maximalist / color-block.
+ * Inspired by modern fashion-tech sites (Glossier, Aesop product launches),
+ * Wix-template-killer territory: vibrant brand color used dominantly,
+ * massive display type, overlapping rotated photo collages, marquee tickers.
+ */
+
+@theme {
+  --color-primary: var(--brand-primary, #0028ff);
+  --color-primary-deep: color-mix(in oklab, var(--brand-primary, #0028ff) 80%, #000000 20%);
+  --color-accent: var(--brand-accent, #ffe600);
+  --color-surface: var(--brand-surface, #f5f1ea);
+  --color-paper: #ffffff;
+  --color-ink: var(--brand-ink, #0a0a0a);
+  --color-ink-soft: #4a4a4a;
+  --color-on-primary: color-mix(in oklab, var(--brand-surface, #f5f1ea) 95%, #ffffff 5%);
+
+  --font-display: "Unbounded", "Familjen Grotesk", system-ui, sans-serif;
+  --font-body: "Hanken Grotesk", -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "DM Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--color-ink);
+    background-color: var(--color-surface);
+  }
+}
+
+@utility neon-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.neon-section {
+  padding-inline: 1.5rem;
+  padding-block: 5rem;
+}
+
+@media (min-width: 768px) {
+  .neon-section {
+    padding-inline: 3rem;
+    padding-block: 7rem;
+  }
+}
+
+@keyframes neon-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.neon-marquee-track {
+  animation: neon-marquee 30s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .neon-marquee-track {
+    animation: none;
+  }
+}
