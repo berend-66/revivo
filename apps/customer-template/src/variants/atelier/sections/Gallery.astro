@@ -1,0 +1,57 @@
+---
+import type { SiteConfig } from "~/types/site-config";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+
+/* Rotate aspects to create varied editorial layout. */
+const aspectClass = (i: number, hint?: string): string => {
+  if (hint === "portrait") return "aspect-[3/4]";
+  if (hint === "landscape") return "aspect-[4/3]";
+  if (hint === "square") return "aspect-square";
+  return ["aspect-[3/4]", "aspect-[4/3]", "aspect-square"][i % 3]!;
+};
+
+const colSpan = (i: number, hint?: string): string => {
+  /* Land photos take 6 cols on md, portraits take 4, squares 5 — varied rhythm. */
+  if (hint === "landscape") return "md:col-span-7";
+  if (hint === "portrait") return "md:col-span-5";
+  if (hint === "square") return "md:col-span-6";
+  return ["md:col-span-5", "md:col-span-7", "md:col-span-6"][i % 3]!;
+};
+---
+
+<section id="gallery" class="section-pad bg-surface-deep">
+  <div class="max-w-6xl">
+    <p class="eyebrow-mono mb-6">— Het werk</p>
+
+    <h2
+      class="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.05] text-ink max-w-3xl"
+      style="font-variation-settings: 'opsz' 144, 'SOFT' 60;"
+    >
+      Een kleine selectie.
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 mt-16">
+      {
+        config.gallery.map((g, i) => (
+          <figure class={`col-span-1 ${colSpan(i, g.aspect)}`}>
+            <img
+              src={g.url}
+              alt={g.caption ?? ""}
+              loading="lazy"
+              class={`w-full ${aspectClass(i, g.aspect)} object-cover`}
+              style="filter: saturate(0.85) contrast(1.05);"
+            />
+            {g.caption && (
+              <figcaption class="font-display italic text-sm text-ink-mute mt-3">
+                — {g.caption}
+              </figcaption>
+            )}
+          </figure>
+        ))
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,41 @@
+---
+import type { SiteConfig } from "~/types/site-config";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+const items = config.testimonials!;
+---
+
+<section id="testimonials" class="section-pad">
+  <div class="max-w-5xl">
+    <p class="eyebrow-mono mb-6">— Wat klanten zeggen</p>
+
+    <div class="space-y-20 mt-12">
+      {
+        items.map((t) => (
+          <figure>
+            <span
+              class="font-display italic text-7xl text-primary leading-none block mb-2"
+              style="font-variation-settings: 'opsz' 144, 'SOFT' 100;"
+              aria-hidden="true"
+            >
+              "
+            </span>
+            <blockquote
+              class="font-display text-2xl md:text-3xl lg:text-4xl text-ink leading-[1.25]"
+              style="font-variation-settings: 'opsz' 144, 'SOFT' 50;"
+            >
+              {t.quote}
+            </blockquote>
+            <figcaption class="mt-8 flex items-center gap-4">
+              <span class="eyebrow-mono">{t.author}</span>
+              <span class="w-10 h-px bg-rule"></span>
+              {t.source && <span class="eyebrow-mono">{t.source}</span>}
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+  </div>
+</section>

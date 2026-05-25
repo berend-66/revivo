@@ -1,0 +1,43 @@
+---
+import type { SiteConfig } from "~/types/site-config";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+---
+
+<section id="manifesto" class="studio-section border-t rule-strong border-t-1">
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-2 label-mono-mute">
+      <div>02 / 07</div>
+      <div class="mt-1">— STUDIO</div>
+    </div>
+
+    <div class="col-span-12 md:col-span-10">
+      <h2 class="label-mono mb-12">{config.about.heading.toUpperCase()}</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div class="space-y-6">
+          {config.about.body.map((p, i) => (
+            <p class={i === 0 ? "text-2xl md:text-3xl leading-[1.25] text-ink font-display-wide" : "text-base text-ink-soft leading-relaxed"}>
+              {p}
+            </p>
+          ))}
+        </div>
+
+        {
+          config.about.stats && (
+            <dl class="grid grid-cols-2 gap-x-8 gap-y-10 md:self-start md:pl-12 md:border-l rule-strong md:border-l-1">
+              {config.about.stats.map((s) => (
+                <div>
+                  <dt class="label-mono-mute">{s.label}</dt>
+                  <dd class="font-display-tight text-5xl text-ink mt-2 tabular-nums">{s.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</section>

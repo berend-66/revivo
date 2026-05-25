@@ -1,0 +1,18 @@
+---
+import { loadConfig } from "~/data/load-config";
+import AtelierLayout from "~/variants/atelier/Layout.astro";
+import StudioLayout from "~/variants/studio/Layout.astro";
+
+const config = loadConfig();
+
+/* When a new variant ships, add it here. Neon is unbuilt — falls back to Atelier. */
+const variants = {
+  atelier: AtelierLayout,
+  studio: StudioLayout,
+  neon: AtelierLayout,
+} as const;
+
+const Variant = variants[config.layout];
+---
+
+<Variant config={config} />

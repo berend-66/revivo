@@ -1,0 +1,66 @@
+---
+import type { SiteConfig } from "~/types/site-config";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+const headlineLines = config.hero.headline.split("\n");
+const heroImg = config.hero.images[0];
+---
+
+<section id="top" class="studio-section pt-16 md:pt-20 relative">
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-2 label-mono-mute mb-8 md:mb-0">
+      <div>N°01</div>
+      <div class="mt-1">— EST. {(config.about.stats?.find((s) => s.label.toLowerCase().includes("open")) ?? config.about.stats?.[0])?.value ?? "—"}</div>
+      <div class="mt-1">— {config.location.city.toUpperCase()}, NL</div>
+    </div>
+
+    <div class="col-span-12 md:col-span-10">
+      <h1
+        class="font-display-tight text-[3.2rem] sm:text-[5rem] md:text-[8rem] lg:text-[11rem] leading-[0.88] text-ink uppercase"
+        style="letter-spacing: -0.04em;"
+      >
+        {headlineLines.map((line, i) => (
+          <span class={`block ${i === 1 ? "pl-[8%] md:pl-[15%]" : ""}`}>{line}</span>
+        ))}
+      </h1>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-12 gap-4 mt-16 md:mt-24">
+    <div class="col-span-12 md:col-span-5 md:col-start-2">
+      {
+        config.hero.subheadline && (
+          <p class="text-lg md:text-xl text-ink-soft leading-snug max-w-md">
+            {config.hero.subheadline}
+          </p>
+        )
+      }
+      <div class="mt-10 flex items-center gap-4">
+        <a
+          href="#booking"
+          class="label-mono px-5 py-3 bg-ink text-surface hover:bg-accent transition-colors"
+        >
+          {config.hero.cta?.label ?? "Book a chair →"}
+        </a>
+        <span class="label-mono-mute">— {config.booking.provider.toUpperCase()}</span>
+      </div>
+    </div>
+
+    <figure class="col-span-12 md:col-span-5 md:col-start-8 mt-12 md:mt-0">
+      <div class="border rule-strong border-1">
+        <img
+          src={heroImg}
+          alt=""
+          class="w-full aspect-[4/5] object-cover grayscale"
+          loading="eager"
+        />
+      </div>
+      <figcaption class="label-mono-mute mt-2 flex justify-between">
+        <span>FIG. 01 — STUDIO</span>
+        <span>{config.location.postcode}</span>
+      </figcaption>
+    </figure>
+  </div>
+</section>

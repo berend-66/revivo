@@ -1,0 +1,107 @@
+{
+  "slug": "mast-studio",
+  "layout": "studio",
+  "brand": {
+    "name": "Mast.",
+    "tagline": "Hair studio — Rotterdam",
+    "colors": {
+      "primary": "#1a1a1a",
+      "accent": "#ff4d2e",
+      "ink": "#0a0a0a",
+      "surface": "#fafaf7"
+    }
+  },
+  "hero": {
+    "headline": "Hair studio.\nRotterdam.",
+    "subheadline": "Een werkplaats voor knippen, kleur en uitgesproken kapsels. Geen rommel, geen ruis — alleen werk.",
+    "images": [
+      "https://picsum.photos/seed/mast-hero-1/2200/1400",
+      "https://picsum.photos/seed/mast-hero-2/1200/1500"
+    ]
+  },
+  "about": {
+    "heading": "Studio, geen salon.",
+    "body": [
+      "Mast is opgezet als een kleine onafhankelijke werkplaats: vier stylisten, één concept, geen franjes. We werken op afspraak en houden de agenda bewust dun zodat ieder kapsel de tijd krijgt die het nodig heeft.",
+      "Specialiteiten: scherpe pony's, contemporary mullets, en kleur die je niet op een doorsnee high street vindt. We werken graag samen met klanten die durven."
+    ],
+    "stats": [
+      { "label": "OPENING", "value": "2021" },
+      { "label": "STAFF", "value": "04" },
+      { "label": "OUTPUT / DAY", "value": "16" }
+    ]
+  },
+  "services": [
+    {
+      "category": "CUT",
+      "items": [
+        { "name": "Studio cut — short", "price": 55, "durationMin": 60 },
+        { "name": "Studio cut — long", "price": 75, "durationMin": 75 },
+        { "name": "Fringe re-shape", "price": 18, "durationMin": 20 },
+        { "name": "Buzz / clipper finish", "price": 38, "durationMin": 30 }
+      ]
+    },
+    {
+      "category": "COLOUR",
+      "items": [
+        { "name": "Bleach — full head", "price": 165, "durationMin": 180 },
+        { "name": "Money-piece highlights", "price": 95, "durationMin": 90 },
+        { "name": "Creative colour — block / dip", "price": 145, "durationMin": 150 },
+        { "name": "Toner — refresh", "price": 42, "durationMin": 30 }
+      ]
+    },
+    {
+      "category": "CARE",
+      "items": [
+        { "name": "Bond builder treatment", "price": 32, "durationMin": 25 },
+        { "name": "Scalp reset", "price": 28, "durationMin": 25 }
+      ]
+    }
+  ],
+  "gallery": [
+    { "url": "https://picsum.photos/seed/mast-1/1200/1500", "aspect": "portrait" },
+    { "url": "https://picsum.photos/seed/mast-2/1200/1500", "aspect": "portrait" },
+    { "url": "https://picsum.photos/seed/mast-3/1200/1500", "aspect": "portrait" },
+    { "url": "https://picsum.photos/seed/mast-4/1200/1500", "aspect": "portrait" },
+    { "url": "https://picsum.photos/seed/mast-5/1200/1500", "aspect": "portrait" },
+    { "url": "https://picsum.photos/seed/mast-6/1200/1500", "aspect": "portrait" }
+  ],
+  "hours": [
+    { "day": "MON", "closed": true },
+    { "day": "TUE", "open": "11:00", "close": "20:00" },
+    { "day": "WED", "open": "11:00", "close": "20:00" },
+    { "day": "THU", "open": "11:00", "close": "21:00" },
+    { "day": "FRI", "open": "11:00", "close": "20:00" },
+    { "day": "SAT", "open": "10:00", "close": "18:00" },
+    { "day": "SUN", "closed": true }
+  ],
+  "location": {
+    "address": "Witte de Withstraat 88",
+    "postcode": "3012 BS",
+    "city": "Rotterdam",
+    "country": "Nederland",
+    "lat": 51.9173,
+    "lng": 4.4796,
+    "transitNotes": "5 min from Eendrachtsplein metro."
+  },
+  "booking": {
+    "provider": "salonized",
+    "iframeUrl": "https://book.salonized.com/mast-studio/widget",
+    "externalUrl": "https://book.salonized.com/mast-studio",
+    "label": "Book now"
+  },
+  "contact": {
+    "phone": "+31 10 555 0188",
+    "email": "studio@mast-rotterdam.nl",
+    "instagram": "mast.studio"
+  },
+  "legal": {
+    "kvk": "82145678",
+    "btw": "NL862457891B01"
+  },
+  "meta": {
+    "title": "Mast. — Hair studio, Rotterdam",
+    "description": "An independent hair studio in Witte de Withstraat. Cut, colour, contemporary work.",
+    "locale": "en-NL"
+  }
+}

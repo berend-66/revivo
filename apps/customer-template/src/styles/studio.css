@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+/* Studio — brutalist minimal / high-fashion aesthetic.
+ * Inspired by Acne Studios, Helmut Lang, The Frankie Shop digital editorials.
+ * Stark white surface, true black ink, ONE sharp accent. Mono details, hairlines,
+ * unforgiving alignment, monumental display type that breaks the grid.
+ */
+
+@theme {
+  --color-surface: var(--brand-surface, #fafaf7);
+  --color-paper: #ffffff;
+  --color-ink: var(--brand-ink, #0a0a0a);
+  --color-ink-soft: #4a4a4a;
+  --color-ink-mute: #8a8a8a;
+  --color-rule: #0a0a0a;
+  --color-rule-soft: #e3e3e0;
+  --color-primary: var(--brand-primary, #1a1a1a);
+  --color-accent: var(--brand-accent, #ff4d2e);
+
+  --font-display: "Bricolage Grotesque", "Archivo", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--color-ink);
+    background-color: var(--color-surface);
+    font-feature-settings: "ss03", "cv11";
+  }
+
+  .font-display {
+    font-variation-settings: "opsz" 96, "wdth" 100, "wght" 600;
+  }
+  .font-display-wide {
+    font-variation-settings: "opsz" 96, "wdth" 120, "wght" 500;
+  }
+  .font-display-tight {
+    font-variation-settings: "opsz" 96, "wdth" 80, "wght" 700;
+  }
+}
+
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+@utility label-mono-mute {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-mute);
+}
+
+@utility rule-strong {
+  border-color: var(--color-rule);
+  border-style: solid;
+}
+
+@utility rule-soft {
+  border-color: var(--color-rule-soft);
+  border-style: solid;
+}
+
+.studio-section {
+  padding-inline: 1.5rem;
+  padding-block: 4rem;
+}
+
+@media (min-width: 768px) {
+  .studio-section {
+    padding-inline: 3rem;
+    padding-block: 6rem;
+  }
+}

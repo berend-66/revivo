@@ -1,0 +1,43 @@
+---
+import type { SiteConfig } from "~/types/site-config";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+---
+
+<section id="index" class="studio-section border-t rule-strong border-t-1 bg-paper">
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-2 label-mono-mute">
+      <div>04 / 07</div>
+      <div class="mt-1">— INDEX</div>
+    </div>
+
+    <div class="col-span-12 md:col-span-10">
+      <h2 class="font-display-tight text-5xl md:text-7xl text-ink uppercase mb-16" style="letter-spacing: -0.03em;">
+        Recent work.
+      </h2>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-10">
+        {
+          config.gallery.map((g, i) => (
+            <figure>
+              <div class="border rule-strong border-1 overflow-hidden">
+                <img
+                  src={g.url}
+                  alt={g.caption ?? ""}
+                  class="w-full aspect-[4/5] object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                  loading="lazy"
+                />
+              </div>
+              <figcaption class="label-mono-mute mt-2 flex justify-between">
+                <span>N°{String(i + 1).padStart(2, "0")}</span>
+                {g.caption && <span class="text-ink">{g.caption}</span>}
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

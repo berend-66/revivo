@@ -1,0 +1,77 @@
+---
+import type { SiteConfig } from "~/types/site-config";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+const mapQuery = encodeURIComponent(`${config.location.address}, ${config.location.postcode} ${config.location.city}`);
+const mapSrc = `https://maps.google.com/maps?q=${mapQuery}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+---
+
+<section id="location" class="studio-section border-t rule-strong border-t-1">
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-2 label-mono-mute">
+      <div>05 / 07</div>
+      <div class="mt-1">— DETAILS</div>
+    </div>
+
+    <div class="col-span-12 md:col-span-10">
+      <h2 class="font-display-tight text-5xl md:text-7xl text-ink uppercase mb-16" style="letter-spacing: -0.03em;">
+        Studio details.
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div>
+          <h3 class="label-mono mb-6">— Hours</h3>
+          <table class="w-full font-mono text-sm">
+            <tbody>
+              {
+                config.hours.map((h) => (
+                  <tr class="border-b rule-soft border-b-1">
+                    <td class="py-3 text-ink">{h.day.toUpperCase()}</td>
+                    <td class="py-3 text-right tabular-nums text-ink">
+                      {h.closed ? "—" : `${h.open}—${h.close}`}
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+
+          <h3 class="label-mono mt-12 mb-6">— Address</h3>
+          <address class="not-italic font-mono text-sm text-ink leading-relaxed">
+            {config.location.address}<br />
+            {config.location.postcode} {config.location.city}<br />
+            {config.location.country}
+          </address>
+
+          {
+            config.location.transitNotes && (
+              <p class="label-mono-mute mt-4">— {config.location.transitNotes}</p>
+            )
+          }
+        </div>
+
+        <div>
+          <div class="border rule-strong border-1">
+            <iframe
+              src={mapSrc}
+              width="100%"
+              height="420"
+              style="border:0; filter: grayscale(1) contrast(1.05);"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Map"
+            ></iframe>
+          </div>
+          <div class="label-mono-mute mt-2 flex justify-between">
+            <span>FIG. 02 — LOCATION</span>
+            <span class="tabular-nums">
+              {config.location.lat?.toFixed(4)} / {config.location.lng?.toFixed(4)}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

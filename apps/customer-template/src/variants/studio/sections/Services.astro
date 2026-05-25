@@ -1,0 +1,59 @@
+---
+import type { SiteConfig } from "~/types/site-config";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+
+const formatPrice = (price: number | null): string => {
+  if (price === null) return "—";
+  return `€${price}`;
+};
+---
+
+<section id="services" class="studio-section border-t rule-strong border-t-1">
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-2 label-mono-mute">
+      <div>03 / 07</div>
+      <div class="mt-1">— SERVICES</div>
+    </div>
+
+    <div class="col-span-12 md:col-span-10">
+      <h2 class="font-display-tight text-5xl md:text-7xl text-ink uppercase mb-16" style="letter-spacing: -0.03em;">
+        Services<br />
+        <span class="text-ink-mute">&amp; rates.</span>
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-px bg-rule">
+        {
+          config.services.map((cat) => (
+            <div class="bg-surface p-6 md:p-8">
+              <h3 class="label-mono mb-6 inline-block px-2 py-1 bg-ink text-surface">{cat.category}</h3>
+
+              <ul class="font-mono text-sm">
+                {cat.items.map((item) => (
+                  <li class="border-t rule-soft border-t-1 py-4 first:border-t-0 first:pt-0">
+                    <div class="flex items-baseline justify-between gap-3">
+                      <span class="text-ink leading-snug pr-2">{item.name}</span>
+                      <span class="text-ink whitespace-nowrap tabular-nums">{formatPrice(item.price)}</span>
+                    </div>
+                    {item.durationMin && (
+                      <div class="label-mono-mute mt-1">{item.durationMin} min</div>
+                    )}
+                    {item.description && (
+                      <p class="text-xs text-ink-mute mt-2 leading-relaxed font-sans normal-case tracking-normal">{item.description}</p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+
+      <p class="label-mono-mute mt-8">
+        — All prices in EUR. Long / thick hair may incur a supplement, agreed in advance.
+      </p>
+    </div>
+  </div>
+</section>

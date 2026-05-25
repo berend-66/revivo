@@ -1,0 +1,27 @@
+---
+import type { SiteConfig } from "~/types/site-config";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+---
+
+<header class="border-b border-rule px-6 md:px-16 py-5 flex items-center justify-between">
+  <a href="#top" class="font-display italic text-xl text-ink leading-none">
+    {config.brand.name}
+  </a>
+
+  <nav class="hidden md:flex items-center gap-9 eyebrow-mono">
+    <a href="#about" class="hover:text-ink transition-colors">Atelier</a>
+    <a href="#services" class="hover:text-ink transition-colors">Diensten</a>
+    <a href="#location" class="hover:text-ink transition-colors">Bezoek</a>
+    <a href="#booking" class="hover:text-ink transition-colors">Boeken</a>
+  </nav>
+
+  <a
+    href="#booking"
+    class="eyebrow-mono px-4 py-2 border border-current hover:bg-ink hover:text-surface transition-colors"
+  >
+    Maak afspraak
+  </a>
+</header>

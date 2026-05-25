@@ -1,0 +1,57 @@
+---
+import "~/styles/studio.css";
+import type { SiteConfig } from "~/types/site-config";
+import TopBar from "./sections/TopBar.astro";
+import Hero from "./sections/Hero.astro";
+import Manifesto from "./sections/Manifesto.astro";
+import Services from "./sections/Services.astro";
+import Index from "./sections/Index.astro";
+import StudioDetails from "./sections/StudioDetails.astro";
+import Booking from "./sections/Booking.astro";
+import Footer from "./sections/Footer.astro";
+
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+
+const title = config.meta.title ?? `${config.brand.name} — ${config.location.city}`;
+const description = config.meta.description ?? config.brand.tagline ?? "";
+
+const brandStyles = [
+  `--brand-primary: ${config.brand.colors.primary};`,
+  config.brand.colors.accent ? `--brand-accent: ${config.brand.colors.accent};` : "",
+  config.brand.colors.ink ? `--brand-ink: ${config.brand.colors.ink};` : "",
+  config.brand.colors.surface ? `--brand-surface: ${config.brand.colors.surface};` : "",
+].join(" ");
+---
+
+<!doctype html>
+<html lang={config.meta.locale} style={brandStyles}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..125,300..800&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    />
+  </head>
+  <body>
+    <TopBar config={config} />
+    <main>
+      <Hero config={config} />
+      <Manifesto config={config} />
+      <Services config={config} />
+      <Index config={config} />
+      <StudioDetails config={config} />
+      <Booking config={config} />
+    </main>
+    <Footer config={config} />
+  </body>
+</html>

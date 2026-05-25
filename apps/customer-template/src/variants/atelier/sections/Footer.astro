@@ -1,0 +1,70 @@
+---
+import type { SiteConfig } from "~/types/site-config";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-rule px-6 md:px-16 py-16">
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-12 max-w-6xl">
+    <div class="md:col-span-5">
+      <p class="font-display italic text-3xl text-ink" style="font-variation-settings: 'opsz' 144, 'SOFT' 100;">
+        {config.brand.name}
+      </p>
+      {
+        config.brand.tagline && (
+          <p class="text-sm text-ink-soft mt-3 max-w-xs">{config.brand.tagline}</p>
+        )
+      }
+    </div>
+
+    <div class="md:col-span-3">
+      <p class="eyebrow-mono mb-4">Contact</p>
+      <ul class="space-y-2 text-sm text-ink-soft">
+        {config.contact.email && (
+          <li>
+            <a href={`mailto:${config.contact.email}`} class="hover:text-ink transition-colors">
+              {config.contact.email}
+            </a>
+          </li>
+        )}
+        {config.contact.phone && (
+          <li>
+            <a href={`tel:${config.contact.phone.replace(/\s/g, "")}`} class="hover:text-ink transition-colors">
+              {config.contact.phone}
+            </a>
+          </li>
+        )}
+        {config.contact.instagram && (
+          <li>
+            <a
+              href={`https://instagram.com/${config.contact.instagram}`}
+              target="_blank"
+              rel="noopener"
+              class="hover:text-ink transition-colors"
+            >
+              @{config.contact.instagram}
+            </a>
+          </li>
+        )}
+      </ul>
+    </div>
+
+    <div class="md:col-span-4">
+      <p class="eyebrow-mono mb-4">Adres</p>
+      <address class="not-italic text-sm text-ink-soft">
+        {config.location.address}<br />
+        {config.location.postcode} {config.location.city}
+      </address>
+    </div>
+  </div>
+
+  <div class="mt-14 pt-8 border-t border-rule flex flex-col md:flex-row md:items-center justify-between gap-3 eyebrow-mono">
+    <span>© {year} {config.brand.name}</span>
+    <span>
+      KvK {config.legal.kvk}{config.legal.btw && ` · BTW ${config.legal.btw}`}
+    </span>
+  </div>
+</footer>

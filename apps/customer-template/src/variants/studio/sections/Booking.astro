@@ -1,0 +1,53 @@
+---
+import type { SiteConfig } from "~/types/site-config";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+const bookingHref = config.booking.externalUrl ?? config.booking.iframeUrl ?? "#";
+const ctaLabel = config.booking.label ?? "Book now";
+---
+
+<section id="booking" class="studio-section border-t rule-strong border-t-1 bg-ink text-surface relative overflow-hidden">
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-2 label-mono-mute" style="color: rgba(255,255,255,0.45);">
+      <div>06 / 07</div>
+      <div class="mt-1">— BOOK</div>
+    </div>
+
+    <div class="col-span-12 md:col-span-10">
+      <h2 class="font-display-tight text-6xl sm:text-7xl md:text-9xl lg:text-[12rem] leading-[0.9] uppercase" style="letter-spacing: -0.04em;">
+        <span style="color: var(--color-accent);">Book</span><br />
+        <span class="pl-[5%] md:pl-[10%]">a chair.</span>
+      </h2>
+
+      <div class="mt-16 flex flex-col md:flex-row md:items-end justify-between gap-8 md:gap-16">
+        <p class="text-lg md:text-xl text-surface/80 leading-snug max-w-md">
+          Sessions run on the hour. Online booking opens 4 weeks ahead. For weddings, editorial, or
+          collaborations — get in touch directly.
+        </p>
+
+        <div class="flex flex-col gap-3">
+          <a
+            href={bookingHref}
+            class="label-mono inline-flex items-center gap-3 px-8 py-5 bg-surface text-ink hover:bg-accent hover:text-surface transition-colors"
+          >
+            <span class="text-base">{ctaLabel}</span>
+            <span class="text-base">→</span>
+          </a>
+          {
+            config.contact.email && (
+              <a
+                href={`mailto:${config.contact.email}`}
+                class="label-mono-mute hover:text-surface text-right"
+                style="color: rgba(255,255,255,0.55);"
+              >
+                — or {config.contact.email}
+              </a>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

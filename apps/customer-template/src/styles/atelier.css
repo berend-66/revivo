@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+/* Atelier — warm editorial-magazine aesthetic.
+ * Inspired by independent print mags (Kinfolk, Apartamento, Cereal) and
+ * the menu cards of small Italian restaurants. Generous whitespace,
+ * varied-height photos, italic serif as decorative emphasis.
+ */
+
+@theme {
+  --color-surface: var(--brand-surface, #f1e9dc);
+  --color-surface-deep: color-mix(in oklab, var(--brand-surface, #f1e9dc) 92%, #000000 8%);
+  --color-ink: var(--brand-ink, #2b1d18);
+  --color-ink-soft: color-mix(in oklab, var(--brand-ink, #2b1d18) 70%, var(--brand-surface, #f1e9dc) 30%);
+  --color-ink-mute: color-mix(in oklab, var(--brand-ink, #2b1d18) 45%, var(--brand-surface, #f1e9dc) 55%);
+  --color-rule: color-mix(in oklab, var(--brand-ink, #2b1d18) 18%, var(--brand-surface, #f1e9dc) 82%);
+  --color-primary: var(--brand-primary, #7a3a2a);
+  --color-accent: var(--brand-accent, #c98a64);
+
+  --font-display: "Fraunces", "Cormorant Garamond", Georgia, serif;
+  --font-body: "DM Sans", -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "DM Mono", "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--color-ink);
+    background-color: var(--color-surface);
+    font-feature-settings: "ss01", "ss02";
+  }
+
+  /* Fraunces variable axis defaults — pushes for organic, "soft" character. */
+  .font-display {
+    font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 0;
+  }
+
+  .font-display.italic {
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+  }
+}
+
+@utility eyebrow-mono {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-mute);
+}
+
+@utility hair-rule {
+  border-color: var(--color-rule);
+  border-style: solid;
+  border-width: 0;
+}
+
+@utility drop-cap {
+  &::first-letter {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 5.5em;
+    line-height: 0.85;
+    float: left;
+    padding: 0.15em 0.18em 0 0;
+    color: var(--color-primary);
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+  }
+}
+
+/* Section padding — plain class so we can use @media. Tailwind v4's
+ * `@utility` cannot be nested inside `@media`, so we drop the magic here. */
+.section-pad {
+  padding-inline: 1.5rem;
+  padding-block: 5rem;
+}
+
+@media (min-width: 768px) {
+  .section-pad {
+    padding-inline: 4rem;
+    padding-block: 7rem;
+  }
+}

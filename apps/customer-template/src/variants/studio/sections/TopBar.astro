@@ -1,0 +1,29 @@
+---
+import type { SiteConfig } from "~/types/site-config";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+---
+
+<header class="sticky top-0 z-30 bg-surface/95 backdrop-blur border-b rule-strong border-b-1">
+  <div class="grid grid-cols-12 items-center px-6 md:px-12 h-14">
+    <a href="#top" class="col-span-3 label-mono font-semibold text-base">
+      {config.brand.name}
+    </a>
+
+    <nav class="hidden md:flex col-span-6 justify-center gap-12 label-mono-mute">
+      <a href="#manifesto" class="hover:text-ink">01 — Studio</a>
+      <a href="#services" class="hover:text-ink">02 — Services</a>
+      <a href="#index" class="hover:text-ink">03 — Index</a>
+      <a href="#booking" class="hover:text-ink">04 — Book</a>
+    </nav>
+
+    <div class="col-span-9 md:col-span-3 flex justify-end items-center gap-4">
+      <span class="label-mono-mute hidden md:inline">{config.location.city.toUpperCase()}</span>
+      <a href="#booking" class="label-mono px-3 py-1.5 bg-ink text-surface hover:bg-accent transition-colors">
+        Book →
+      </a>
+    </div>
+  </div>
+</header>
