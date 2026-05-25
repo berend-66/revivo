@@ -1,0 +1,8 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Approve postinstall scripts for trusted dependencies (pnpm v11+ explicit allowlist).
+allowBuilds:
+  esbuild: true
+  sharp: true

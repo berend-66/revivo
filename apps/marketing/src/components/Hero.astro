@@ -1,0 +1,50 @@
+---
+import Decorations from "./Decorations.astro";
+---
+
+<section class="relative overflow-hidden bg-burgundy-900 text-cream-100 min-h-screen flex flex-col">
+  <Decorations position="top-right" size={620} opacity={0.14} />
+  <Decorations position="bottom-left" size={520} opacity={0.12} />
+
+  <header class="relative z-10 px-8 md:px-16 pt-8 md:pt-12 flex items-center justify-between text-[0.65rem] uppercase tracking-[0.28em] text-cream-100/60">
+    <span class="font-display italic text-lg lowercase tracking-normal text-cream-100/90">revivo</span>
+    <span class="hidden md:inline">Amsterdam · 2025</span>
+  </header>
+
+  <div class="relative z-10 flex-1 flex flex-col justify-center px-8 md:px-16 max-w-6xl mx-auto w-full py-20">
+    <span class="text-[0.7rem] uppercase tracking-[0.3em] text-cream-100/60 mb-8 inline-flex items-center gap-3">
+      <span class="inline-block w-3 h-3 border-l border-t border-current"></span>
+      Voor kapsalons & beautysalons
+    </span>
+
+    <h1 class="font-display text-5xl md:text-7xl lg:text-[5.5rem] leading-[1.05] text-cream-50 max-w-4xl">
+      Een website die <em class="italic font-normal text-burgundy-200">jouw zaak</em> waardig is.
+    </h1>
+
+    <p class="font-display italic text-xl md:text-2xl text-cream-100/70 mt-10 max-w-2xl">
+      Jouw zaak. Een frisse start.
+    </p>
+
+    <p class="text-base md:text-lg leading-relaxed text-cream-100/80 mt-12 max-w-xl">
+      Modern, professioneel, en afgestemd op de sfeer van jouw salon. Inclusief online boekingen,
+      mobile-first ontworpen, in vijf werkdagen live.
+    </p>
+
+    <div class="mt-14 flex flex-col sm:flex-row gap-4 sm:items-center">
+      <a
+        href="#contact"
+        class="inline-flex items-center justify-center px-10 py-4 bg-cream-100 text-burgundy-900 text-xs uppercase tracking-[0.25em] font-medium hover:bg-cream-50 transition-colors"
+      >
+        Plan een gesprek
+      </a>
+      <span class="text-sm text-cream-100/60">
+        Eenmalig <span class="text-cream-100">€1.000</span> · klaar in 5 werkdagen
+      </span>
+    </div>
+  </div>
+
+  <footer class="relative z-10 px-8 md:px-16 pb-8 text-[0.65rem] uppercase tracking-[0.28em] text-cream-100/40">
+    Scroll
+    <span class="inline-block w-8 h-px bg-current ml-3 align-middle"></span>
+  </footer>
+</section>

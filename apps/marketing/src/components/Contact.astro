@@ -1,0 +1,38 @@
+---
+// Cal.com link — set up `cal.com/revivo` then update this constant.
+const CAL_URL = "https://cal.com/revivo/kennismaking";
+const EMAIL = "hallo@revivo.nl";
+---
+
+<section id="contact" class="bg-cream-50 pb-24 md:pb-32 pt-8">
+  <div class="max-w-3xl mx-auto px-8 md:px-16 text-center">
+    <h2 class="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.1] text-ink-900">
+      Klaar voor een <em class="italic font-normal text-burgundy-800">frisse start?</em>
+    </h2>
+
+    <p class="text-base md:text-lg text-ink-700 mt-8 max-w-xl mx-auto">
+      Stuur ons een bericht en we plannen binnen 24 uur een vrijblijvend gesprek in.
+    </p>
+
+    <div class="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a
+        href={CAL_URL}
+        class="inline-flex items-center justify-center px-10 py-4 bg-burgundy-900 text-cream-50 text-xs uppercase tracking-[0.25em] font-medium hover:bg-burgundy-800 transition-colors"
+      >
+        Plan een gesprek
+      </a>
+      <a
+        href={`mailto:${EMAIL}`}
+        class="inline-flex items-center justify-center px-10 py-4 border border-burgundy-900/20 text-burgundy-900 text-xs uppercase tracking-[0.25em] font-medium hover:bg-burgundy-900/5 transition-colors"
+      >
+        Stuur een mail
+      </a>
+    </div>
+
+    <p class="text-sm text-ink-500 mt-10">
+      <a href={`mailto:${EMAIL}`} class="hover:text-burgundy-900 transition-colors">{EMAIL}</a>
+      <span class="mx-3">·</span>
+      Amsterdam
+    </p>
+  </div>
+</section>

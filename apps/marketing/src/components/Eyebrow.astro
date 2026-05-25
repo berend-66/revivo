@@ -1,0 +1,14 @@
+---
+interface Props {
+  label: string;
+  tone?: "burgundy" | "cream";
+}
+const { label, tone = "burgundy" } = Astro.props;
+
+const colorClass = tone === "burgundy" ? "text-burgundy-800" : "text-cream-100";
+---
+
+<span class={`inline-flex items-center gap-3 text-xs uppercase tracking-[0.22em] font-medium ${colorClass}`}>
+  <span class="inline-block w-3 h-3 border-l border-t border-current"></span>
+  {label}
+</span>

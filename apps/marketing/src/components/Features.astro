@@ -1,0 +1,48 @@
+---
+import Eyebrow from "./Eyebrow.astro";
+
+const features = [
+  {
+    n: "01",
+    title: "Ontwerp op maat",
+    body: "Een unieke website die past bij de uitstraling van jouw zaak — geen templates die je overal ziet.",
+  },
+  {
+    n: "02",
+    title: "Mobile-first",
+    body: "Jouw klanten zoeken via hun telefoon. Je site ziet er op elk scherm perfect uit.",
+  },
+  {
+    n: "03",
+    title: "Online boekingen",
+    body: "Directe koppeling met jouw boekingstool, zodat klanten meteen kunnen reserveren.",
+  },
+  {
+    n: "04",
+    title: "Klaar in 5 werkdagen",
+    body: "Geen maandenlange trajecten. Binnen vijf werkdagen live.",
+  },
+];
+---
+
+<section id="wat-je-krijgt" class="bg-cream-50 section">
+  <div class="max-w-6xl mx-auto px-8 md:px-16">
+    <Eyebrow label="Wat je krijgt" />
+
+    <h2 class="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.1] text-ink-900 mt-8 max-w-3xl">
+      Alles wat je nodig hebt. <em class="italic font-normal text-burgundy-800">Niets meer.</em>
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-px mt-16 bg-cream-200">
+      {
+        features.map((f) => (
+          <article class="bg-cream-50 p-10 md:p-12">
+            <span class="font-display italic text-sm text-burgundy-800/70">— {f.n}</span>
+            <h3 class="font-display text-2xl md:text-3xl text-ink-900 mt-4">{f.title}</h3>
+            <p class="text-base text-ink-700 mt-5 leading-relaxed max-w-md">{f.body}</p>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

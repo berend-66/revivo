@@ -1,0 +1,49 @@
+---
+import Eyebrow from "./Eyebrow.astro";
+
+const steps = [
+  {
+    n: "01",
+    title: "Kennismaking",
+    body: "Een kort gesprek — 15 minuten. We leren jouw zaak kennen: de sfeer, de diensten en wat jij belangrijk vindt.",
+  },
+  {
+    n: "02",
+    title: "Ontwerp & bouw",
+    body: "Wij gaan aan de slag. Binnen een aantal werkdagen heb je een eerste versie.",
+  },
+  {
+    n: "03",
+    title: "Jouw feedback",
+    body: "Je bekijkt de site en geeft je wensen door, wij passen aan.",
+  },
+  {
+    n: "04",
+    title: "Live",
+    body: "De site gaat online. Klanten kunnen je vinden, je verhaal lezen, en direct boeken.",
+  },
+];
+---
+
+<section id="proces" class="bg-cream-50 section">
+  <div class="max-w-6xl mx-auto px-8 md:px-16">
+    <Eyebrow label="Het proces" />
+
+    <h2 class="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.1] text-ink-900 mt-8 max-w-3xl">
+      Van gesprek naar <em class="italic font-normal text-burgundy-800">live</em><br />
+      in vijf werkdagen.
+    </h2>
+
+    <ol class="mt-20 divide-y divide-cream-200 border-y border-cream-200">
+      {
+        steps.map((s) => (
+          <li class="grid grid-cols-[auto_1fr] md:grid-cols-[auto_1fr_2fr] gap-6 md:gap-12 items-start py-8 md:py-10">
+            <span class="font-display italic text-base text-burgundy-800/70 w-8">{s.n}</span>
+            <h3 class="font-display text-2xl md:text-3xl text-ink-900">{s.title}</h3>
+            <p class="text-base text-ink-700 leading-relaxed col-start-2 md:col-start-3">{s.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>

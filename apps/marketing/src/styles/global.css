@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand palette — pulled from the proposal PDF */
+  --color-burgundy-950: #2b0808;
+  --color-burgundy-900: #3d0c0c;
+  --color-burgundy-800: #4a1010;
+  --color-burgundy-700: #5e1818;
+  --color-burgundy-200: #c9b687;
+  --color-burgundy-100: #d8c79c;
+
+  --color-cream-50: #f5efe0;
+  --color-cream-100: #ede4d1;
+  --color-cream-200: #e3d8be;
+
+  --color-ink-900: #2a1818;
+  --color-ink-700: #4b3a3a;
+  --color-ink-500: #6b5757;
+  --color-ink-300: #998585;
+
+  /* Typography */
+  --font-display: "Cormorant Garamond", "Cormorant", Georgia, "Times New Roman", serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Custom spacing token — `py-section` etc. */
+  --spacing-section: 7rem;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--color-ink-900);
+    background-color: var(--color-cream-50);
+  }
+}
+
+@utility section {
+  padding-top: var(--spacing-section);
+  padding-bottom: var(--spacing-section);
+}
