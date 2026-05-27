@@ -4,9 +4,14 @@ import { z } from "zod";
  * SiteConfig — the complete data spec a customer site needs to render.
  *
  * The same shape powers every variant (Atelier / Studio / Neon) and is the
- * artifact the mockup-generator pipeline produces from a salon's Google Place
- * + Instagram. Validate with `SiteConfigSchema.parse(json)` before rendering;
- * the LLM occasionally produces near-misses that Zod catches.
+ * artifact the mockup-generator pipeline produces from a salon's brief (and
+ * later, Google Place + Instagram). Validate with `SiteConfigSchema.parse(json)`
+ * before rendering; the LLM occasionally produces near-misses that Zod catches.
+ *
+ * This lives in @revivo/shared because both the customer-template (consumer)
+ * and packages/llm (producer) depend on it. It is a CONTRACT — changing the
+ * shape ripples to every variant and the generator prompt. See
+ * apps/customer-template/CLAUDE.md.
  */
 
 const ColorSchema = z.string().regex(/^#[0-9a-fA-F]{6}$/, "expected #rrggbb hex color");
@@ -45,9 +50,11 @@ const TestimonialSchema = z.object({
   source: z.string().optional(),
 });
 
+export const LAYOUT_VARIANTS = ["atelier", "studio", "neon"] as const;
+
 export const SiteConfigSchema = z.object({
   slug: z.string().regex(/^[a-z0-9-]+$/, "lowercase kebab-case"),
-  layout: z.enum(["atelier", "studio", "neon"]),
+  layout: z.enum(LAYOUT_VARIANTS),
 
   brand: z.object({
     name: z.string(),
@@ -130,6 +137,7 @@ export const SiteConfigSchema = z.object({
 });
 
 export type SiteConfig = z.infer<typeof SiteConfigSchema>;
+export type LayoutVariant = (typeof LAYOUT_VARIANTS)[number];
 export type ServiceCategory = z.infer<typeof ServiceCategorySchema>;
 export type ServiceItem = z.infer<typeof ServiceItemSchema>;
 export type GalleryItem = z.infer<typeof GalleryItemSchema>;

@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { SiteConfigSchema, type SiteConfig } from "~/types/site-config";
+import { SiteConfigSchema, type SiteConfig } from "@revivo/shared";
 
 /**
  * Resolves the active site config from (in priority order):

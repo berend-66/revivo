@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "pnpm --filter @revivo/marketing dev",
     "build": "pnpm -r build",
-    "lint": "pnpm -r lint"
+    "lint": "pnpm -r lint",
+    "gen-mockup": "pnpm -F @revivo/llm gen-mockup"
   },
   "devDependencies": {
     "typescript": "^5.7.2"

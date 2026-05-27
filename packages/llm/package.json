@@ -1,0 +1,25 @@
+{
+  "name": "@revivo/llm",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "bin": {
+    "gen-mockup": "./bin/gen-mockup.ts"
+  },
+  "scripts": {
+    "gen-mockup": "tsx bin/gen-mockup.ts"
+  },
+  "dependencies": {
+    "@revivo/shared": "workspace:*",
+    "dotenv": "^16.4.5",
+    "openai": "^4.77.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "@types/node": "^22.10.0"
+  }
+}

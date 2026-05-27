@@ -38,3 +38,6 @@ Thumbs.db
 # Misc
 .cache/
 coverage/
+
+# Generated mockup configs — reproducible via `pnpm gen-mockup`, not source
+apps/customer-template/examples/generated/

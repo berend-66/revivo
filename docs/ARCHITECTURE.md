@@ -12,11 +12,11 @@ revivo/
 │   ├── mockups/            # mock.revivo.nl — Astro SSR, reads Supabase (NOT YET BUILT)
 │   └── admin/              # Next.js operator workspace (NOT YET BUILT)
 ├── packages/
-│   ├── llm/                # Claude wrappers, mockup generator (NOT YET BUILT)
+│   ├── llm/                # Mockup generator + model-agnostic LLM client (BUILT — manual-brief MVP)
 │   ├── sourcing/           # Google Places, KvK, Insta (NOT YET BUILT)
 │   ├── deploy/             # Vercel + TransIP API wrappers (NOT YET BUILT)
 │   ├── db/                 # Supabase client + types (NOT YET BUILT)
-│   └── shared/             # Shared types & utils (NOT YET BUILT)
+│   └── shared/             # SiteConfig contract + shared types (BUILT)
 ├── scripts/cron/           # Scheduled jobs (NOT YET BUILT)
 ├── supabase/migrations/    # SQL migrations (NOT YET BUILT)
 ├── docs/                   # Living documentation
@@ -63,7 +63,7 @@ Boring, well-trodden tools that minimize the attention tax on a single solo oper
 | Admin app | **Next.js App Router** | React for interactive surfaces; Server Actions for mutations |
 | DB + auth | **Supabase** (EU region) | Postgres + auth + RLS in one click; cheap at this scale |
 | Styling | **Tailwind v4** (`@tailwindcss/vite`) | CSS-first theming via `@theme`; no JS config file; pairs cleanly with Astro |
-| LLM | **Claude via `@anthropic-ai/sdk`** with prompt caching | Mockup-generator system prompt is large + reused → caching is mandatory |
+| LLM | **Model-agnostic client** (`packages/llm`), default **Claude via OpenRouter** | Generator depends on an `LLMClient` interface only; provider/model are env vars. OpenRouter works today with the user's key; native Anthropic (cheaper + prompt caching) is a one-edit migration. See `packages/llm/CLAUDE.md` |
 | Mockup hosting | **single Astro+SSR project at `mock.revivo.nl`** | One `[slug].astro` reads `mockups.config_json` at request time, edge-cached |
 | Customer site hosting | **Vercel, one project per customer** | Clean isolation, trivial custom-domain attach via API |
 | Domain registration | **TransIP REST API** | NL-native, supports `.nl` programmatically + DNS |

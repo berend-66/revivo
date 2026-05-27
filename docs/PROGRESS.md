@@ -4,7 +4,7 @@ Living document. Update after each shippable chunk. Keep dates absolute.
 
 ## TL;DR
 
-**Current stage: Stage 1 complete.** Stage 0 (revivo.nl marketing site) and Stage 1 (customer site template with three design variants) are built and committed. Nothing is deployed yet. Stage 2 (mockup generator) is the next major build and is gated on Berend providing API keys.
+**Current stage: Stage 2 MVP working.** Stage 0 (marketing site), Stage 1 (three-variant template), and the Stage 2 mockup generator (manual-brief mode, CLI) are built. The generator produces deployed-quality personalized salon sites from a one-line brief — the moat is validated live via OpenRouter (Claude). Nothing is deployed to the web yet. Next: places-mode (Google Places input) + Supabase sink + `mock.revivo.nl` SSR app.
 
 ## Stages
 
@@ -12,7 +12,7 @@ The full design + staged plan lives at `~/.claude/plans/i-want-to-build-peaceful
 
 - [x] **Stage 0** — revivo.nl marketing site + monorepo scaffold (commit `e7d5f91`)
 - [x] **Stage 1** — customer-template with three variants (commits `f4ab7b8`, `87588ec`)
-- [ ] **Stage 2** — mockup generator (LLM pipeline, `mock.revivo.nl/{slug}`)
+- [~] **Stage 2** — mockup generator: **MVP done** (manual-brief CLI → SiteConfig JSON, live via OpenRouter). Remaining: places-mode input, Supabase sink, `mock.revivo.nl/{slug}` SSR app.
 - [ ] **Stage 3** — lead workspace admin (Next.js + Supabase)
 - [ ] **Stage 4** — sourcing pipeline (Google Places + KvK + qualification)
 - [ ] **Stage 5** — build & deploy automation (TransIP + Vercel API)
@@ -45,6 +45,18 @@ The full design + staged plan lives at `~/.claude/plans/i-want-to-build-peaceful
   - `spark-hair.json` (Rotterdam electric-blue concept salon)
 - Verified: all three render correctly on desktop + mobile, both builds pass
 
+### Stage 2 — Mockup generator MVP (2026-05-26)
+
+- `packages/shared` — extracted the `SiteConfig` Zod schema here (the contract) so both the template (consumer) and generator (producer) share it. 29 imports updated.
+- `packages/llm` — model-agnostic LLM pipeline:
+  - `client.ts` — `LLMClient` interface + OpenAI-compatible adapter (covers OpenRouter + OpenAI). Provider/model/base-URL all from env; switching is a config change.
+  - `prompts/mockup-system.ts` — the generator system prompt (variant-pick rubric, palette/copy/pricing guidance, schema).
+  - `mockup-generator.ts` — brief → SiteConfig, Zod-validated, 1 retry on schema miss; image URLs rewritten to deterministic picsum BEFORE validation.
+  - `dry-run.ts` — deterministic stub (no API call) for plumbing tests.
+  - `bin/gen-mockup.ts` — CLI. `pnpm gen-mockup --name ... --city ... --vibe ...` (or `--brief file.json`, `--dry-run`).
+- Verified live via OpenRouter (`anthropic/claude-sonnet-4.5`): "Bloom Beauty" (luxe beauty) → **atelier** with sage palette; "VOLT" (brutale Gen-Z) → **neon** with hot magenta + "Haar dat schreeuwt". Both rendered + screenshot-checked. ~€0.04/mockup, 1 attempt after the image-injection fix.
+- Generated configs land in `apps/customer-template/examples/generated/` (gitignored — reproducible via CLI).
+
 ## Manually pending (Berend's TODO)
 
 These steps need a human — Claude can't do them.
@@ -75,3 +87,7 @@ Append-only. Date, decision, why.
 - **2026-05-25 — pnpm monorepo + Astro + Next.js + Supabase + Claude.** All "boring" choices to keep one-operator load low. Inngest deferred unless cron + queue table prove insufficient.
 - **2026-05-25 — Three layout variants (Atelier / Studio / Neon).** Polar-opposite design DNAs from the same SiteConfig. LLM will pick variant per-salon based on extracted brand vibe in Stage 2.
 - **2026-05-25 — Customer site hosting model: revivo hosts on its own Vercel account, one project per customer, custom domain attached at go-live.** Care plan (€10–15/mo) is the upsell that makes this sustainable.
+- **2026-05-26 — LLM is model-agnostic, defaulting to OpenRouter with Claude models.** Berend has an OpenRouter key today (and OpenAI); Anthropic gettable. OpenRouter lets us use Claude (`anthropic/claude-sonnet-4.5`) without waiting. Generator depends only on an `LLMClient` interface; provider is an env change. Reason to keep it swappable: OpenRouter has a markup, so native Anthropic (cheaper + prompt caching) stays a one-edit migration. This supersedes the plan's "Anthropic SDK direct" default for now.
+- **2026-05-26 — `SiteConfig` contract relocated to `packages/shared`.** Both the template and the generator depend on it; it no longer lives inside an app.
+- **2026-05-26 — Stage 2 built CLI-first / file-based** (chosen over full Supabase flow) to validate the moat cheaply before investing in DB + deploy infra. Generated configs are local files rendered by the existing template.
+- **2026-05-26 — Generator rewrites image URLs to placeholders before Zod validation**, not after — a malformed model URL must never trigger a costly retry over a field we discard anyway.
