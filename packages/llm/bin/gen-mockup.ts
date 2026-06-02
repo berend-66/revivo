@@ -101,8 +101,11 @@ async function main() {
         return config;
       })();
 
+  // Resolve --out against REPO_ROOT (not cwd) — pnpm -F shifts cwd into the
+  // package dir, so cwd-relative paths surprise users. Absolute paths still
+  // pass through unchanged.
   const outPath = values.out
-    ? resolve(process.cwd(), values.out)
+    ? resolve(REPO_ROOT, values.out)
     : join(GENERATED_DIR, `${config.slug}.json`);
   mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(outPath, JSON.stringify(config, null, 2) + "\n", "utf-8");
