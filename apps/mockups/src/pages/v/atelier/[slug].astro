@@ -1,0 +1,14 @@
+---
+/** Per-variant render page — see src/pages/[slug].astro for why each variant has
+ * its own page (CSS isolation under SSR). Statically imports ONLY atelier. */
+import AtelierLayout from "~/variants/atelier/Layout.astro";
+import NotFound from "../../../components/NotFound.astro";
+import { resolveForVariant, MOCKUP_CACHE_CONTROL } from "../../../lib/render";
+
+const { slug } = Astro.params;
+const config = await resolveForVariant(Astro.locals.mockupConfig, slug, "atelier");
+if (config) Astro.response.headers.set("Cache-Control", MOCKUP_CACHE_CONTROL);
+else Astro.response.status = 404;
+---
+
+{config ? <AtelierLayout config={config} /> : <NotFound slug={slug} />}

@@ -45,6 +45,17 @@ pnpm dev:studio                        # brutalist minimal
 pnpm dev:neon                          # bold contemporary
 # or:
 REVIVO_CONFIG=examples/<your>.json pnpm dev
+
+# Mockup generator (brief/places → SiteConfig). From repo root.
+pnpm gen-mockup --name "Lume" --city Amsterdam --vibe "warm, rustig"   # manual
+pnpm gen-mockup --place-id "ChIJ..."                                   # places (needs GOOGLE_PLACES_API_KEY)
+pnpm gen-mockup --fixture-place                                        # offline fixture → real LLM
+pnpm gen-mockup --dry-run --fixture-place                             # no LLM, no cost
+pnpm gen-mockup --fixture-place --push                                # upsert into Supabase mockups
+pnpm gen-mockup --help
+
+# Mock app (mock.revivo.nl/{slug}) — SSR; reads Supabase, else local example JSON
+cd apps/mockups && pnpm dev            # http://localhost:4321/<slug>
 ```
 
 ## Hard rules

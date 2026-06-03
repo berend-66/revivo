@@ -1,0 +1,49 @@
+---
+/**
+ * Root of the mockup host. Not a public landing page — mockups live at /{slug}.
+ * Kept minimal and noindex; the real marketing site is revivo.nl.
+ *
+ * Styles are scoped to `.idx` (fixed, full-viewport) — never bare `body`/`html`,
+ * which Astro leaves global and would leak into other pages. See NotFound.astro.
+ */
+---
+
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>revivo · mockups</title>
+  </head>
+  <body>
+    <div class="idx">
+      <div class="idx-wrap">
+        <h1>revivo · mockups</h1>
+        <p>
+          Persoonlijke salon-mockups verschijnen op <code>/{"{"}slug{"}"}</code>.
+          Meer over revivo op <a href="https://revivo.nl">revivo.nl</a>.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
+
+<style>
+  .idx {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+    text-align: center;
+    background: #3d0c0c;
+    color: #f5efe0;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .idx-wrap { max-width: 30rem; }
+  .idx h1 { font-size: 1.25rem; font-weight: 500; letter-spacing: 0.02em; margin: 0 0 0.5rem; }
+  .idx p { color: rgba(245, 239, 224, 0.7); line-height: 1.6; margin: 0; }
+  .idx code { background: rgba(245, 239, 224, 0.12); padding: 0.1em 0.4em; border-radius: 0.25rem; }
+  .idx a { color: #f5efe0; }
+</style>

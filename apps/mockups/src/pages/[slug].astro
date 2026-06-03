@@ -1,0 +1,27 @@
+---
+/**
+ * mock.revivo.nl/{slug} — public entry for a shareable mockup.
+ *
+ * This is a DISPATCHER, not a renderer. It looks up the salon's SiteConfig and
+ * rewrites to the per-variant render page (/v/<layout>/<slug>) so the response
+ * ships exactly ONE variant's stylesheet. Rendering all variants from one page
+ * under SSR would bundle all three variants' Tailwind globals (@theme / @layer
+ * base) into a single sheet, and they collide — see src/pages/v/* and CLAUDE.md.
+ * The visible URL stays /{slug} (rewrite, not redirect). The config is handed to
+ * the render page via Astro.locals so the mockup is read only once.
+ */
+import NotFound from "../components/NotFound.astro";
+import { loadMockup } from "../lib/load-mockup";
+
+const { slug } = Astro.params;
+const config = slug ? await loadMockup(slug) : null;
+
+if (config) {
+  Astro.locals.mockupConfig = config;
+  return Astro.rewrite(`/v/${config.layout}/${slug}`);
+}
+
+Astro.response.status = 404;
+---
+
+<NotFound slug={slug} />

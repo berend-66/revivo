@@ -1,7 +1,6 @@
-import { SiteConfigSchema, type SiteConfig } from "@revivo/shared";
+import { SiteConfigSchema, slugify, type SiteConfig, type SalonBrief } from "@revivo/shared";
 import { createLLMClient, type LLMClient } from "./client";
 import { MOCKUP_SYSTEM_PROMPT } from "./prompts/mockup-system";
-import { slugify, type SalonBrief } from "./brief";
 
 export interface GenerateResult {
   config: SiteConfig;

@@ -50,9 +50,12 @@ pnpm gen-mockup --name "VOLT" --city Rotterdam \
 - **Prompt caching is not implemented** (OpenRouter path). It's deferred until we go native Anthropic at volume — the prompt is already structured as a stable prefix + small variable suffix so caching is a drop-in then.
 - **Cost**: ~1.7k in / 2.2k out tokens per mockup (~€0.04 on Sonnet via OpenRouter). Fine for validation; revisit at Stage 4 scale.
 
+## Places mode + Supabase sink (built)
+
+- **`SalonBrief` + `slugify` now live in `@revivo/shared`** (not here). This package consumes the brief; `@revivo/sourcing` produces it. The system prompt's inline schema is still the prose copy of `SiteConfig` — keep it in sync.
+- **Places mode** lives in `@revivo/sourcing` (Google Place + Instagram-light → `SalonBrief`). The **`bin/` CLI orchestrates** sourcing + db; the library `src/` stays provider/pipeline-pure (only `LLMClient` + the generator). `--place-id`/`--query`/`--fixture-place` build the brief, then the unchanged `generateMockup` runs; `--push` upserts via `@revivo/db`.
+
 ## Not built yet (future)
 
-- **Places mode** — assemble a `SalonBrief` from a Google Place ID + Instagram scrape instead of manual flags (Stage 2 → Stage 4 bridge).
 - **Native Anthropic adapter** + prompt caching (`adapters/anthropic.ts`).
-- **Supabase sink** — write configs to a `mockups` table instead of local files, served by `apps/mockups` at `mock.revivo.nl/{slug}`.
 - **Brand-color extraction from real photos** and **design-quality screenshot judging** of a prospect's current site.

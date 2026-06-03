@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Self-declare content sources so Tailwind generates this variant's utilities
+ * regardless of which app builds the CSS — the customer-template (cwd) AND the
+ * mock app (which reuses these variants from outside its own cwd). Paths are
+ * relative to this file. */
+@source "../variants/atelier";
+
 /* Atelier — warm editorial-magazine aesthetic.
  * Inspired by independent print mags (Kinfolk, Apartamento, Cereal) and
  * the menu cards of small Italian restaurants. Generous whitespace,

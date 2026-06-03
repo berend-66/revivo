@@ -4,9 +4,12 @@ import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
-import { SalonBriefSchema, type SalonBrief } from "../src/brief";
+import { SalonBriefSchema, type SalonBrief, type SiteConfig } from "@revivo/shared";
+import { assembleBriefFromPlaces, assembleBriefFromFixture, type PlaceToBriefOverrides } from "@revivo/sourcing";
+import { createServiceClient, upsertMockupBySlug, type MockupSource } from "@revivo/db";
 import { generateMockup } from "../src/mockup-generator";
 import { stubMockup } from "../src/dry-run";
+import { loadLLMSettings } from "../src/config";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 dotenv.config({ path: join(REPO_ROOT, ".env") });
@@ -16,7 +19,12 @@ const GENERATED_DIR = join(REPO_ROOT, "apps/customer-template/examples/generated
 const { values } = parseArgs({
   options: {
     "dry-run": { type: "boolean", default: false },
+    // input modes
     brief: { type: "string" },
+    "place-id": { type: "string" },
+    query: { type: "string" },
+    "fixture-place": { type: "boolean", default: false },
+    // manual / override fields (also used as overrides in places mode)
     name: { type: "string" },
     city: { type: "string" },
     type: { type: "string" },
@@ -29,6 +37,12 @@ const { values } = parseArgs({
     language: { type: "string" },
     layout: { type: "string" },
     notes: { type: "string" },
+    // instagram-light (places mode)
+    ig: { type: "string" },
+    "ig-bio": { type: "string" },
+    "ig-captions": { type: "string" },
+    // sinks
+    push: { type: "boolean", default: false },
     out: { type: "string" },
     help: { type: "boolean", default: false },
   },
@@ -38,34 +52,61 @@ if (values.help) {
   console.log(`
 revivo mockup generator
 
-Usage:
-  pnpm gen-mockup --name "Lume Atelier" --city Amsterdam --vibe "warm, rustig, premium"
-  pnpm gen-mockup --brief path/to/brief.json
-  pnpm gen-mockup --dry-run --name "Test Salon" --city Utrecht   # no API call
+Input modes (pick one):
+  Manual   pnpm gen-mockup --name "Lume Atelier" --city Amsterdam --vibe "warm, rustig, premium"
+  Brief    pnpm gen-mockup --brief path/to/brief.json
+  Places   pnpm gen-mockup --place-id "ChIJ..."            (live Google Places; needs GOOGLE_PLACES_API_KEY)
+           pnpm gen-mockup --query "Kapsalon Mira Utrecht" (text-search → first hit → brief)
+  Fixture  pnpm gen-mockup --fixture-place                 (built-in fixture Place; no key — great e2e test)
 
-Flags:
-  --dry-run            Build a deterministic stub (no LLM, no cost)
-  --brief <path>       Read a SalonBrief JSON file instead of inline flags
-  --name, --city       Required (unless --brief)
-  --type               hair | beauty | both        (default hair)
-  --vibe               Free-text character description (most useful field)
-  --address, --postcode, --instagram, --website
-  --services           Pasted price list / services (free text)
-  --language           nl | en                      (default nl)
-  --layout             atelier | studio | neon      (steer the variant)
-  --notes              Anything else for the model
+Offline / no cost:
+  --dry-run            Build a deterministic stub (no LLM). With a places mode, uses the fixture Place (no Google call).
+
+Instagram-light (places mode):
+  --ig <handle>        Instagram @handle (or full profile URL)
+  --ig-bio <text>      Pasted profile bio (becomes brand-voice signal)
+  --ig-captions <text> Pasted captions, separated by '||' or newlines
+
+Overrides (places mode) / fields (manual mode):
+  --name, --city, --type (hair|beauty|both), --vibe, --address, --postcode,
+  --instagram, --website, --services, --language (nl|en), --layout (atelier|studio|neon), --notes
+
+Sinks:
+  --push               Upsert the result into Supabase 'mockups' (needs SUPABASE_URL + SERVICE_ROLE_KEY + applied migration)
   --out <path>         Output JSON path (default: examples/generated/<slug>.json)
 `);
   process.exit(0);
 }
 
-function buildBrief(): SalonBrief {
+/** Captions pasted as "a||b" or multi-line → string[]. */
+function parseCaptions(raw?: string): string[] | undefined {
+  if (!raw) return undefined;
+  const parts = raw
+    .split(/\|\||\r?\n/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return parts.length ? parts : undefined;
+}
+
+function placesOverrides(): PlaceToBriefOverrides {
+  return {
+    city: values.city,
+    type: values.type as PlaceToBriefOverrides["type"],
+    vibe: values.vibe,
+    language: values.language as PlaceToBriefOverrides["language"],
+    preferLayout: values.layout as PlaceToBriefOverrides["preferLayout"],
+    knownServices: values.services,
+    notes: values.notes,
+  };
+}
+
+function buildManualBrief(): SalonBrief {
   if (values.brief) {
     const raw = readFileSync(resolve(process.cwd(), values.brief), "utf-8");
     return SalonBriefSchema.parse(JSON.parse(raw));
   }
   if (!values.name || !values.city) {
-    console.error("Error: --name and --city are required (or pass --brief <path>). See --help.");
+    console.error("Error: --name and --city are required (or use --brief / --place-id / --query / --fixture-place). See --help.");
     process.exit(1);
   }
   return SalonBriefSchema.parse({
@@ -84,40 +125,79 @@ function buildBrief(): SalonBrief {
   });
 }
 
+interface ResolvedBrief {
+  brief: SalonBrief;
+  source: MockupSource;
+  placeId?: string;
+}
+
+async function resolveBrief(): Promise<ResolvedBrief> {
+  const placesMode = values["place-id"] || values.query || values["fixture-place"];
+  if (!placesMode) {
+    return { brief: buildManualBrief(), source: "manual" };
+  }
+
+  const overrides = placesOverrides();
+  const instagram = {
+    handle: values.ig ?? values.instagram,
+    bio: values["ig-bio"],
+    captions: parseCaptions(values["ig-captions"]),
+  };
+
+  // A dry run never hits Google; the fixture Place stands in. --fixture-place
+  // forces the fixture even on a real (LLM) run, which is the no-key e2e path.
+  const useFixture = values["dry-run"] || values["fixture-place"];
+  const assembled = useFixture
+    ? await assembleBriefFromFixture({ instagram, overrides })
+    : await assembleBriefFromPlaces({ placeId: values["place-id"], query: values.query, instagram, overrides });
+
+  return { brief: assembled.brief, source: "places", placeId: assembled.place.placeId };
+}
+
 async function main() {
-  const brief = buildBrief();
+  const { brief, source, placeId } = await resolveBrief();
   const dryRun = values["dry-run"];
 
-  console.log(`\n→ ${dryRun ? "DRY RUN (stub, no API call)" : "Generating via LLM"} for "${brief.name}"\n`);
+  const modeLabel = dryRun ? "DRY RUN (stub, no API call)" : "Generating via LLM";
+  const srcLabel = source === "places" ? (values["fixture-place"] || dryRun ? " · fixture Place" : ` · Place ${placeId}`) : "";
+  console.log(`\n→ ${modeLabel} for "${brief.name}" [${source}${srcLabel}]\n`);
 
-  const config = dryRun
-    ? stubMockup(brief)
-    : await (async () => {
-        const { config, usage, attempts } = await generateMockup(brief);
-        console.log(
-          `   model produced a valid SiteConfig in ${attempts} attempt(s)` +
-            (usage ? ` · ${usage.inputTokens} in / ${usage.outputTokens} out tokens` : ""),
-        );
-        return config;
-      })();
+  let config: SiteConfig;
+  let model = "dry-run-stub";
+  if (dryRun) {
+    config = stubMockup(brief);
+  } else {
+    const result = await generateMockup(brief);
+    config = result.config;
+    model = loadLLMSettings().model;
+    console.log(
+      `   model produced a valid SiteConfig in ${result.attempts} attempt(s)` +
+        (result.usage ? ` · ${result.usage.inputTokens} in / ${result.usage.outputTokens} out tokens` : ""),
+    );
+  }
 
   // Resolve --out against REPO_ROOT (not cwd) — pnpm -F shifts cwd into the
-  // package dir, so cwd-relative paths surprise users. Absolute paths still
-  // pass through unchanged.
-  const outPath = values.out
-    ? resolve(REPO_ROOT, values.out)
-    : join(GENERATED_DIR, `${config.slug}.json`);
+  // package dir, so cwd-relative paths surprise users. Absolute paths pass through.
+  const outPath = values.out ? resolve(REPO_ROOT, values.out) : join(GENERATED_DIR, `${config.slug}.json`);
   mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(outPath, JSON.stringify(config, null, 2) + "\n", "utf-8");
 
-  const relConfig = outPath.includes("/examples/")
-    ? "examples/" + outPath.split("/examples/")[1]
-    : outPath;
+  const relConfig = outPath.includes("/examples/") ? "examples/" + outPath.split("/examples/")[1] : outPath;
 
   console.log(`\n✓ Wrote ${outPath}`);
-  console.log(`   layout: ${config.layout} · ${config.services.length} service categories\n`);
-  console.log("Preview it:");
-  console.log(`   cd apps/customer-template && REVIVO_CONFIG="${relConfig}" pnpm dev\n`);
+  console.log(`   layout: ${config.layout} · ${config.services.length} service categories`);
+
+  if (values.push) {
+    const client = createServiceClient(); // throws a helpful error if Supabase env is missing
+    const row = await upsertMockupBySlug(client, { slug: config.slug, config, source, placeId, brief, model });
+    console.log(`✓ Pushed to Supabase 'mockups' (id ${row.id}, source ${row.source})`);
+    const base = process.env.REVIVO_MOCK_BASE_URL ?? "http://localhost:4321";
+    console.log(`\nShareable mockup URL:\n   ${base.replace(/\/$/, "")}/${config.slug}\n`);
+  } else {
+    console.log("\nPreview it locally:");
+    console.log(`   cd apps/customer-template && REVIVO_CONFIG="${relConfig}" pnpm dev`);
+    console.log(`   # or via the mock app:  cd apps/mockups && pnpm dev   → http://localhost:4321/${config.slug}\n`);
+  }
 }
 
 main().catch((err) => {

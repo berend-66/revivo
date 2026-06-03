@@ -1,0 +1,58 @@
+---
+/**
+ * Neutral not-found page for the mockup host. Deliberately un-branded — it is
+ * neither a customer's site nor the revivo marketing brand, just a quiet dead end
+ * for a slug that has no mockup.
+ *
+ * IMPORTANT: styles are scoped to `.nf` and the layout box is `position: fixed;
+ * inset: 0`. We must NOT style `body`/`html` here — Astro leaves bare `body`/`html`
+ * selectors GLOBAL (unscoped), so a `body { display: grid }` rule would leak into
+ * every page that merely imports this component (the per-variant render pages do),
+ * clobbering a variant's own `@layer base body {}`. The fixed wrapper fills the
+ * viewport without needing any body reset.
+ */
+interface Props {
+  slug?: string;
+}
+const { slug } = Astro.props;
+---
+
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Mockup niet gevonden — revivo</title>
+  </head>
+  <body>
+    <div class="nf">
+      <div class="nf-wrap">
+        <h1>Deze mockup bestaat niet (meer)</h1>
+        <p>
+          {slug ? <>Er is geen mockup voor <code>{slug}</code>.</> : "Onbekende pagina."}
+          Klopt dit niet? Neem contact op via <a href="https://revivo.nl">revivo.nl</a>.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
+
+<style>
+  .nf {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+    text-align: center;
+    background: #f5efe0;
+    color: #3d0c0c;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .nf-wrap { max-width: 28rem; }
+  .nf h1 { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 0.75rem; }
+  .nf p { color: #6b4a4a; line-height: 1.6; margin: 0; }
+  .nf code { background: rgba(61, 12, 12, 0.07); padding: 0.1em 0.4em; border-radius: 0.25rem; }
+  .nf a { color: #3d0c0c; }
+</style>

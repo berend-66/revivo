@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Self-declare content sources so Tailwind generates this variant's utilities
+ * regardless of which app builds the CSS (customer-template AND the mock app
+ * that reuses these variants). Paths are relative to this file. */
+@source "../variants/studio";
+
 /* Studio — brutalist minimal / high-fashion aesthetic.
  * Inspired by Acne Studios, Helmut Lang, The Frankie Shop digital editorials.
  * Stark white surface, true black ink, ONE sharp accent. Mono details, hairlines,

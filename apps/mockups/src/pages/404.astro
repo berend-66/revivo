@@ -1,0 +1,8 @@
+---
+/** SSR fallback for unmatched routes. The /{slug} route renders its own
+ * NotFound for missing mockups; this catches everything else. */
+import NotFound from "../components/NotFound.astro";
+Astro.response.status = 404;
+---
+
+<NotFound />

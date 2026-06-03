@@ -1,5 +1,4 @@
-import type { SiteConfig } from "@revivo/shared";
-import { slugify, type SalonBrief } from "./brief";
+import { slugify, type SiteConfig, type SalonBrief } from "@revivo/shared";
 
 /**
  * Deterministic stub SiteConfig built from a brief WITHOUT calling the LLM.

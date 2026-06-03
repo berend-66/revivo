@@ -9,16 +9,16 @@ revivo/
 ├── apps/
 │   ├── marketing/          # revivo.nl — Astro static
 │   ├── customer-template/  # JSON-driven Astro template (renders any salon)
-│   ├── mockups/            # mock.revivo.nl — Astro SSR, reads Supabase (NOT YET BUILT)
+│   ├── mockups/            # mock.revivo.nl — Astro SSR, reads Supabase (BUILT — wraps customer-template variants)
 │   └── admin/              # Next.js operator workspace (NOT YET BUILT)
 ├── packages/
-│   ├── llm/                # Mockup generator + model-agnostic LLM client (BUILT — manual-brief MVP)
-│   ├── sourcing/           # Google Places, KvK, Insta (NOT YET BUILT)
+│   ├── llm/                # Mockup generator + model-agnostic LLM client (BUILT — manual + places mode)
+│   ├── sourcing/           # Google Places (New) + Instagram-light → SalonBrief (BUILT); KvK is Stage 4
 │   ├── deploy/             # Vercel + TransIP API wrappers (NOT YET BUILT)
-│   ├── db/                 # Supabase client + types (NOT YET BUILT)
-│   └── shared/             # SiteConfig contract + shared types (BUILT)
+│   ├── db/                 # Supabase client + mockups table helpers (BUILT)
+│   └── shared/             # SiteConfig + SalonBrief contracts + shared types (BUILT)
 ├── scripts/cron/           # Scheduled jobs (NOT YET BUILT)
-├── supabase/migrations/    # SQL migrations (NOT YET BUILT)
+├── supabase/migrations/    # SQL migrations (BUILT — mockups); auto-applied via the Supabase↔GitHub integration on push to main
 ├── docs/                   # Living documentation
 └── revivo-proposal.pdf     # Customer-facing proposal — brand & spec reference
 ```
@@ -64,7 +64,7 @@ Boring, well-trodden tools that minimize the attention tax on a single solo oper
 | DB + auth | **Supabase** (EU region) | Postgres + auth + RLS in one click; cheap at this scale |
 | Styling | **Tailwind v4** (`@tailwindcss/vite`) | CSS-first theming via `@theme`; no JS config file; pairs cleanly with Astro |
 | LLM | **Model-agnostic client** (`packages/llm`), default **Claude via OpenRouter** | Generator depends on an `LLMClient` interface only; provider/model are env vars. OpenRouter works today with the user's key; native Anthropic (cheaper + prompt caching) is a one-edit migration. See `packages/llm/CLAUDE.md` |
-| Mockup hosting | **single Astro+SSR project at `mock.revivo.nl`** | One `[slug].astro` reads `mockups.config_json` at request time, edge-cached |
+| Mockup hosting | **single Astro+SSR project at `mock.revivo.nl`** (`@astrojs/node`) | `[slug].astro` reads `mockups.config_json` at request time and rewrites to a per-variant render page that reuses the customer-template variant components. Per-variant pages exist to isolate each variant's Tailwind globals under SSR; `Cache-Control: s-maxage` for edge caching. Falls back to local example JSON when Supabase is unset |
 | Customer site hosting | **Vercel, one project per customer** | Clean isolation, trivial custom-domain attach via API |
 | Domain registration | **TransIP REST API** | NL-native, supports `.nl` programmatically + DNS |
 | Pipeline orchestration | **Vercel Cron + Supabase `jobs` queue table** | Inngest / k8s / Kafka are overkill at <200 leads/week |
