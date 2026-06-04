@@ -7,6 +7,7 @@ import About from "./sections/About.astro";
 import Services from "./sections/Services.astro";
 import Gallery from "./sections/Gallery.astro";
 import Testimonials from "./sections/Testimonials.astro";
+import Team from "./sections/Team.astro";
 import LocationHours from "./sections/LocationHours.astro";
 import BookingCta from "./sections/BookingCta.astro";
 import Footer from "./sections/Footer.astro";
@@ -51,6 +52,7 @@ const brandStyles = [
       <Services config={config} />
       <Gallery config={config} />
       {config.testimonials && config.testimonials.length > 0 && <Testimonials config={config} />}
+      {config.team && config.team.length > 0 && <Team config={config} />}
       <LocationHours config={config} />
       <BookingCta config={config} />
     </main>

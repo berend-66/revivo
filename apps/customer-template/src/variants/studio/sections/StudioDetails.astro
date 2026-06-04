@@ -1,9 +1,11 @@
 ---
 import type { SiteConfig } from "@revivo/shared";
+import { studioRail } from "./_rail";
 interface Props {
   config: SiteConfig;
 }
 const { config } = Astro.props;
+const rail = studioRail(config);
 const mapQuery = encodeURIComponent(`${config.location.address}, ${config.location.postcode} ${config.location.city}`);
 const mapSrc = `https://maps.google.com/maps?q=${mapQuery}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
 ---
@@ -11,7 +13,7 @@ const mapSrc = `https://maps.google.com/maps?q=${mapQuery}&t=&z=15&ie=UTF8&iwloc
 <section id="location" class="studio-section border-t rule-strong border-t-1">
   <div class="grid grid-cols-12 gap-4">
     <div class="col-span-12 md:col-span-2 label-mono-mute">
-      <div>05 / 07</div>
+      <div>{rail.details} / {rail.total}</div>
       <div class="mt-1">— DETAILS</div>
     </div>
 

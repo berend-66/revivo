@@ -1,0 +1,65 @@
+---
+import type { SiteConfig } from "@revivo/shared";
+import { studioRail } from "./_rail";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+const rail = studioRail(config);
+const team = config.team!;
+const fmtRating = (n: number) => n.toFixed(1).replace(".", ",");
+const fmtCount = (n: number) => n.toLocaleString("nl-NL");
+---
+
+<section id="team" class="studio-section border-t rule-strong border-t-1 bg-paper">
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-2 label-mono-mute">
+      <div>{rail.team} / {rail.total}</div>
+      <div class="mt-1">— TEAM</div>
+    </div>
+
+    <div class="col-span-12 md:col-span-10">
+      <h2 class="font-display-tight text-5xl md:text-7xl text-ink uppercase mb-16" style="letter-spacing: -0.03em;">
+        The chairs.
+      </h2>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-10">
+        {
+          team.map((m, i) => (
+            <figure>
+              <div class="border rule-strong border-1 overflow-hidden bg-surface aspect-[4/5] flex items-center justify-center">
+                {m.photoUrl ? (
+                  <img
+                    src={m.photoUrl}
+                    alt={m.name}
+                    class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                    loading="lazy"
+                  />
+                ) : (
+                  <span class="font-display-tight text-6xl text-ink-mute uppercase">{m.name.charAt(0)}</span>
+                )}
+              </div>
+              <figcaption class="mt-2">
+                <div class="flex justify-between label-mono-mute">
+                  <span>N°{String(i + 1).padStart(2, "0")}</span>
+                  {m.role && <span class="text-ink">{m.role.toUpperCase()}</span>}
+                </div>
+                <div class="label-mono mt-1 text-ink">{m.name}</div>
+                {m.specialty && (
+                  <p class="text-xs text-ink-mute mt-1 leading-relaxed font-sans normal-case tracking-normal">
+                    {m.specialty}
+                  </p>
+                )}
+                {m.rating != null && (
+                  <div class="label-mono-mute mt-2 tabular-nums">
+                    {fmtRating(m.rating)}★{m.reviewCount != null && ` — ${fmtCount(m.reviewCount)} reviews`}
+                  </div>
+                )}
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

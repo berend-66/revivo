@@ -1,0 +1,47 @@
+---
+import type { SiteConfig } from "@revivo/shared";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+const items = config.testimonials!;
+const rotations = ["rotate-[1.5deg]", "rotate-[-1.5deg]", "rotate-[1deg]", "rotate-[-1deg]"];
+const fmtRating = (r: number) => r.toLocaleString("nl-NL", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+---
+
+<section id="testimonials" class="neon-section bg-paper overflow-hidden">
+  <div class="mb-16">
+    <span class="neon-label" style="color: var(--color-primary);">— Wat klanten zeggen</span>
+    <h2
+      class="font-display text-5xl md:text-7xl font-bold mt-6 text-ink leading-[0.95]"
+      style="letter-spacing: -0.03em;"
+    >
+      De reviews.
+    </h2>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+    {
+      items.map((t, i) => (
+        <figure
+          class={`${rotations[i % rotations.length]} hover:rotate-0 transition-transform duration-500 rounded-3xl p-8 bg-surface shadow-md flex flex-col gap-5`}
+        >
+          <div class="font-display text-6xl leading-[0.5] h-6" style="color: var(--color-primary);" aria-hidden="true">
+            “
+          </div>
+          <blockquote class="text-lg md:text-xl text-ink leading-snug font-medium flex-1">
+            {t.quote}
+          </blockquote>
+          <figcaption class="flex items-center justify-between neon-label pt-2">
+            <span class="text-ink">{t.author}</span>
+            {t.rating != null && (
+              <span class="font-display font-bold tabular-nums" style="color: var(--color-primary);">
+                {fmtRating(t.rating)}★
+              </span>
+            )}
+          </figcaption>
+        </figure>
+      ))
+    }
+  </div>
+</section>

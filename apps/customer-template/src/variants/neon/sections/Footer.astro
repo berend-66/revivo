@@ -5,6 +5,7 @@ interface Props {
 }
 const { config } = Astro.props;
 const year = new Date().getFullYear();
+const igHandle = config.contact.instagram?.replace(/^@+/, "");
 ---
 
 <footer class="bg-ink text-on-primary px-6 md:px-8 py-12">
@@ -27,14 +28,14 @@ const year = new Date().getFullYear();
         {config.contact.phone && (
           <li><a href={`tel:${config.contact.phone.replace(/\s/g, "")}`} class="hover:underline">{config.contact.phone}</a></li>
         )}
-        {config.contact.instagram && (
-          <li><a href={`https://instagram.com/${config.contact.instagram}`} class="hover:underline">@{config.contact.instagram}</a></li>
+        {igHandle && (
+          <li><a href={`https://instagram.com/${igHandle}`} class="hover:underline">@{igHandle}</a></li>
         )}
       </ul>
     </div>
 
     <div class="col-span-6 md:col-span-4 md:text-right neon-label opacity-60">
-      <div>KvK {config.legal.kvk}</div>
+      {config.legal.kvk && <div>KvK {config.legal.kvk}</div>}
       {config.legal.btw && <div>BTW {config.legal.btw}</div>}
       <div class="mt-3">© {year} — {config.location.city}</div>
     </div>

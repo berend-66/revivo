@@ -1,0 +1,49 @@
+---
+import type { SiteConfig } from "@revivo/shared";
+import { studioRail } from "./_rail";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+const rail = studioRail(config);
+const items = config.testimonials!;
+const fmtRating = (n: number) => n.toFixed(1).replace(".", ",");
+---
+
+<section id="testimonials" class="studio-section border-t rule-strong border-t-1 bg-paper">
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-2 label-mono-mute">
+      <div>{rail.reviews} / {rail.total}</div>
+      <div class="mt-1">— REVIEWS</div>
+    </div>
+
+    <div class="col-span-12 md:col-span-10">
+      <h2 class="font-display-tight text-5xl md:text-7xl text-ink uppercase mb-16" style="letter-spacing: -0.03em;">
+        Word of mouth.
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {
+          items.map((t, i) => (
+            <figure class="border rule-strong border-1 p-8 md:p-10 flex flex-col justify-between min-h-[15rem]">
+              <div class="flex items-start justify-between label-mono-mute mb-6">
+                <span>N°{String(i + 1).padStart(2, "0")}</span>
+                {t.rating != null && <span class="tabular-nums text-ink">{fmtRating(t.rating)}★</span>}
+              </div>
+              <blockquote
+                class="font-display-tight text-2xl md:text-3xl text-ink leading-[1.15] flex-1"
+                style="letter-spacing: -0.02em;"
+              >
+                “{t.quote}”
+              </blockquote>
+              <figcaption class="mt-8 flex items-center justify-between label-mono">
+                <span class="text-ink">{t.author}</span>
+                {t.source && <span class="label-mono-mute">— {t.source}</span>}
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

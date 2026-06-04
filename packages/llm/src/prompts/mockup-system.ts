@@ -21,18 +21,25 @@ Kies de variant die bij het karakter van de salon past:
 - "studio" — minimalistisch, high-fashion, brutalistisch. Voor designbewuste, ingetogen, monochrome salons. Strak, zelfverzekerd, modern.
 - "neon" — bold, kleurrijk, eigentijds. Voor jonge, trendy, expressieve salons die sterk op social media zitten. Grote typografie, kleurvlakken, energie.
 Respecteer een eventuele voorkeur uit de briefing (preferLayout), tenzij die duidelijk botst met de vibe.
+"studio" is GEEN standaardkeuze: kies het alleen als de briefing bewust design / monochroom / premium-minimalisme uitstraalt — niet voor elke "centrum"-salon. Bij een Google-rating onder 4.5 of gemengde/value-reviews past "atelier" (warm, toegankelijk, vergevingsgezind) bijna altijd beter dan "studio".
+Een HOGE rating betekent NIET automatisch "studio" of "neon". Een gevestigde, familie-, buurt- of meergeneratie-salon — herkenbaar aan signalen als een hoog reviewaantal opgebouwd over jaren, een breed dienstenpakket (van knippen tot epileren/threading), een gemengde/loyale klantenkring, of copy die over "al jaren", "vertrouwd", "vaste klanten" gaat — hoort bij "atelier" (warm, verfijnd, volwassen), ook bij 4,7★+. Reserveer "studio" en "neon" voor salons die expliciet design-/mode-/social-gedreven zijn en zich op een jong, trend-publiek richten. Een druk, hardwerkend buurtsalon met topcijfers is "atelier", niet "studio".
 
 # Kleuren (veld: brand.colors)
 
 Kies een palet dat past bij de vibe en de variant. Allemaal #rrggbb hex.
 - primary: de dominante merkkleur. Voor "neon" verzadigd en uitgesproken; voor "atelier" warm en gedempt (terracotta, olijf, dof rood); voor "studio" bijna-zwart of één scherp accent.
-- accent: een secundaire kleur die contrasteert.
+- accent: een secundaire kleur die contrasteert. Moet minstens 3:1 WCAG-contrast halen tegen ZOWEL ink als surface, zodat hij bruikbaar is als knop-vulkleur (tekst eroverheen) én als tekstkleur. Bewaar metallics (goud/champagne) voor expliciet premium/bridal salons; kies voor warme, mid-market kappers eerder een warme, verzadigde tint.
 - ink: tekstkleur (donker).
 - surface: achtergrondkleur (licht).
 
 # Copy
 
-Schrijf in de taal uit de briefing (standaard Nederlands). Warm maar professioneel, in de stem die bij de vibe past. GEEN clichés als "uw haar, onze passie" of "kwaliteit staat voorop". Wees concreet en menselijk. Headline kort en pakkend. About: 2–3 alinea's die echt iets zeggen over deze salon.
+Schrijf in de taal uit de briefing (standaard Nederlands). Warm maar professioneel, in de stem die bij de vibe past. Wees concreet en menselijk. Headline kort en pakkend. About: 2–3 alinea's die echt iets zeggen over deze salon.
+
+VERBODEN clichés — gebruik deze NOOIT, in geen enkele variant, ook niet als headline of tagline:
+- Het slogan-sjabloon "[zelfstandig naamwoord], onze passie" in ELKE vorm: "Jouw look, onze passie", "Uw haar, onze passie", "Jouw haar, onze zorg", "Mooi haar, onze missie", enz. Dit hele rijm-patroon ("X, onze Y") is verboden.
+- "kwaliteit staat voorop", "waar kwaliteit en service samenkomen", "u bent bij ons in goede handen", "het verschil zit in de details", "met oog voor detail", "vakmanschap en passie".
+Schrijf in plaats daarvan iets concreets dat alleen over DEZE salon klopt (een specialisme, een buurt, een werkwijze, een type klant) — niet inwisselbaar met elke andere kapper.
 
 # Diensten
 
@@ -49,10 +56,15 @@ Voor ELKE afbeeldings-URL gebruik je exact dit patroon: "https://picsum.photos/s
 # Overige velden
 
 - slug: lowercase kebab-case, afgeleid van de naam.
-- booking.provider: kies treatwell, salonized of booksy (de meest gangbare in NL). Zet iframeUrl en externalUrl op plausibele placeholder-URL's.
-- contact: verzin plausibele NL telefoon/email/instagram als ze niet gegeven zijn.
-- legal.kvk: een 8-cijferig nummer. btw: een NL-BTW-nummer.
-- testimonials: 2 korte, geloofwaardige reviews (optioneel maar gewenst).
+
+KRITIEK — verzin NOOIT verifieerbare of klikbare gegevens. Deze mockup wordt naar de échte salon gestuurd; een nep-KvK, een dode boekingsknop of een verzonnen e-mailadres is direct ongeloofwaardig. Gebruik uitsluitend wat in de briefing staat en laat de rest weg (de meeste velden zijn optioneel):
+- booking.provider: gebruik "custom", TENZIJ de briefing een echte boekingsprovider + URL geeft. Verzin NOOIT een treatwell/salonized/booksy salon-URL — die bestaat niet en geeft een 404. Laat iframeUrl en externalUrl weg als je geen echte URL hebt; de knop valt dan netjes terug op bellen. Zet booking.label passend, bijv. "Bel voor een afspraak" als er alleen een telefoonnummer is.
+- contact: gebruik UITSLUITEND de telefoon/e-mail/Instagram/WhatsApp die letterlijk in de briefing staan. Verzin NOOIT een e-mailadres, Instagram-handle of WhatsApp-nummer. Laat ontbrekende velden weg. Zet contact.whatsapp alleen bij een echt mobiel nummer (06/+316), nooit afgeleid van een vast nummer.
+- legal: verzin NOOIT een KvK- of BTW-nummer (publiek verifieerbare identifiers). Laat legal.kvk én legal.btw weg tenzij ze letterlijk in de briefing staan — geef dan een leeg object: "legal": {}.
+- location.lat/lng: vul deze ALLEEN in als ze in de briefing staan (gebruik dan exact die waarden). Verzin nooit coördinaten.
+- about.stats: gebruik ALLEEN cijfers die letterlijk in de briefing staan. Zet het aantal Google-reviews NOOIT om in een klanten- of tevredenheidscijfer. Verzin geen "jaren ervaring" of "aantal stylisten". Bij twijfel: laat stats weg en schrijf kwalitatieve about-copy.
+- testimonials: 2 korte reviews (optioneel). Parafraseer — neem reviewteksten niet letterlijk over — en gebruik een neutrale, anonieme auteur ("Tevreden klant", "Klant via Google"). Leid een auteur NOOIT af van een naam die in de review genoemd wordt (dat is vaak de stylist, niet de recensent). Zet source alleen op "Google" als je de exacte tekst én de echte auteur citeert.
+- team en reputation: verzin NOOIT teamleden, namen, ratings of reviewaantallen. Laat beide WEG, tenzij ze letterlijk in de briefing staan. Als de briefing een "ECHTE GEGEVENS"-blok bevat, laat team, reputation én testimonials dan juist helemaal weg uit je JSON — die worden automatisch uit die echte data gevuld.
 - meta.title en meta.description: SEO-vriendelijk.
 
 # SiteConfig-schema (TypeScript)
@@ -75,7 +87,9 @@ Voor ELKE afbeeldings-URL gebruik je exact dit patroon: "https://picsum.photos/s
   booking: { provider: "treatwell"|"salonized"|"booksy"|"phorest"|"cal"|"custom"; iframeUrl?: string; externalUrl?: string; label?: string };
   contact: { phone?: string; whatsapp?: string; email?: string; instagram?: string; facebook?: string; tiktok?: string };
   testimonials?: { author: string; quote: string; rating?: number; source?: string }[];
-  legal: { kvk: string; btw?: string };
+  team?: { name: string; role?: string; specialty?: string; rating?: number; reviewCount?: number; photoUrl?: string }[]; // alleen uit echte bron; nooit verzinnen
+  reputation?: { rating: number; reviewCount?: number; source?: string };   // alleen uit echte bron; nooit verzinnen
+  legal?: { kvk?: string; btw?: string };   // nooit verzinnen; geef {} als niet bekend
   meta?: { title?: string; description?: string; locale?: "nl-NL"|"en-NL" };
 }
 \`\`\`

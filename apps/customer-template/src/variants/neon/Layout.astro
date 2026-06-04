@@ -8,6 +8,8 @@ import About from "./sections/About.astro";
 import Services from "./sections/Services.astro";
 import Gallery from "./sections/Gallery.astro";
 import Visit from "./sections/Visit.astro";
+import Team from "./sections/Team.astro";
+import Testimonials from "./sections/Testimonials.astro";
 import Booking from "./sections/Booking.astro";
 import Footer from "./sections/Footer.astro";
 
@@ -51,6 +53,8 @@ const brandStyles = [
       <About config={config} />
       <Services config={config} />
       <Gallery config={config} />
+      {config.team && config.team.length > 0 && <Team config={config} />}
+      {config.testimonials && config.testimonials.length > 0 && <Testimonials config={config} />}
       <Visit config={config} />
       <Booking config={config} />
     </main>

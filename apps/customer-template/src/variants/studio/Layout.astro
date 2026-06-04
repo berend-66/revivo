@@ -6,6 +6,8 @@ import Hero from "./sections/Hero.astro";
 import Manifesto from "./sections/Manifesto.astro";
 import Services from "./sections/Services.astro";
 import Index from "./sections/Index.astro";
+import Team from "./sections/Team.astro";
+import Testimonials from "./sections/Testimonials.astro";
 import StudioDetails from "./sections/StudioDetails.astro";
 import Booking from "./sections/Booking.astro";
 import Footer from "./sections/Footer.astro";
@@ -49,6 +51,8 @@ const brandStyles = [
       <Manifesto config={config} />
       <Services config={config} />
       <Index config={config} />
+      {config.team && config.team.length > 0 && <Team config={config} />}
+      {config.testimonials && config.testimonials.length > 0 && <Testimonials config={config} />}
       <StudioDetails config={config} />
       <Booking config={config} />
     </main>

@@ -35,6 +35,23 @@ function deriveSalonType(place: PlaceDetails): SalonBrief["type"] {
   return "hair";
 }
 
+/**
+ * A Dutch MOBILE number is 06 / +316 (then 8 digits). Anything else on +31 is a
+ * geographic landline (e.g. +31 30 = Utrecht), which cannot host a WhatsApp
+ * account — so we explicitly warn the generator not to derive contact.whatsapp
+ * from it.
+ */
+function isDutchMobile(phone?: string): boolean {
+  if (!phone) return false;
+  const d = phone.replace(/[^\d+]/g, "");
+  return /^(?:\+316|00316|06)\d{8}$/.test(d);
+}
+
+/** A website that is really just the Instagram profile isn't a real website. */
+function hasRealWebsite(place: PlaceDetails): boolean {
+  return Boolean(place.websiteUri && !/instagram\.com/i.test(place.websiteUri));
+}
+
 /** Recover the city from a Dutch formatted address ("... , 1073 AG Amsterdam, Nederland"). */
 function cityFromFormattedAddress(addr?: string): string | undefined {
   if (!addr) return undefined;
@@ -85,6 +102,22 @@ function buildNotes(place: PlaceDetails, ig: InstagramLight | undefined, extra?:
   }
   if (ig?.fullName) blocks.push(`Instagram-naam: ${ig.fullName}`);
 
+  // Explicit guardrails so the generator can't fabricate contact channels we
+  // don't actually have. These mirror the no-fabrication rules in the system
+  // prompt, but stated against THIS salon's real data.
+  const guards: string[] = [];
+  if (place.phone && !isDutchMobile(place.phone)) {
+    guards.push(
+      "Het telefoonnummer is een vast nummer (geen mobiel): zet contact.whatsapp NIET — WhatsApp werkt niet op een vast nummer.",
+    );
+  }
+  if (!hasRealWebsite(place)) {
+    guards.push(
+      "Deze salon heeft geen eigen website/domein bekend: verzin GEEN e-mailadres. Gebruik telefoon (en Instagram als bekend) als contact.",
+    );
+  }
+  if (guards.length) blocks.push(`Contact-aanwijzingen:\n${guards.map((g) => `- ${g}`).join("\n")}`);
+
   if (extra) blocks.push(extra);
 
   return blocks.length ? blocks.join("\n\n") : undefined;
@@ -103,10 +136,6 @@ export function placeToBrief(
     );
   }
 
-  // A website that is really just the Instagram profile isn't a website.
-  const website =
-    place.websiteUri && !/instagram\.com/i.test(place.websiteUri) ? place.websiteUri : undefined;
-
   return SalonBriefSchema.parse({
     name: place.name,
     city,
@@ -115,10 +144,15 @@ export function placeToBrief(
     address: place.street ?? place.formattedAddress,
     postcode: place.postcode,
     instagram: ig?.handle,
-    website,
+    website: hasRealWebsite(place) ? place.websiteUri : undefined,
     knownServices: overrides.knownServices,
     language: overrides.language ?? "nl",
     preferLayout: overrides.preferLayout,
+    // Real grounding so the generator copies facts instead of inventing them.
+    rating: place.rating,
+    reviewCount: place.userRatingCount,
+    lat: place.lat,
+    lng: place.lng,
     notes: buildNotes(place, ig, overrides.notes),
   } satisfies Partial<SalonBrief>);
 }

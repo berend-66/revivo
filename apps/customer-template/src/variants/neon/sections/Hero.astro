@@ -62,6 +62,21 @@ const headlineLines = config.hero.headline.split("\n");
           )
         }
       </div>
+
+      {
+        config.reputation && (
+          <div class="mt-8 flex items-center gap-3 neon-label text-ink-soft">
+            <span class="font-display text-2xl font-bold tabular-nums" style="color: var(--color-primary);">
+              {config.reputation.rating.toLocaleString("nl-NL", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}★
+            </span>
+            <span>
+              {config.reputation.source && `op ${config.reputation.source}`}
+              {config.reputation.reviewCount != null &&
+                ` · ${config.reputation.reviewCount.toLocaleString("nl-NL")} reviews`}
+            </span>
+          </div>
+        )
+      }
     </div>
 
     <div class="col-span-12 lg:col-span-5 relative mt-10 lg:mt-0 lg:pl-8">

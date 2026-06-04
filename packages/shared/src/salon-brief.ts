@@ -31,6 +31,17 @@ export const SalonBriefSchema = z.object({
   language: z.enum(["nl", "en"]).default("nl"),
   /** Optional steer toward a specific variant; otherwise the LLM picks. */
   preferLayout: z.enum(["atelier", "studio", "neon"]).optional(),
+  /**
+   * Structured real-world grounding from a Place, so the generator surfaces real
+   * facts instead of inventing them. Rating + reviewCount let it write
+   * "4.3★ op Google (230 reviews)" rather than laundering the review count into a
+   * "230+ tevreden klanten" stat; lat/lng let it copy the true map coordinates
+   * instead of hallucinating them. All optional — manual briefs leave them unset.
+   */
+  rating: z.number().optional(),
+  reviewCount: z.number().int().nonnegative().optional(),
+  lat: z.number().optional(),
+  lng: z.number().optional(),
   notes: z.string().optional(),
 });
 

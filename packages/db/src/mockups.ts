@@ -8,7 +8,9 @@ import type { SalonBrief, SiteConfig } from "@revivo/shared";
  * once that workflow is set up).
  */
 
-export type MockupSource = "manual" | "places";
+// "listing" = sourced from a public salon listing (Treatwell): real menu/prices/
+// team/hours/reviews/photos. See migration 20260603120000_mockups_source_listing.sql.
+export type MockupSource = "manual" | "places" | "listing";
 
 export interface MockupRow {
   id: string;

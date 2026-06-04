@@ -1,4 +1,4 @@
-import { SiteConfigSchema, slugify, type SiteConfig, type SalonBrief } from "@revivo/shared";
+import { SiteConfigSchema, slugify, type SiteConfig, type SalonBrief, type ListingFacts } from "@revivo/shared";
 import { createLLMClient, type LLMClient } from "./client";
 import { MOCKUP_SYSTEM_PROMPT } from "./prompts/mockup-system";
 
@@ -12,13 +12,22 @@ export interface GenerateResult {
  * brief → SiteConfig via the LLM. Validates with Zod and retries once with the
  * validation error fed back, since models occasionally miss the schema by a
  * field. Image URLs are deterministically rewritten afterwards (see
- * `withDeterministicImages`) so a flaky model can never break rendering.
+ * `normalizeImagesInPlace`) so a flaky model can never break rendering.
+ *
+ * When `facts` are supplied (a real Treatwell listing), the architecture is
+ * "facts deterministic, voice LLM": the facts are surfaced to the model as
+ * authoritative grounding for its VOICE (copy/colour/layout), then
+ * `applyListingFacts` deterministically overwrites the factual fields of the
+ * returned config (services, prices, hours, team, reputation, reviews, contact,
+ * booking, location, photos). The model's invented facts are discarded — only
+ * its voice survives — so model drift can never reach the mockup.
  */
 export async function generateMockup(
   brief: SalonBrief,
   client: LLMClient = createLLMClient(),
+  facts?: ListingFacts,
 ): Promise<GenerateResult> {
-  const userMessage = briefToMessage(brief);
+  const userMessage = briefToMessage(brief, facts);
   let lastError = "";
 
   for (let attempt = 1; attempt <= 2; attempt++) {
@@ -45,6 +54,10 @@ export async function generateMockup(
     // model's image URLs are discarded anyway, so they must never trigger a
     // costly retry over a malformed URL.
     normalizeImagesInPlace(parsed.value);
+    // Models intermittently emit `null` for optional string fields (e.g. a
+    // service `description: null`), which fails an `.optional()` Zod check —
+    // strip those before validating so a stray null never forces a retry.
+    stripStrayNullsInPlace(parsed.value);
 
     const result = SiteConfigSchema.safeParse(parsed.value);
     if (!result.success) {
@@ -54,13 +67,14 @@ export async function generateMockup(
       continue;
     }
 
-    return { config: result.data, usage, attempts: attempt };
+    const config = facts ? SiteConfigSchema.parse(applyListingFacts(result.data, facts)) : result.data;
+    return { config, usage, attempts: attempt };
   }
 
   throw new Error(`Mockup generation failed schema validation after 2 attempts:\n${lastError}`);
 }
 
-function briefToMessage(brief: SalonBrief): string {
+function briefToMessage(brief: SalonBrief, facts?: ListingFacts): string {
   const lines = [
     `Naam: ${brief.name}`,
     `Stad: ${brief.city}`,
@@ -74,8 +88,143 @@ function briefToMessage(brief: SalonBrief): string {
   if (brief.website) lines.push(`Huidige website: ${brief.website}`);
   if (brief.knownServices) lines.push(`Bekende diensten/prijzen:\n${brief.knownServices}`);
   if (brief.preferLayout) lines.push(`Voorkeur layout: ${brief.preferLayout}`);
+  // Only surface Google rating/coords when we lack richer listing facts — the
+  // ECHTE GEGEVENS block below supersedes them (and avoids conflicting numbers).
+  if (!facts) {
+    if (typeof brief.rating === "number") {
+      const reviews = typeof brief.reviewCount === "number" ? ` (${brief.reviewCount} reviews)` : "";
+      lines.push(
+        `Google-rating: ${brief.rating}★${reviews} — toon dit hooguit als '${brief.rating}★ op Google${reviews}', NOOIT als aantal (tevreden) klanten.`,
+      );
+    }
+    if (typeof brief.lat === "number" && typeof brief.lng === "number") {
+      lines.push(`Coördinaten (gebruik exact deze in location.lat/lng): ${brief.lat}, ${brief.lng}`);
+    }
+  }
   if (brief.notes) lines.push(`Notities: ${brief.notes}`);
-  return `Briefing voor de salon:\n${lines.join("\n")}`;
+
+  let msg = `Briefing voor de salon:\n${lines.join("\n")}`;
+  if (facts) msg += `\n\n${factsToGrounding(facts)}`;
+  return msg;
+}
+
+/**
+ * Render the scraped facts as an authoritative grounding block so the model's
+ * VOICE (copy, palette, layout) fits the real salon — even though these exact
+ * fields get deterministically overwritten by `applyListingFacts` afterwards.
+ * It is told to omit team/reputation/testimonials (filled from facts) and to
+ * spend its effort on the parts that are genuinely its job.
+ */
+function factsToGrounding(facts: ListingFacts): string {
+  const L: string[] = [];
+  if (facts.reputation) {
+    const r = facts.reputation;
+    L.push(
+      `Reputatie: ${fmtRating(r.rating)}★ op ${r.source ?? "Treatwell"}${
+        r.reviewCount ? ` (${r.reviewCount} reviews)` : ""
+      }`,
+    );
+  }
+  if (facts.team?.length) {
+    L.push(
+      `Team (${facts.team.length} ${facts.team.length === 1 ? "stylist" : "stylisten"}): ${facts.team
+        .map((t) => t.name)
+        .join(", ")}`,
+    );
+  }
+  if (facts.services?.length) {
+    L.push(`Diensten-categorieën: ${facts.services.map((c) => c.category).join("; ")}`);
+    const samples = facts.services
+      .map((c) => c.items[0])
+      .filter((i): i is NonNullable<typeof i> => Boolean(i))
+      .slice(0, 6)
+      .map((i) => `${i.name} ${i.price != null ? fmtEuro(i.price) : "op aanvraag"}`);
+    if (samples.length) L.push(`Voorbeeldprijzen: ${samples.join(" · ")}`);
+  }
+  if (facts.address) {
+    const coords =
+      facts.lat !== undefined && facts.lng !== undefined ? ` (coördinaten ${facts.lat}, ${facts.lng})` : "";
+    L.push(`Locatie: ${facts.address}${facts.city ? `, ${facts.city}` : ""}${coords}`);
+  }
+  if (facts.description) {
+    L.push(
+      `Over de salon (echte omschrijving — gebruik voor toon en feiten, niet letterlijk overnemen): ${facts.description.slice(
+        0,
+        420,
+      )}`,
+    );
+  }
+
+  return [
+    "# ECHTE GEGEVENS (bron: Treatwell) — LEIDEND",
+    "Deze feiten zijn geverifieerd en worden NA jouw antwoord automatisch en exact in de config gezet (diensten + prijzen, openingstijden, team, reputatie, reviews, telefoon, boeking, locatie, foto's). Verzin hier NIETS bij en spreek ze NIET tegen. Laat team, reputation én testimonials zélf WEG uit je JSON — die worden uit deze echte data gevuld. Besteed je aandacht aan wat WEL jouw taak is en bij deze échte salon past: de layout-keuze, het kleurenpalet, de merknaam-stijl, hero headline/subheadline, about-copy, tagline, gallery-captions en meta.",
+    ...L,
+  ].join("\n");
+}
+
+function fmtRating(n: number): string {
+  return String(n).replace(".", ",");
+}
+
+function fmtEuro(n: number): string {
+  const s = Number.isInteger(n) ? String(n) : n.toFixed(2).replace(".", ",");
+  return `€${s}`;
+}
+
+/**
+ * Deterministic facts passthrough — the second half of "facts deterministic,
+ * voice LLM". Overwrites the factual fields of a generated config with the
+ * scraped truth, discarding whatever the model invented for them. Only touches a
+ * field when the listing actually provides it, so a partial listing degrades
+ * gracefully (and a salon with no listing keeps the hardened omit-don't-invent
+ * behaviour). Returns a new config; the caller re-validates it.
+ */
+export function applyListingFacts(config: SiteConfig, facts: ListingFacts): SiteConfig {
+  const next: SiteConfig = structuredClone(config);
+
+  if (facts.services?.length) next.services = facts.services;
+  if (facts.hours?.length === 7) next.hours = facts.hours;
+  if (facts.team?.length) next.team = facts.team;
+  if (facts.reputation) next.reputation = facts.reputation;
+  if (facts.reviews?.length) next.testimonials = facts.reviews;
+  if (facts.phone) next.contact = { ...next.contact, phone: facts.phone };
+
+  // A real, clickable booking URL (the listing itself) — replaces the hardened
+  // "custom, no URL" fallback now that we genuinely have one.
+  if (facts.bookingUrl) {
+    next.booking = {
+      provider: "treatwell",
+      externalUrl: facts.bookingUrl,
+      label: next.booking.label ?? "Boek online via Treatwell",
+    };
+  }
+
+  // Location: overwrite only what the listing provides; keep the LLM/Google
+  // postcode + transitNotes (Treatwell has no postcode).
+  if (facts.address) next.location.address = facts.address;
+  if (facts.city) next.location.city = facts.city;
+  if (facts.postcode) next.location.postcode = facts.postcode;
+  if (facts.lat !== undefined) next.location.lat = facts.lat;
+  if (facts.lng !== undefined) next.location.lng = facts.lng;
+
+  // Photos, sized dynamically to however many the listing has. The picsum
+  // placeholders from `normalizeImagesInPlace` survive only when there are none.
+  if (facts.photos?.length) {
+    const photos = facts.photos;
+    next.hero.images = photos.slice(0, Math.min(4, photos.length));
+    if (photos.length >= 2) {
+      next.gallery = photos.map((url, i) => {
+        const caption = config.gallery[i]?.caption;
+        return { url, aspect: "landscape" as const, ...(caption ? { caption } : {}) };
+      });
+    }
+    // The editorial portrait (atelier's About) is also an image — without this
+    // the model's picsum placeholder survives and renders on a real mockup.
+    // Prefer one beyond the hero set for variety; fall back to the last available.
+    next.about.portrait = photos[Math.min(4, photos.length - 1)];
+  }
+
+  return next;
 }
 
 interface ParseOk {
@@ -115,6 +264,25 @@ const ASPECT_DIMS: Record<string, [number, number]> = {
 
 function picsum(seed: string, w: number, h: number): string {
   return `https://picsum.photos/seed/${seed}/${w}/${h}`;
+}
+
+/**
+ * Recursively delete `null`-valued keys before validation. The model sometimes
+ * emits `null` for optional fields (e.g. a service `description: null`), which
+ * Zod rejects under `.optional()`. `price` is the one field that is legitimately
+ * `z.number().nullable()` ("op aanvraag"), so its `null` is preserved.
+ */
+function stripStrayNullsInPlace(node: unknown): void {
+  if (Array.isArray(node)) {
+    for (const x of node) stripStrayNullsInPlace(x);
+    return;
+  }
+  if (node && typeof node === "object") {
+    for (const [k, val] of Object.entries(node as Record<string, unknown>)) {
+      if (val === null && k !== "price") delete (node as Record<string, unknown>)[k];
+      else stripStrayNullsInPlace(val);
+    }
+  }
 }
 
 /**

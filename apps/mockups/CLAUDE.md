@@ -42,8 +42,10 @@ before render — a drifted row fails loudly instead of painting a broken page.
 
 ## Rules
 
-- **SSR, not static.** `output: "server"` + `@astrojs/node` (standalone). Swapping to
-  `@astrojs/vercel` for edge deploy is a one-line adapter change.
+- **SSR, not static.** `output: "server"` + `@astrojs/vercel` (v8, Astro-5 line). Deploys to
+  Vercel as a serverless function; build output lands in `.vercel/output` (gitignored). Needs
+  `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` set as Vercel env vars. The custom domain
+  `mock.revivo.nl` is attached post-deploy; until then the `*.vercel.app` URL serves.
 - **Don't fetch inside variant sections.** They read `props.config` only — the data work
   happened upstream (generator → DB).
 - **Cache-Control** is set per mockup (`s-maxage` + `stale-while-revalidate`); mockups
@@ -55,7 +57,8 @@ before render — a drifted row fails loudly instead of painting a broken page.
 
 ```bash
 cd apps/mockups && pnpm dev        # http://localhost:4321/<slug>  (e.g. /kapsalon-mira)
-pnpm build && pnpm start           # production SSR build via the node adapter
+pnpm build                         # production SSR build → .vercel/output
+vercel deploy --prebuilt           # deploy the built output (after `vercel link` + env vars)
 ```
 Generate a mockup to view: `pnpm gen-mockup --fixture-place` (writes the local JSON the
 dev fallback reads), or `... --push` once Supabase is configured.

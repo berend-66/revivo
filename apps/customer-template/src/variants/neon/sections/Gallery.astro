@@ -4,6 +4,7 @@ interface Props {
   config: SiteConfig;
 }
 const { config } = Astro.props;
+const igHandle = config.contact.instagram?.replace(/^@+/, "");
 
 /* Mild rotation per cell for that hand-pinned photo-wall vibe. */
 const rotations = ["rotate-[-2deg]", "rotate-[1.5deg]", "rotate-[-1deg]", "rotate-[2deg]", "rotate-[-2.5deg]", "rotate-[1deg]"];
@@ -21,14 +22,14 @@ const rotations = ["rotate-[-2deg]", "rotate-[1.5deg]", "rotate-[-1deg]", "rotat
       </h2>
     </div>
     {
-      config.contact.instagram && (
+      igHandle && (
         <a
-          href={`https://instagram.com/${config.contact.instagram}`}
+          href={`https://instagram.com/${igHandle}`}
           target="_blank"
           rel="noopener"
           class="neon-label hover:text-primary transition-colors"
         >
-          → meer op @{config.contact.instagram}
+          → meer op @{igHandle}
         </a>
       )
     }

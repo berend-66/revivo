@@ -1,15 +1,17 @@
 ---
 import type { SiteConfig } from "@revivo/shared";
+import { studioRail } from "./_rail";
 interface Props {
   config: SiteConfig;
 }
 const { config } = Astro.props;
+const rail = studioRail(config);
 ---
 
 <section id="index" class="studio-section border-t rule-strong border-t-1 bg-paper">
   <div class="grid grid-cols-12 gap-4">
     <div class="col-span-12 md:col-span-2 label-mono-mute">
-      <div>04 / 07</div>
+      <div>{rail.index} / {rail.total}</div>
       <div class="mt-1">— INDEX</div>
     </div>
 

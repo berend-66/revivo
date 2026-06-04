@@ -43,6 +43,16 @@ const secondaryImg = config.hero.images[1];
             <span class="eyebrow-mono">{config.brand.tagline}</span>
           )
         }
+        {
+          config.reputation && (
+            <span class="eyebrow-mono">
+              {config.reputation.rating.toLocaleString("nl-NL", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}★
+              {config.reputation.source && ` op ${config.reputation.source}`}
+              {config.reputation.reviewCount != null &&
+                ` · ${new Intl.NumberFormat("nl-NL").format(config.reputation.reviewCount)} reviews`}
+            </span>
+          )
+        }
       </div>
     </div>
 

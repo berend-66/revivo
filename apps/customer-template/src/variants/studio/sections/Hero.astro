@@ -14,6 +14,15 @@ const heroImg = config.hero.images[0];
       <div>N°01</div>
       <div class="mt-1">— EST. {(config.about.stats?.find((s) => s.label.toLowerCase().includes("open")) ?? config.about.stats?.[0])?.value ?? "—"}</div>
       <div class="mt-1">— {config.location.city.toUpperCase()}, NL</div>
+      {
+        config.reputation && (
+          <div class="mt-3 text-ink">
+            {config.reputation.rating.toFixed(1).replace(".", ",")}★
+            {config.reputation.source && ` ${config.reputation.source.toUpperCase()}`}
+            {config.reputation.reviewCount != null && ` · ${config.reputation.reviewCount.toLocaleString("nl-NL")}`}
+          </div>
+        )
+      }
     </div>
 
     <div class="col-span-12 md:col-span-10">
@@ -44,7 +53,9 @@ const heroImg = config.hero.images[0];
         >
           {config.hero.cta?.label ?? "Book a chair →"}
         </a>
-        <span class="label-mono-mute">— {config.booking.provider.toUpperCase()}</span>
+        {config.booking.provider !== "custom" && (
+          <span class="label-mono-mute">— {config.booking.provider.toUpperCase()}</span>
+        )}
       </div>
     </div>
 

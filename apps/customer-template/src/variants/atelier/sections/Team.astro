@@ -1,0 +1,72 @@
+---
+import type { SiteConfig } from "@revivo/shared";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+const team = config.team!;
+const nf = new Intl.NumberFormat("nl-NL");
+const fmtRating = (r: number) => r.toLocaleString("nl-NL", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+---
+
+<section id="team" class="section-pad">
+  <div class="max-w-6xl">
+    <p class="eyebrow-mono mb-6">— Het team</p>
+
+    <h2
+      class="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.05] text-ink max-w-3xl"
+      style="font-variation-settings: 'opsz' 144, 'SOFT' 60;"
+    >
+      De handen achter het werk.
+    </h2>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-14 mt-16">
+      {
+        team.map((m) => (
+          <figure>
+            {m.photoUrl ? (
+              <img
+                src={m.photoUrl}
+                alt={m.name}
+                loading="lazy"
+                class="w-full aspect-[3/4] object-cover"
+                style="filter: saturate(0.85) contrast(1.05);"
+              />
+            ) : (
+              <div
+                class="w-full aspect-[3/4] bg-surface-deep flex items-center justify-center font-display italic text-6xl text-primary"
+                style="font-variation-settings: 'opsz' 144, 'SOFT' 100, 'WONK' 1;"
+                aria-hidden="true"
+              >
+                {m.name.charAt(0)}
+              </div>
+            )}
+
+            <figcaption class="mt-5 border-t border-rule pt-4">
+              <p
+                class="font-display text-2xl text-ink leading-none"
+                style="font-variation-settings: 'opsz' 144, 'SOFT' 60;"
+              >
+                {m.name}
+              </p>
+              {m.role && <p class="eyebrow-mono mt-3">{m.role}</p>}
+              {m.specialty && (
+                <p
+                  class="font-display italic text-base text-ink-mute mt-3 leading-snug"
+                  style="font-variation-settings: 'opsz' 144, 'SOFT' 100;"
+                >
+                  {m.specialty}
+                </p>
+              )}
+              {m.rating != null && (
+                <p class="eyebrow-mono mt-4">
+                  {fmtRating(m.rating)}★{m.reviewCount != null && ` · ${nf.format(m.reviewCount)} reviews`}
+                </p>
+              )}
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+  </div>
+</section>

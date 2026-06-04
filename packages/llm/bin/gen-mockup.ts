@@ -4,10 +4,16 @@ import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
-import { SalonBriefSchema, type SalonBrief, type SiteConfig } from "@revivo/shared";
-import { assembleBriefFromPlaces, assembleBriefFromFixture, type PlaceToBriefOverrides } from "@revivo/sourcing";
+import { SalonBriefSchema, SiteConfigSchema, type SalonBrief, type SiteConfig, type ListingFacts } from "@revivo/shared";
+import {
+  assembleBriefFromPlaces,
+  assembleBriefFromFixture,
+  fetchTreatwellFacts,
+  listingFactsToBrief,
+  type PlaceToBriefOverrides,
+} from "@revivo/sourcing";
 import { createServiceClient, upsertMockupBySlug, type MockupSource } from "@revivo/db";
-import { generateMockup } from "../src/mockup-generator";
+import { generateMockup, applyListingFacts } from "../src/mockup-generator";
 import { stubMockup } from "../src/dry-run";
 import { loadLLMSettings } from "../src/config";
 
@@ -24,6 +30,7 @@ const { values } = parseArgs({
     "place-id": { type: "string" },
     query: { type: "string" },
     "fixture-place": { type: "boolean", default: false },
+    treatwell: { type: "string" },
     // manual / override fields (also used as overrides in places mode)
     name: { type: "string" },
     city: { type: "string" },
@@ -58,6 +65,9 @@ Input modes (pick one):
   Places   pnpm gen-mockup --place-id "ChIJ..."            (live Google Places; needs GOOGLE_PLACES_API_KEY)
            pnpm gen-mockup --query "Kapsalon Mira Utrecht" (text-search → first hit → brief)
   Fixture  pnpm gen-mockup --fixture-place                 (built-in fixture Place; no key — great e2e test)
+  Treatwell pnpm gen-mockup --treatwell <salon-url|slug>   (REAL menu/prices/team/hours/reviews/photos — no key)
+            Combine with --place-id for the postcode + extra Google photos:
+            pnpm gen-mockup --treatwell <url> --place-id "ChIJ..."
 
 Offline / no cost:
   --dry-run            Build a deterministic stub (no LLM). With a places mode, uses the fixture Place (no Google call).
@@ -129,15 +139,48 @@ interface ResolvedBrief {
   brief: SalonBrief;
   source: MockupSource;
   placeId?: string;
+  /** Real listing facts (Treatwell), applied deterministically to the config. */
+  facts?: ListingFacts;
 }
 
 async function resolveBrief(): Promise<ResolvedBrief> {
+  const treatwellUrl = values.treatwell;
   const placesMode = values["place-id"] || values.query || values["fixture-place"];
+  const overrides = placesOverrides();
+
+  // Treatwell mode — the salon's real source of truth. Optionally combined with
+  // a places mode to borrow Google's postcode + coordinates (Treatwell has no
+  // postcode); the listing facts win on everything they cover.
+  if (treatwellUrl) {
+    const { facts } = await fetchTreatwellFacts(treatwellUrl);
+    if (placesMode) {
+      const instagram = {
+        handle: values.ig ?? values.instagram,
+        bio: values["ig-bio"],
+        captions: parseCaptions(values["ig-captions"]),
+      };
+      const useFixture = values["dry-run"] || values["fixture-place"];
+      const assembled = useFixture
+        ? await assembleBriefFromFixture({ instagram, overrides })
+        : await assembleBriefFromPlaces({ placeId: values["place-id"], query: values.query, instagram, overrides });
+      const brief: SalonBrief = { ...assembled.brief };
+      if (facts.name) brief.name = facts.name;
+      if (facts.address) brief.address = facts.address;
+      if (facts.lat !== undefined) brief.lat = facts.lat;
+      if (facts.lng !== undefined) brief.lng = facts.lng;
+      if (facts.reputation) {
+        brief.rating = facts.reputation.rating;
+        brief.reviewCount = facts.reputation.reviewCount;
+      }
+      return { brief, facts, source: "listing", placeId: assembled.place.placeId };
+    }
+    return { brief: listingFactsToBrief(facts, overrides), facts, source: "listing" };
+  }
+
   if (!placesMode) {
     return { brief: buildManualBrief(), source: "manual" };
   }
 
-  const overrides = placesOverrides();
   const instagram = {
     handle: values.ig ?? values.instagram,
     bio: values["ig-bio"],
@@ -155,19 +198,29 @@ async function resolveBrief(): Promise<ResolvedBrief> {
 }
 
 async function main() {
-  const { brief, source, placeId } = await resolveBrief();
+  const { brief, source, placeId, facts } = await resolveBrief();
   const dryRun = values["dry-run"];
 
   const modeLabel = dryRun ? "DRY RUN (stub, no API call)" : "Generating via LLM";
-  const srcLabel = source === "places" ? (values["fixture-place"] || dryRun ? " · fixture Place" : ` · Place ${placeId}`) : "";
+  const srcLabel =
+    source === "listing"
+      ? ` · Treatwell${placeId ? ` + Place ${placeId}` : ""}`
+      : source === "places"
+        ? values["fixture-place"] || dryRun
+          ? " · fixture Place"
+          : ` · Place ${placeId}`
+        : "";
   console.log(`\n→ ${modeLabel} for "${brief.name}" [${source}${srcLabel}]\n`);
 
   let config: SiteConfig;
   let model = "dry-run-stub";
   if (dryRun) {
     config = stubMockup(brief);
+    // Apply the real facts even to the stub, so --dry-run --treatwell is a
+    // zero-cost offline preview of the deterministic passthrough.
+    if (facts) config = SiteConfigSchema.parse(applyListingFacts(config, facts));
   } else {
-    const result = await generateMockup(brief);
+    const result = await generateMockup(brief, undefined, facts);
     config = result.config;
     model = loadLLMSettings().model;
     console.log(

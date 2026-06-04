@@ -1,9 +1,11 @@
 ---
 import type { SiteConfig } from "@revivo/shared";
+import { studioRail } from "./_rail";
 interface Props {
   config: SiteConfig;
 }
 const { config } = Astro.props;
+const rail = studioRail(config);
 
 const formatPrice = (price: number | null): string => {
   if (price === null) return "—";
@@ -14,7 +16,7 @@ const formatPrice = (price: number | null): string => {
 <section id="services" class="studio-section border-t rule-strong border-t-1">
   <div class="grid grid-cols-12 gap-4">
     <div class="col-span-12 md:col-span-2 label-mono-mute">
-      <div>03 / 07</div>
+      <div>{rail.services} / {rail.total}</div>
       <div class="mt-1">— SERVICES</div>
     </div>
 

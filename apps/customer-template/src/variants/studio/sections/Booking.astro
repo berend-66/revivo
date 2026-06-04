@@ -1,17 +1,22 @@
 ---
 import type { SiteConfig } from "@revivo/shared";
+import { studioRail } from "./_rail";
 interface Props {
   config: SiteConfig;
 }
 const { config } = Astro.props;
-const bookingHref = config.booking.externalUrl ?? config.booking.iframeUrl ?? "#";
+const rail = studioRail(config);
+const bookingHref =
+  config.booking.externalUrl ??
+  config.booking.iframeUrl ??
+  (config.contact.phone ? `tel:${config.contact.phone.replace(/\s/g, "")}` : "#");
 const ctaLabel = config.booking.label ?? "Book now";
 ---
 
 <section id="booking" class="studio-section border-t rule-strong border-t-1 bg-ink text-surface relative overflow-hidden">
   <div class="grid grid-cols-12 gap-4">
     <div class="col-span-12 md:col-span-2 label-mono-mute" style="color: rgba(255,255,255,0.45);">
-      <div>06 / 07</div>
+      <div>{rail.booking} / {rail.total}</div>
       <div class="mt-1">— BOOK</div>
     </div>
 
@@ -43,6 +48,17 @@ const ctaLabel = config.booking.label ?? "Book now";
                 style="color: rgba(255,255,255,0.55);"
               >
                 — or {config.contact.email}
+              </a>
+            )
+          }
+          {
+            config.contact.phone && (
+              <a
+                href={`tel:${config.contact.phone.replace(/\s/g, "")}`}
+                class="label-mono-mute hover:text-surface text-right"
+                style="color: rgba(255,255,255,0.55);"
+              >
+                — or call {config.contact.phone}
               </a>
             )
           }

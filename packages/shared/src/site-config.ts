@@ -16,7 +16,9 @@ import { z } from "zod";
 
 const ColorSchema = z.string().regex(/^#[0-9a-fA-F]{6}$/, "expected #rrggbb hex color");
 
-const ServiceItemSchema = z.object({
+// Exported (not just the inferred type) so the listing-facts schema can reuse
+// these as runtime Zod schemas — the scraped facts share SiteConfig's shapes.
+export const ServiceItemSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
   /** Price in EUR. Use `null` for "vanaf"/quote-only services. */
@@ -24,7 +26,7 @@ const ServiceItemSchema = z.object({
   durationMin: z.number().int().positive().optional(),
 });
 
-const ServiceCategorySchema = z.object({
+export const ServiceCategorySchema = z.object({
   category: z.string(),
   items: z.array(ServiceItemSchema).min(1),
 });
@@ -36,17 +38,40 @@ const GalleryItemSchema = z.object({
   aspect: z.enum(["square", "portrait", "landscape"]).optional(),
 });
 
-const HoursRowSchema = z.object({
+export const HoursRowSchema = z.object({
   day: z.string(),
   open: z.string().optional(),
   close: z.string().optional(),
   closed: z.boolean().optional(),
 });
 
-const TestimonialSchema = z.object({
+export const TestimonialSchema = z.object({
   author: z.string(),
   quote: z.string(),
   rating: z.number().int().min(1).max(5).optional(),
+  source: z.string().optional(),
+});
+
+// A named stylist/staff member. Populated ONLY from a real source (e.g. a
+// Treatwell listing) — never invented by the generator. `rating`/`reviewCount`
+// are per-stylist where the source exposes them.
+export const TeamMemberSchema = z.object({
+  name: z.string(),
+  role: z.string().optional(),
+  /** A short focus / "what clients say" tag (e.g. a top review sentiment). */
+  specialty: z.string().optional(),
+  rating: z.number().min(0).max(5).optional(),
+  reviewCount: z.number().int().nonnegative().optional(),
+  photoUrl: z.string().url().optional(),
+});
+
+// Aggregate reputation, e.g. "4,7★ op Treatwell · 2.907 reviews". Sourced from a
+// real listing, never fabricated — distinct from the per-quote `testimonials`.
+export const ReputationSchema = z.object({
+  /** Aggregate star rating, 0–5 (e.g. 4.7). */
+  rating: z.number().min(0).max(5),
+  reviewCount: z.number().int().nonnegative().optional(),
+  /** Where the rating comes from, e.g. "Treatwell" or "Google". */
   source: z.string().optional(),
 });
 
@@ -122,10 +147,27 @@ export const SiteConfigSchema = z.object({
 
   testimonials: z.array(TestimonialSchema).optional(),
 
-  legal: z.object({
-    kvk: z.string(),
-    btw: z.string().optional(),
-  }),
+  // Named stylists + aggregate reputation. Additive + optional so every existing
+  // example/row keeps validating, and all variants render-if-present (like
+  // `testimonials`). Both are SOURCED (Treatwell listing), never invented — the
+  // generator omits them and `applyListingFacts` fills them deterministically.
+  team: z.array(TeamMemberSchema).optional(),
+
+  reputation: ReputationSchema.optional(),
+
+  // Optional by design: the mockup generator must NOT fabricate a KvK/BTW —
+  // they are public, verifiable identifiers and a made-up number is an instant
+  // credibility break on an opener the salon owner inspects. Real values come
+  // from Stage-4 KvK enrichment; until present the footer omits the line.
+  // `.default({})` lets the model omit the whole block (so it never retries over
+  // a "missing legal" schema error) while keeping `config.legal` always present
+  // for the variant footers. See packages/llm/src/prompts/mockup-system.ts.
+  legal: z
+    .object({
+      kvk: z.string().optional(),
+      btw: z.string().optional(),
+    })
+    .default({}),
 
   meta: z
     .object({
@@ -143,3 +185,5 @@ export type ServiceItem = z.infer<typeof ServiceItemSchema>;
 export type GalleryItem = z.infer<typeof GalleryItemSchema>;
 export type HoursRow = z.infer<typeof HoursRowSchema>;
 export type Testimonial = z.infer<typeof TestimonialSchema>;
+export type TeamMember = z.infer<typeof TeamMemberSchema>;
+export type Reputation = z.infer<typeof ReputationSchema>;
