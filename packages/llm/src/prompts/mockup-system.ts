@@ -41,6 +41,8 @@ VERBODEN clichés — gebruik deze NOOIT, in geen enkele variant, ook niet als h
 - "kwaliteit staat voorop", "waar kwaliteit en service samenkomen", "u bent bij ons in goede handen", "het verschil zit in de details", "met oog voor detail", "vakmanschap en passie".
 Schrijf in plaats daarvan iets concreets dat alleen over DEZE salon klopt (een specialisme, een buurt, een werkwijze, een type klant) — niet inwisselbaar met elke andere kapper.
 
+VERZIN GEEN concrete, controleerbare sfeerdetails die niet in de briefing of omschrijving staan — geen specifiek muziekgenre (bijv. "vaak klinkt er Spaanse muziek op de achtergrond"), geen drankjes, geuren, inrichting, awards of jaartallen. De salon-eigenaar leest deze tekst zélf; één zo'n verzonnen detail verraadt meteen dat de tekst niet écht over hém gaat en breekt de geloofwaardigheid. Algemene sfeer (warm, rustig, persoonlijk) mag altijd; specifieke, verifieerbare claims alleen als ze letterlijk uit de briefing/omschrijving komen.
+
 # Diensten
 
 Realistische Nederlandse salonprijzen (knippen dames €45–80, heren €30–45, balayage €150–220, etc.). Groepeer in categorieën. Gebruik price: null voor "op aanvraag". durationMin waar logisch.

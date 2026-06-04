@@ -148,10 +148,9 @@ function factsToGrounding(facts: ListingFacts): string {
   }
   if (facts.description) {
     L.push(
-      `Over de salon (echte omschrijving — gebruik voor toon en feiten, niet letterlijk overnemen): ${facts.description.slice(
-        0,
-        420,
-      )}`,
+      `Over de salon (ECHTE omschrijving, door de salon zélf geschreven — dit is je ENIGE bron voor de about-copy): "${facts.description
+        .slice(0, 700)
+        .trim()}". Herschrijf dit in je eigen woorden en toon, maar voeg GEEN concrete details toe die hier niet in staan — geen verzonnen muziekgenre, drankjes, geuren, inrichting, jaartallen of sfeerclaims. Elke feitelijke bewering in de about moet terug te voeren zijn op deze omschrijving of de bovenstaande gegevens.`,
     );
   }
 
