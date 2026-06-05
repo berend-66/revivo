@@ -132,6 +132,31 @@ importers:
         specifier: ^22.10.0
         version: 22.19.19
 
+  packages/verify:
+    dependencies:
+      '@revivo/llm':
+        specifier: workspace:*
+        version: link:../llm
+      '@revivo/shared':
+        specifier: workspace:*
+        version: link:../shared
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.6.1
+      playwright-core:
+        specifier: ^1.55.0
+        version: 1.60.0
+      zod:
+        specifier: ^3.23.0
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^22.10.0
+        version: 22.19.19
+      tsx:
+        specifier: ^4.19.2
+        version: 4.22.3
+
 packages:
 
   '@astrojs/compiler@2.13.1':
@@ -2149,6 +2174,11 @@ packages:
   picomatch@4.0.4:
     resolution: {integrity: sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==}
     engines: {node: '>=12'}
+
+  playwright-core@1.60.0:
+    resolution: {integrity: sha512-9bW6zvX/m0lEbgTKJ6YppOKx8H3VOPBMOCFh2irXFOT4BbHgrx5hPjwJYLT40Lu+4qtD36qKc/Hn56StUW57IA==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   postcss@8.5.15:
     resolution: {integrity: sha512-FfR8sjd4em2T6fb3I2MwAJU7HWVMr9zba+enmQeeWFfCbm+UOC/0X4DS8XtpUTMwWMGbjKYP7xjfNekzyGmB3A==}
@@ -4633,6 +4663,8 @@ snapshots:
   picomatch@2.3.2: {}
 
   picomatch@4.0.4: {}
+
+  playwright-core@1.60.0: {}
 
   postcss@8.5.15:
     dependencies:

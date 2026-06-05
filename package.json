@@ -10,7 +10,8 @@
     "dev": "pnpm --filter @revivo/marketing dev",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
-    "gen-mockup": "pnpm -F @revivo/llm gen-mockup"
+    "gen-mockup": "pnpm -F @revivo/llm gen-mockup",
+    "verify-mockup": "pnpm -F @revivo/verify verify"
   },
   "devDependencies": {
     "typescript": "^5.7.2"

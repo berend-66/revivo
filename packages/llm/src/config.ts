@@ -13,6 +13,9 @@ export interface LLMSettings {
   apiKey: string;
   baseUrl: string;
   model: string;
+  /** Multimodal model for the verification pass (screenshots → discrepancy report).
+   * Same provider/key/baseUrl as `model`; only the slug differs. */
+  visionModel: string;
 }
 
 const DEFAULT_BASE_URL: Record<Provider, string> = {
@@ -25,6 +28,14 @@ const DEFAULT_BASE_URL: Record<Provider, string> = {
 
 const DEFAULT_MODEL: Record<Provider, string> = {
   openrouter: "anthropic/claude-sonnet-4.5",
+  openai: "gpt-4o",
+  anthropic: "claude-sonnet-4-6",
+};
+
+// Vision/judge model for the verification pass. Confirmed multimodal on OpenRouter
+// (text+image → text, 1M ctx, ~$0.40/$1.60 per Mtok). Override with VISION_LLM_MODEL.
+const DEFAULT_VISION_MODEL: Record<Provider, string> = {
+  openrouter: "qwen/qwen3.7-plus",
   openai: "gpt-4o",
   anthropic: "claude-sonnet-4-6",
 };
@@ -47,5 +58,6 @@ export function loadLLMSettings(env: NodeJS.ProcessEnv = process.env): LLMSettin
     apiKey,
     baseUrl: env.LLM_BASE_URL ?? DEFAULT_BASE_URL[provider],
     model: env.LLM_MODEL ?? DEFAULT_MODEL[provider],
+    visionModel: env.VISION_LLM_MODEL ?? DEFAULT_VISION_MODEL[provider],
   };
 }

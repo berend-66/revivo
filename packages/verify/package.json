@@ -1,0 +1,27 @@
+{
+  "name": "@revivo/verify",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "bin": {
+    "verify-mockup": "./bin/verify.ts"
+  },
+  "scripts": {
+    "verify": "tsx bin/verify.ts",
+    "test-templates": "tsx bin/test-templates.ts"
+  },
+  "dependencies": {
+    "@revivo/llm": "workspace:*",
+    "@revivo/shared": "workspace:*",
+    "dotenv": "^16.4.5",
+    "playwright-core": "^1.55.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "@types/node": "^22.10.0"
+  }
+}

@@ -40,8 +40,12 @@ fixtures.ts        → FIXTURE_PLACE / FIXTURE_INSTAGRAM (offline + --dry-run + 
   `treatwell.ts` reads typed JSON directly — `JSON.parse` of a balanced-brace-extracted blob,
   no parser dep, no LLM, zero model drift on facts. `window.__state__` is primary; JSON-LD is a
   redundant fallback for the scalar fields. It's a public-page read (no auth/API); keep the
-  selectors minimal (one marker + parse) so cosmetic HTML changes don't break it. The eventual
-  vision check is the backstop that catches a silently-bad scrape.
+  selectors minimal (one marker + parse) so cosmetic HTML changes don't break it. There is no
+  automated backstop for a *silently-bad* scrape today: a screenshot-vision comparator was built
+  and measured (Phase 6) but proved false-positive-prone, so it's shelved as a manual spot-check
+  (`@revivo/verify`). Rely on the deterministic parse + occasional eyeballing; the about-PROSE is
+  separately guarded by `checkAboutFidelity` (`@revivo/llm`). The `window.__state__`↔JSON-LD
+  cross-check is the cheap deterministic option if a fidelity guard is ever wanted.
 - **Treatwell is the source of truth for menu/prices/team/hours/reviews; Google stays for
   coords/postcode/extra photos.** `ListingFacts` is the real-data contract (lives in
   `@revivo/shared`); `@revivo/llm`'s `applyListingFacts` writes it into the config deterministically.

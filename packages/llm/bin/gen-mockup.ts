@@ -14,6 +14,7 @@ import {
 } from "@revivo/sourcing";
 import { createServiceClient, upsertMockupBySlug, type MockupSource } from "@revivo/db";
 import { generateMockup, applyListingFacts } from "../src/mockup-generator";
+import { checkAboutFidelity } from "../src/check-about";
 import { stubMockup } from "../src/dry-run";
 import { loadLLMSettings } from "../src/config";
 
@@ -227,6 +228,27 @@ async function main() {
       `   model produced a valid SiteConfig in ${result.attempts} attempt(s)` +
         (result.usage ? ` · ${result.usage.inputTokens} in / ${result.usage.outputTokens} out tokens` : ""),
     );
+  }
+
+  // About-fidelity guard. Facts are deterministic, but the LLM-authored about-prose can
+  // still invent a concrete claim (a music genre, an award, a year). Catch it with a cheap
+  // text check before the mockup is sent. Warn, don't block — operator judgment.
+  if (!dryRun && facts?.description) {
+    try {
+      const fidelity = await checkAboutFidelity({ config, facts });
+      if (fidelity.verdict === "fabrication") {
+        console.warn(`\n⚠ About-tekst: ${fidelity.claims.length} mogelijk verzonnen claim(s) [${fidelity.model}]:`);
+        for (const c of fidelity.claims) {
+          console.warn(`   • "${c.quote}"`);
+          console.warn(`     ${c.issue}`);
+        }
+        console.warn(`   → Controleer/herschrijf de about of genereer opnieuw vóór verzending.`);
+      } else {
+        console.log(`   about-fidelity: clean`);
+      }
+    } catch (err) {
+      console.warn(`   about-fidelity check overgeslagen: ${(err as Error).message}`);
+    }
   }
 
   // Resolve --out against REPO_ROOT (not cwd) — pnpm -F shifts cwd into the
