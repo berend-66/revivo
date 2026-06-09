@@ -11,7 +11,8 @@ config.ts          → GOOGLE_PLACES_API_KEY → SourcingSettings
 places.ts          → Google Places API (NEW) client: getPlaceDetails / searchSalonByText / placePhotoMediaUrl
 instagram.ts       → Instagram-light: normalize handle + paste-through bio/captions + provider seam
 places-to-brief.ts → placeToBrief(PlaceDetails, InstagramLight?) → SalonBrief
-treatwell.ts       → fetchTreatwellListing / treatwellListingToFacts → ListingFacts; listingFactsToBrief (REAL data, deterministic, NO LLM)
+treatwell.ts       → fetchTreatwellListing / parseTreatwellHtml / treatwellListingToFacts → ListingFacts; listingFactsToBrief (REAL data, deterministic, NO LLM)
+fact-check.ts      → crossCheckListing(raw, facts) → state↔JSON-LD scalar agreement report (deterministic scrape-fidelity backstop, NO LLM/vision)
 pipeline.ts        → assembleBriefFromPlaces() / assembleBriefFromFixture()  ← the entry points
 fixtures.ts        → FIXTURE_PLACE / FIXTURE_INSTAGRAM (offline + --dry-run + the e2e LLM test)
 ```
@@ -40,12 +41,18 @@ fixtures.ts        → FIXTURE_PLACE / FIXTURE_INSTAGRAM (offline + --dry-run + 
   `treatwell.ts` reads typed JSON directly — `JSON.parse` of a balanced-brace-extracted blob,
   no parser dep, no LLM, zero model drift on facts. `window.__state__` is primary; JSON-LD is a
   redundant fallback for the scalar fields. It's a public-page read (no auth/API); keep the
-  selectors minimal (one marker + parse) so cosmetic HTML changes don't break it. There is no
-  automated backstop for a *silently-bad* scrape today: a screenshot-vision comparator was built
-  and measured (Phase 6) but proved false-positive-prone, so it's shelved as a manual spot-check
-  (`@revivo/verify`). Rely on the deterministic parse + occasional eyeballing; the about-PROSE is
-  separately guarded by `checkAboutFidelity` (`@revivo/llm`). The `window.__state__`↔JSON-LD
-  cross-check is the cheap deterministic option if a fidelity guard is ever wanted.
+  selectors minimal (one marker + parse) so cosmetic HTML changes don't break it. `fetchTreatwellListing`
+  is just `fetch` in front of the pure `parseTreatwellHtml(html, sourceUrl)` — split out so the
+  extractor is unit-tested offline against captured HTML (see `## Tests`).
+- **The silently-bad-scrape backstop is `crossCheckListing` (`fact-check.ts`), NOT vision.** Because a
+  Treatwell page carries the salon's scalars twice (`window.__state__` + JSON-LD), we re-extract each
+  source independently and flag any disagreement on name/geo/rating/reviewCount/hours/photos — exactly
+  the failure a layout change would cause (state parse breaks, JSON-LD stays intact). It's deterministic,
+  makes no LLM/vision call, and `gen-mockup` prints its one-line verdict on every Treatwell run (warn,
+  don't block). It guards **scalars only** (JSON-LD has no menu/team/reviews) — price/menu correctness is
+  covered by the golden snapshot test, and about-PROSE by `checkAboutFidelity` (`@revivo/llm`). The
+  screenshot-vision comparator that was built + measured (Phase 6) proved false-positive-prone and stays a
+  manual spot-check only (`@revivo/verify`); this is the structured replacement for it.
 - **Treatwell is the source of truth for menu/prices/team/hours/reviews; Google stays for
   coords/postcode/extra photos.** `ListingFacts` is the real-data contract (lives in
   `@revivo/shared`); `@revivo/llm`'s `applyListingFacts` writes it into the config deterministically.
@@ -63,6 +70,23 @@ pnpm gen-mockup --place-id "ChIJ..."            # live (needs GOOGLE_PLACES_API_
 pnpm gen-mockup --query "Kapsalon Mira Utrecht" # live: text-search → first hit → brief
 pnpm gen-mockup --dry-run --places             # offline: FIXTURE_PLACE → brief → stub config
 ```
+
+## Tests
+
+`pnpm -F @revivo/sourcing test` (or `pnpm -r test` from the root) runs the **vitest**
+regression harness. It is fully **offline** — no network, no keys — feeding committed real
+HTML in `test/fixtures/treatwell/` through the pure `parseTreatwellHtml` → `treatwellListingToFacts`
+path and asserting a frozen golden `ListingFacts` snapshot (every price, all 7 hours rows, team,
+reputation, ≥4★ review dedup, photos). This is the moat's load-bearing regression anchor: a
+silently-broken scraper ships a mockup that is confidently wrong about the salon's own business.
+
+- Fixtures are real captured bytes, so the asserted values are frozen regardless of how the live
+  page later drifts — they anchor **our parser**, not Treatwell's live data. Refresh a fixture
+  only deliberately (re-capture + `pnpm -F @revivo/sourcing test -u` to update the snapshot).
+- `no-state.html` strips `window.__state__` to prove the JSON-LD fallback recovers scalars,
+  warns, and **omits** services/team/reviews rather than inventing them.
+- `fact-check.test.ts` covers `crossCheckListing`: PASS on the faithful page, MISMATCH when the
+  state hours are deliberately mangled (JSON-LD intact), and UNCHECKABLE when only one source exists.
 
 ## Not built yet
 

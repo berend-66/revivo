@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "pnpm --filter @revivo/marketing dev",
     "build": "pnpm -r build",
+    "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "gen-mockup": "pnpm -F @revivo/llm gen-mockup",
     "verify-mockup": "pnpm -F @revivo/verify verify"

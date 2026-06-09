@@ -1,0 +1,295 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`treatwellListingToFacts — Utrecht Hairstyle golden fixture > matches the frozen golden ListingFacts snapshot 1`] = `
+{
+  "address": "Lange Jansstraat 6",
+  "bookingUrl": "https://www.treatwell.nl/salon/utrecht-hairstyle/",
+  "city": "Utrecht",
+  "description": "In de Lange Jansstraat in het centrum van Utrecht vind je UTRECHT HAIRSTYLE, een kapsalon waar zowel mannen, vrouwen en kinderen terechtkunnen voor onder andere het knippen en kleuren van het haar. Eigenaren Nael heeft meer dan 20 jaar ervaring als kapper, backstage en voor verschillende artiesten in Dubai en Libanon. Al hun kennis en training zal ervoor zorgen dat jij tevreden de salon verlaat met een kapsel dat helemaal in stijl is. Tevens zijn ze gespecialiseerd in het epileren met touw, ook wel threading genoemd. De salon is centraal gelegen en daarom ook goed bereikbaar met het openbaar vervoer.",
+  "hours": [
+    {
+      "close": "19:00",
+      "day": "Maandag",
+      "open": "11:30",
+    },
+    {
+      "close": "19:00",
+      "day": "Dinsdag",
+      "open": "10:00",
+    },
+    {
+      "close": "19:00",
+      "day": "Woensdag",
+      "open": "10:00",
+    },
+    {
+      "close": "20:00",
+      "day": "Donderdag",
+      "open": "10:00",
+    },
+    {
+      "close": "19:00",
+      "day": "Vrijdag",
+      "open": "10:00",
+    },
+    {
+      "close": "19:00",
+      "day": "Zaterdag",
+      "open": "10:00",
+    },
+    {
+      "closed": true,
+      "day": "Zondag",
+    },
+  ],
+  "lat": 52.0936779,
+  "lng": 5.1192412,
+  "name": "Utrecht Hairstyle",
+  "phone": "06 41348878",
+  "photos": [
+    "https://cdn1.treatwell.net/images/view/v2.i1313310.w1280.h800.x66BCCF45/",
+    "https://cdn1.treatwell.net/images/view/v2.i1313312.w1280.h800.x9618E459/",
+    "https://cdn1.treatwell.net/images/view/v2.i1313313.w1280.h800.x48A0A288/",
+    "https://cdn1.treatwell.net/images/view/v2.i1313314.w1280.h800.x2397371A/",
+    "https://cdn1.treatwell.net/images/view/v2.i1313315.w1280.h800.x77F77624/",
+    "https://cdn1.treatwell.net/images/view/v2.i1313316.w1280.h800.x93B95061/",
+    "https://cdn1.treatwell.net/images/view/v2.i1313317.w1280.h800.x2FF5E3B3/",
+    "https://cdn1.treatwell.net/images/view/v2.i1313318.w1280.h800.xA3197C02/",
+    "https://cdn1.treatwell.net/images/view/v2.i1313319.w1280.h800.xC9BDD1A2/",
+    "https://cdn1.treatwell.net/images/view/v2.i1313320.w1280.h800.x36DD3F95/",
+    "https://cdn1.treatwell.net/images/view/v2.i1313321.w1280.h800.xCAE46ECD/",
+    "https://cdn1.treatwell.net/images/view/v2.i1313322.w1280.h800.xD01E4A24/",
+    "https://cdn1.treatwell.net/images/view/v2.i1313324.w1280.h800.x86E6B430/",
+    "https://cdn1.treatwell.net/images/view/v2.i1313325.w1280.h800.xAFC0498C/",
+    "https://cdn1.treatwell.net/images/view/v2.i1313326.w1280.h800.xBC619307/",
+  ],
+  "reputation": {
+    "rating": 4.7,
+    "reviewCount": 2913,
+    "source": "Treatwell",
+  },
+  "reviews": [
+    {
+      "author": "Rik",
+      "quote": "Altijd een mooi resultaat bij deze kapper. Vriendelijk personeel en altijd een bakkie koffie. Overdag is er eigenlijk altijd wel plek, koopavond of weekend even van te voren reserveren. Aanrader!",
+      "rating": 5,
+      "source": "Treatwell",
+    },
+    {
+      "author": "Anne",
+      "quote": "Echt ontzettend mooi gedaan! Zorgvuldig, aardig en wat advies gekregen.",
+      "rating": 4,
+      "source": "Treatwell",
+    },
+    {
+      "author": "Arwen",
+      "quote": "Tevreden!",
+      "rating": 4,
+      "source": "Treatwell",
+    },
+  ],
+  "services": [
+    {
+      "category": "Vrouwen - Knippen En Stylen",
+      "items": [
+        {
+          "durationMin": 45,
+          "name": "Vrouwen - wassen en knippen",
+          "price": 32,
+        },
+        {
+          "durationMin": 60,
+          "name": "Vrouwen - wassen, knippen en modelföhnen",
+          "price": 55,
+        },
+        {
+          "durationMin": 45,
+          "name": "Vrouwen - wassen en modelföhnen",
+          "price": 30,
+        },
+        {
+          "durationMin": 90,
+          "name": "Permanent",
+          "price": 100,
+        },
+      ],
+    },
+    {
+      "category": "Mannen En Kinderen - Knippen En Stylen",
+      "items": [
+        {
+          "durationMin": 30,
+          "name": "Mannen - knippen",
+          "price": 25,
+        },
+        {
+          "durationMin": 30,
+          "name": "Mannen - wassen, knippen en stylen",
+          "price": 28,
+        },
+        {
+          "durationMin": 25,
+          "name": "Mannen - tondeuse",
+          "price": 20,
+        },
+        {
+          "durationMin": 20,
+          "name": "Baard scheren",
+          "price": 15,
+        },
+        {
+          "durationMin": 20,
+          "name": "Kinderen t/m 10 jaar - knippen",
+          "price": 20,
+        },
+      ],
+    },
+    {
+      "category": "Kleuren",
+      "items": [
+        {
+          "durationMin": 60,
+          "name": "Kleuren - uitgroei",
+          "price": 50,
+        },
+        {
+          "durationMin": 60,
+          "name": "Kleuren - Eén kleur",
+          "price": 33.75,
+        },
+        {
+          "durationMin": 60,
+          "name": "Kleuren - Eén kleur -met Olaplex-behandeling",
+          "price": 50,
+        },
+        {
+          "durationMin": 150,
+          "name": "Highlights",
+          "price": 55,
+        },
+        {
+          "durationMin": 60,
+          "name": "Highlights - met muts",
+          "price": 50,
+        },
+        {
+          "durationMin": 60,
+          "name": "Olaplex-behandeling",
+          "price": 40,
+        },
+      ],
+    },
+    {
+      "category": "Epileren Met Touw",
+      "items": [
+        {
+          "durationMin": 15,
+          "name": "Threaden - wenkbrauwen",
+          "price": 15,
+        },
+        {
+          "durationMin": 5,
+          "name": "Threaden - bovenlip",
+          "price": 5,
+        },
+        {
+          "durationMin": 5,
+          "name": "Threaden - kin",
+          "price": 5,
+        },
+        {
+          "durationMin": 25,
+          "name": "Threaden - gezicht",
+          "price": 25,
+        },
+      ],
+    },
+    {
+      "category": "Vrouwen - Highlights & Balayage",
+      "items": [
+        {
+          "durationMin": 120,
+          "name": "Vrouwen - highlights",
+          "price": 55,
+        },
+        {
+          "durationMin": 150,
+          "name": "Vrouwen - balayage",
+          "price": 70,
+        },
+        {
+          "durationMin": 120,
+          "name": "Vrouwen - ombre",
+          "price": 70,
+        },
+      ],
+    },
+    {
+      "category": "Wimpers & Wenkbrauwen",
+      "items": [
+        {
+          "durationMin": 15,
+          "name": "Verven - wenkbrauwen",
+          "price": 10,
+        },
+      ],
+    },
+    {
+      "category": "Mannen - Knippen & Styling",
+      "items": [
+        {
+          "durationMin": 30,
+          "name": "Mannen - baard trimmen & contouren",
+          "price": 15,
+        },
+        {
+          "durationMin": 30,
+          "name": "Mannen studenten - Knippen",
+          "price": 24,
+        },
+        {
+          "durationMin": 5,
+          "name": "Mannen - Contouren",
+          "price": 5,
+        },
+      ],
+    },
+  ],
+  "sourceUrl": "https://www.treatwell.nl/salon/utrecht-hairstyle/",
+  "team": [
+    {
+      "name": "Nael",
+      "photoUrl": "https://cdn1.treatwell.net/images/view/v2.i1904328.w256.h256.x4C6976A3/",
+      "rating": 4.8,
+      "reviewCount": 873,
+      "specialty": "Professioneel",
+    },
+    {
+      "name": "Hanan",
+      "photoUrl": "https://cdn1.treatwell.net/images/view/v2.i9130477.w256.h256.x830E1804/",
+      "rating": 4.6,
+      "reviewCount": 460,
+      "specialty": "Professioneel",
+    },
+    {
+      "name": "lana",
+      "photoUrl": "https://cdn1.treatwell.net/images/view/v2.i9917563.w256.h256.x7F5C31F1/",
+      "rating": 4.8,
+      "reviewCount": 836,
+      "specialty": "Vakkundig",
+    },
+    {
+      "name": "Carmen",
+      "photoUrl": "https://cdn1.treatwell.net/images/view/v2.i16705839.w256.h256.xDA816B16/",
+      "rating": 4.4,
+      "reviewCount": 5,
+    },
+    {
+      "name": "Ahmad",
+      "photoUrl": "https://cdn1.treatwell.net/images/view/v2.i15866808.w256.h256.x9680A7D3/",
+      "rating": 4.9,
+      "reviewCount": 27,
+    },
+  ],
+}
+`;

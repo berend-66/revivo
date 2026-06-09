@@ -10,6 +10,8 @@ import {
   assembleBriefFromFixture,
   fetchTreatwellFacts,
   listingFactsToBrief,
+  crossCheckListing,
+  type RawListing,
   type PlaceToBriefOverrides,
 } from "@revivo/sourcing";
 import { createServiceClient, upsertMockupBySlug, type MockupSource } from "@revivo/db";
@@ -142,6 +144,8 @@ interface ResolvedBrief {
   placeId?: string;
   /** Real listing facts (Treatwell), applied deterministically to the config. */
   facts?: ListingFacts;
+  /** The raw scraped blobs — kept for the deterministic scrape-fidelity cross-check. */
+  raw?: RawListing;
 }
 
 async function resolveBrief(): Promise<ResolvedBrief> {
@@ -153,7 +157,7 @@ async function resolveBrief(): Promise<ResolvedBrief> {
   // a places mode to borrow Google's postcode + coordinates (Treatwell has no
   // postcode); the listing facts win on everything they cover.
   if (treatwellUrl) {
-    const { facts } = await fetchTreatwellFacts(treatwellUrl);
+    const { raw, facts } = await fetchTreatwellFacts(treatwellUrl);
     if (placesMode) {
       const instagram = {
         handle: values.ig ?? values.instagram,
@@ -173,9 +177,9 @@ async function resolveBrief(): Promise<ResolvedBrief> {
         brief.rating = facts.reputation.rating;
         brief.reviewCount = facts.reputation.reviewCount;
       }
-      return { brief, facts, source: "listing", placeId: assembled.place.placeId };
+      return { brief, facts, raw, source: "listing", placeId: assembled.place.placeId };
     }
-    return { brief: listingFactsToBrief(facts, overrides), facts, source: "listing" };
+    return { brief: listingFactsToBrief(facts, overrides), facts, raw, source: "listing" };
   }
 
   if (!placesMode) {
@@ -199,7 +203,7 @@ async function resolveBrief(): Promise<ResolvedBrief> {
 }
 
 async function main() {
-  const { brief, source, placeId, facts } = await resolveBrief();
+  const { brief, source, placeId, facts, raw } = await resolveBrief();
   const dryRun = values["dry-run"];
 
   const modeLabel = dryRun ? "DRY RUN (stub, no API call)" : "Generating via LLM";
@@ -212,6 +216,26 @@ async function main() {
           : ` · Place ${placeId}`
         : "";
   console.log(`\n→ ${modeLabel} for "${brief.name}" [${source}${srcLabel}]\n`);
+
+  // Scrape-fidelity guard (deterministic, no LLM). A Treatwell page carries the
+  // salon's scalars twice — window.__state__ and JSON-LD — so we re-extract each
+  // independently and flag any silent disagreement (a state parse broken by a
+  // layout change). Printed before generation so a broken scrape surfaces before
+  // any LLM cost. Warn, don't block — operator judgment, like checkAboutFidelity.
+  if (raw && facts) {
+    const fidelity = crossCheckListing(raw, facts);
+    if (fidelity.verdict === "mismatch") {
+      console.warn(`⚠ Scrape-fidelity: ${fidelity.summary}`);
+      for (const m of fidelity.mismatches) {
+        console.warn(`   • ${m.field}: state "${m.stateValue}" ≠ JSON-LD "${m.jsonLdValue}"`);
+      }
+      console.warn(`   → De Treatwell-scrape kan stuk zijn (layout gewijzigd?). Controleer vóór verzending.\n`);
+    } else if (fidelity.verdict === "uncheckable") {
+      console.log(`   scrape-fidelity: – ${fidelity.summary}\n`);
+    } else {
+      console.log(`   scrape-fidelity: ✓ ${fidelity.summary}\n`);
+    }
+  }
 
   let config: SiteConfig;
   let model = "dry-run-stub";

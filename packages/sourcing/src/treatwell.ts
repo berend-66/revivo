@@ -79,6 +79,16 @@ export async function fetchTreatwellListing(input: string, init?: RequestInit): 
     throw new Error(`Treatwell fetch ${res.status} for ${sourceUrl}: ${res.statusText}`);
   }
   const html = await res.text();
+  return parseTreatwellHtml(html, sourceUrl);
+}
+
+/**
+ * Pure HTML → RawListing parse (no network). `fetchTreatwellListing` is just a
+ * `fetch` in front of this. Keeping the parse separate makes the moat's
+ * load-bearing extractor unit-testable against captured HTML fixtures with no
+ * network and no keys — see `test/treatwell.test.ts`.
+ */
+export function parseTreatwellHtml(html: string, sourceUrl: string): RawListing {
   const state = extractStateObject(html);
   const jsonLd = extractJsonLd(html);
   if (!state) {
