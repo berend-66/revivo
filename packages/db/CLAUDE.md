@@ -1,16 +1,20 @@
 # @revivo/db — agent context
 
-The Supabase data layer. Thin, typed helpers over `@supabase/supabase-js`. Today it
-covers the `mockups` table (Stage 2); `leads`, `customers`, `jobs` etc. land in later stages.
+The Supabase data layer. Thin, typed helpers over `@supabase/supabase-js`. Covers the
+`mockups` table (Stage 2) and the `leads` + `jobs` tables (Stage 4); `customers` etc.
+land in later stages.
 
 ```
 config.ts   → SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY → settings (null when unset, so callers can fall back)
 client.ts   → createServiceClient() / createServiceClientOrNull()  ← service role, SERVER-SIDE ONLY
 mockups.ts  → MockupRow type + upsertMockupBySlug / getMockupBySlug / listRecentMockups
+leads.ts    → LeadRow + insertLeadIfNew / getLeadById / listLeadsByStatus / setLeadStatus
+jobs.ts     → JobRow + enqueueJobIfNone / claimNextPendingJob / markJobResult / listJobsByStatus
 ```
 
-Schema lives in `supabase/migrations/*.sql` (repo root). `MockupRow` hand-mirrors
-`20260603093000_mockups.sql` — **change both together**.
+Schema lives in `supabase/migrations/*.sql` (repo root). Row types hand-mirror the
+migrations (`mockups` ↔ `20260603093000`, `leads`/`jobs` ↔ `20260609100000`) —
+**change both together**.
 
 ## Rules
 
@@ -22,6 +26,18 @@ Schema lives in `supabase/migrations/*.sql` (repo root). `MockupRow` hand-mirror
 - **`config_json` is a `SiteConfig`** (`@revivo/shared`) — validate before trusting it on
   read (the mock app does). `layout_variant` is denormalised from `config.layout` for cheap filtering.
 - Helpers return plain rows / throw on error — no silent failures.
+- **Leads dedup is per source** (partial unique indexes: `listing_url` for marketplace,
+  `place_id` for google_places — deliberately NOT one composite key). PostgREST can't
+  target a partial index via `on_conflict`, so `insertLeadIfNew` is select-then-insert
+  with the index as the 23505 race backstop. Don't "simplify" it to `.upsert()` — that
+  call fails against a partial unique index.
+- **Job claiming is an optimistic CAS** (`update … eq(status,'pending').eq(attempt_count, seen)`),
+  because PostgREST has no `FOR UPDATE SKIP LOCKED`. Correct at worker concurrency 1-2 —
+  which is the design point; don't raise concurrency without revisiting this.
+- **Jobs are a polled Postgres table, not a queue service** (the ~50-200-customers anchor).
+  A job exhausting `MAX_JOB_ATTEMPTS` goes to `failed` for manual review — no dead-letter
+  infra. A crashed worker leaves a `running` row; at this scale the operator re-queues by
+  hand (no reaper until that actually hurts).
 
 ## Applying schema
 

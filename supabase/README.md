@@ -13,6 +13,13 @@ project's Postgres version if you ever run `supabase start`).
 
 - `migrations/20260603093000_mockups.sql` — the `mockups` table (Stage 2). Surfaced at
   `mock.revivo.nl/{slug}`. RLS on, service-role-only access.
+- `migrations/20260603120000_mockups_source_listing.sql` — widen `mockups.source` to
+  allow `'listing'` (Treatwell-sourced mockups).
+- `migrations/20260609100000_leads_jobs.sql` — the `leads` + `jobs` tables (Stage 4):
+  prospect funnel with per-source partial-unique dedup, and the polled work queue.
+  RLS on, service-role-only access.
+- `migrations/20260609100100_mockups_marketplace_lead_fk.sql` — widen `mockups.source`
+  to allow `'marketplace'`; resolve the `mockups.lead_id` FK stub (`on delete set null`).
 
 ## Applying migrations
 

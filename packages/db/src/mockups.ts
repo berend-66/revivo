@@ -10,12 +10,14 @@ import type { SalonBrief, SiteConfig } from "@revivo/shared";
 
 // "listing" = sourced from a public salon listing (Treatwell): real menu/prices/
 // team/hours/reviews/photos. See migration 20260603120000_mockups_source_listing.sql.
-export type MockupSource = "manual" | "places" | "listing";
+// "marketplace" = batch-generated from a marketplace lead (leads table, Stage 4) —
+// same listing data path, different provenance. See 20260609100100_mockups_marketplace_lead_fk.sql.
+export type MockupSource = "manual" | "places" | "listing" | "marketplace";
 
 export interface MockupRow {
   id: string;
   slug: string;
-  /** FK to leads, added in Stage 4. Null for standalone (manual/places) mockups. */
+  /** FK to leads (on delete set null). Null for standalone (manual/places/listing) mockups. */
   lead_id: string | null;
   /** Google Place id when generated via places mode. */
   place_id: string | null;
@@ -43,18 +45,25 @@ export interface MockupUpsert {
 }
 
 /** Insert or replace the mockup for a slug. `slug` is the natural key — regenerating
- * a salon overwrites its row in place (so its mock.revivo.nl URL stays stable). */
+ * a salon overwrites its row in place (so its mock.revivo.nl URL stays stable).
+ *
+ * Generation fields (config/layout/brief/model) always reflect the latest run.
+ * Provenance fields (source, lead_id, place_id, deploy_url) are only written when
+ * explicitly passed — PostgREST's merge-upsert leaves omitted columns untouched, so
+ * an operator CLI re-run can't silently sever a batch-created lead→mockup link or
+ * null a deploy URL. On a fresh insert, omitted columns take the SQL defaults
+ * (source 'manual', rest null). */
 export async function upsertMockupBySlug(client: SupabaseClient, input: MockupUpsert): Promise<MockupRow> {
   const row = {
     slug: input.slug,
-    source: input.source ?? "manual",
-    lead_id: input.leadId ?? null,
-    place_id: input.placeId ?? null,
     layout_variant: input.config.layout,
     config_json: input.config,
     brief_json: input.brief ?? null,
     model: input.model ?? null,
-    deploy_url: input.deployUrl ?? null,
+    ...(input.source !== undefined && { source: input.source }),
+    ...(input.leadId !== undefined && { lead_id: input.leadId }),
+    ...(input.placeId !== undefined && { place_id: input.placeId }),
+    ...(input.deployUrl !== undefined && { deploy_url: input.deployUrl }),
   };
   const { data, error } = await client
     .from(TABLE)
