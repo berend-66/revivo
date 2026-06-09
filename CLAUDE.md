@@ -61,6 +61,11 @@ cd apps/mockups && pnpm dev            # http://localhost:4321/<slug>
 pnpm crawl-marketplace --city utrecht --dry-run    # crawl + print, no DB writes
 pnpm crawl-marketplace --city utrecht              # insert deduped pending leads (Supabase env)
 pnpm crawl-marketplace --help
+
+# Batch worker — pending leads → jobs → mockups (Supabase env + LLM key). From repo root.
+pnpm generate-pending --dry-run                    # report pending leads + due jobs, no writes
+pnpm generate-pending --max-jobs 5                 # bound one run's LLM spend
+pnpm generate-pending --stub-llm                   # full loop, stub configs, €0 (infra test)
 ```
 
 ## Hard rules

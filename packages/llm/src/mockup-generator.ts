@@ -29,6 +29,11 @@ export async function generateMockup(
 ): Promise<GenerateResult> {
   const userMessage = briefToMessage(brief, facts);
   let lastError = "";
+  // Accumulated over ALL attempts — a schema retry costs a second full
+  // completion, and the spend estimate downstream must not undercount it.
+  let totalIn = 0;
+  let totalOut = 0;
+  let sawUsage = false;
 
   for (let attempt = 1; attempt <= 2; attempt++) {
     const user =
@@ -43,6 +48,11 @@ export async function generateMockup(
       maxTokens: 4096,
       temperature: 0.7,
     });
+    if (usage) {
+      sawUsage = true;
+      totalIn += usage.inputTokens;
+      totalOut += usage.outputTokens;
+    }
 
     const parsed = safeParseJson(text);
     if (!parsed.ok) {
@@ -68,7 +78,11 @@ export async function generateMockup(
     }
 
     const config = facts ? SiteConfigSchema.parse(applyListingFacts(result.data, facts)) : result.data;
-    return { config, usage, attempts: attempt };
+    return {
+      config,
+      usage: sawUsage ? { inputTokens: totalIn, outputTokens: totalOut } : undefined,
+      attempts: attempt,
+    };
   }
 
   throw new Error(`Mockup generation failed schema validation after 2 attempts:\n${lastError}`);

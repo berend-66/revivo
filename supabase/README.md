@@ -20,6 +20,9 @@ project's Postgres version if you ever run `supabase start`).
   RLS on, service-role-only access.
 - `migrations/20260609100100_mockups_marketplace_lead_fk.sql` — widen `mockups.source`
   to allow `'marketplace'`; resolve the `mockups.lead_id` FK stub (`on delete set null`).
+- `migrations/20260609100200_leads_needs_review.sql` — widen `leads.status` with
+  `'needs_review'` (the operator parking spot for gate findings / exhausted jobs) +
+  add `leads.review_reason`.
 
 ## Applying migrations
 

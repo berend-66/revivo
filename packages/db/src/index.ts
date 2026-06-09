@@ -3,3 +3,6 @@ export * from "./client";
 export * from "./mockups";
 export * from "./leads";
 export * from "./jobs";
+// Consumers type their handles via this package, not via a direct
+// @supabase/supabase-js dependency — the db layer owns that boundary.
+export type { SupabaseClient } from "@supabase/supabase-js";

@@ -7,14 +7,17 @@ land in later stages.
 ```
 config.ts   → SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY → settings (null when unset, so callers can fall back)
 client.ts   → createServiceClient() / createServiceClientOrNull()  ← service role, SERVER-SIDE ONLY
-mockups.ts  → MockupRow type + upsertMockupBySlug / getMockupBySlug / listRecentMockups
+mockups.ts  → MockupRow type + upsertMockupBySlug / getMockupBySlug / getMockupsByLeadId / listRecentMockups
 leads.ts    → LeadRow + insertLeadIfNew / getLeadById / listLeadsByStatus / setLeadStatus
 jobs.ts     → JobRow + enqueueJobIfNone / claimNextPendingJob / markJobResult / listJobsByStatus
 ```
 
 Schema lives in `supabase/migrations/*.sql` (repo root). Row types hand-mirror the
-migrations (`mockups` ↔ `20260603093000`, `leads`/`jobs` ↔ `20260609100000`) —
-**change both together**.
+migrations (`mockups` ↔ `20260603093000`, `leads`/`jobs` ↔ `20260609100000` +
+`20260609100200` for `needs_review`/`review_reason`) — **change both together**.
+The index also re-exports the `SupabaseClient` **type** so consumers (e.g.
+`@revivo/llm`'s worker core) type their handles via this package instead of
+growing a direct supabase-js dependency.
 
 ## Rules
 
@@ -38,6 +41,11 @@ migrations (`mockups` ↔ `20260603093000`, `leads`/`jobs` ↔ `20260609100000`)
   A job exhausting `MAX_JOB_ATTEMPTS` goes to `failed` for manual review — no dead-letter
   infra. A crashed worker leaves a `running` row; at this scale the operator re-queues by
   hand (no reaper until that actually hurts).
+- **`needs_review` is the single operator-attention status** (B3): gate findings AND
+  terminally failed generate jobs both park the lead there with a `review_reason`. Recovery
+  is uniform — fix the cause, set the lead back to `pending`. The batch enqueue phase only
+  looks at `pending`, so parked leads are never silently re-queued. A clean later run clears
+  `review_reason` (pass `reviewReason: null`).
 
 ## Applying schema
 

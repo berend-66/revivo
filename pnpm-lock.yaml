@@ -11,6 +11,9 @@ importers:
       '@revivo/db':
         specifier: workspace:*
         version: link:packages/db
+      '@revivo/llm':
+        specifier: workspace:*
+        version: link:packages/llm
       '@revivo/sourcing':
         specifier: workspace:*
         version: link:packages/sourcing
@@ -127,6 +130,9 @@ importers:
       tsx:
         specifier: ^4.19.2
         version: 4.22.3
+      vitest:
+        specifier: ^4.1.8
+        version: 4.1.8(@types/node@22.19.19)(vite@6.4.2(@types/node@22.19.19)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.3))
 
   packages/shared:
     dependencies:

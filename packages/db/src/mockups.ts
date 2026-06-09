@@ -81,6 +81,18 @@ export async function getMockupBySlug(client: SupabaseClient, slug: string): Pro
   return (data as MockupRow | null) ?? null;
 }
 
+/** All mockups linked to a lead, most recently updated first. Normally 0 or 1 —
+ * the batch worker pins a lead's existing slug on re-runs (URL stability). */
+export async function getMockupsByLeadId(client: SupabaseClient, leadId: string): Promise<MockupRow[]> {
+  const { data, error } = await client
+    .from(TABLE)
+    .select("*")
+    .eq("lead_id", leadId)
+    .order("updated_at", { ascending: false });
+  if (error) throw new Error(`getMockupsByLeadId(${leadId}) failed: ${error.message}`);
+  return (data as MockupRow[]) ?? [];
+}
+
 /** Recent mockups, newest first — for an admin index later. */
 export async function listRecentMockups(client: SupabaseClient, limit = 50): Promise<MockupRow[]> {
   const { data, error } = await client

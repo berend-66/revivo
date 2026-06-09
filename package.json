@@ -14,10 +14,12 @@
     "lint": "pnpm -r lint",
     "gen-mockup": "pnpm -F @revivo/llm gen-mockup",
     "verify-mockup": "pnpm -F @revivo/verify verify",
-    "crawl-marketplace": "tsx scripts/crawl-marketplace.ts"
+    "crawl-marketplace": "tsx scripts/crawl-marketplace.ts",
+    "generate-pending": "tsx scripts/generate-pending.ts"
   },
   "devDependencies": {
     "@revivo/db": "workspace:*",
+    "@revivo/llm": "workspace:*",
     "@revivo/sourcing": "workspace:*",
     "@types/node": "^22.19.19",
     "dotenv": "^16.4.5",

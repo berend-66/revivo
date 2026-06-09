@@ -4,21 +4,26 @@ import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
-import { SalonBriefSchema, SiteConfigSchema, type SalonBrief, type SiteConfig, type ListingFacts } from "@revivo/shared";
+import { SalonBriefSchema, type SalonBrief } from "@revivo/shared";
 import {
   assembleBriefFromPlaces,
   assembleBriefFromFixture,
-  fetchTreatwellFacts,
-  listingFactsToBrief,
-  crossCheckListing,
-  type RawListing,
+  normalizeTreatwellUrl,
+  type FidelityReport,
   type PlaceToBriefOverrides,
 } from "@revivo/sourcing";
-import { createServiceClient, upsertMockupBySlug, type MockupSource } from "@revivo/db";
-import { generateMockup, applyListingFacts } from "../src/mockup-generator";
-import { checkAboutFidelity } from "../src/check-about";
-import { stubMockup } from "../src/dry-run";
-import { loadLLMSettings } from "../src/config";
+import {
+  createServiceClient,
+  getLeadById,
+  getMockupBySlug,
+  upsertMockupBySlug,
+  type MockupSource,
+} from "@revivo/db";
+import { resolveListingBrief, runMockupPipeline, type RunMockupInput } from "../src/run-mockup";
+
+// The CLI is arg-parsing + sinks ONLY (roadmap B3): every mode funnels into the
+// shared `runMockupPipeline` — the same path the batch worker runs — so there is
+// no CLI-flavoured generation behaviour to drift from the batch behaviour.
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 dotenv.config({ path: join(REPO_ROOT, ".env") });
@@ -138,63 +143,42 @@ function buildManualBrief(): SalonBrief {
   });
 }
 
-interface ResolvedBrief {
-  brief: SalonBrief;
+interface ResolvedBrief extends Pick<RunMockupInput, "brief" | "facts" | "raw"> {
   source: MockupSource;
   placeId?: string;
-  /** Real listing facts (Treatwell), applied deterministically to the config. */
-  facts?: ListingFacts;
-  /** The raw scraped blobs — kept for the deterministic scrape-fidelity cross-check. */
-  raw?: RawListing;
 }
 
 async function resolveBrief(): Promise<ResolvedBrief> {
   const treatwellUrl = values.treatwell;
   const placesMode = values["place-id"] || values.query || values["fixture-place"];
   const overrides = placesOverrides();
+  const instagram = {
+    handle: values.ig ?? values.instagram,
+    bio: values["ig-bio"],
+    captions: parseCaptions(values["ig-captions"]),
+  };
+  // A dry run never hits Google; the fixture Place stands in. --fixture-place
+  // forces the fixture even on a real (LLM) run, which is the no-key e2e path.
+  const useFixture = values["dry-run"] || values["fixture-place"];
 
-  // Treatwell mode — the salon's real source of truth. Optionally combined with
-  // a places mode to borrow Google's postcode + coordinates (Treatwell has no
-  // postcode); the listing facts win on everything they cover.
+  // Treatwell mode — the salon's real source of truth, optionally combined with
+  // a places mode for Google's postcode + coordinates. Shared with the batch
+  // worker via resolveListingBrief.
   if (treatwellUrl) {
-    const { raw, facts } = await fetchTreatwellFacts(treatwellUrl);
-    if (placesMode) {
-      const instagram = {
-        handle: values.ig ?? values.instagram,
-        bio: values["ig-bio"],
-        captions: parseCaptions(values["ig-captions"]),
-      };
-      const useFixture = values["dry-run"] || values["fixture-place"];
-      const assembled = useFixture
-        ? await assembleBriefFromFixture({ instagram, overrides })
-        : await assembleBriefFromPlaces({ placeId: values["place-id"], query: values.query, instagram, overrides });
-      const brief: SalonBrief = { ...assembled.brief };
-      if (facts.name) brief.name = facts.name;
-      if (facts.address) brief.address = facts.address;
-      if (facts.lat !== undefined) brief.lat = facts.lat;
-      if (facts.lng !== undefined) brief.lng = facts.lng;
-      if (facts.reputation) {
-        brief.rating = facts.reputation.rating;
-        brief.reviewCount = facts.reputation.reviewCount;
-      }
-      return { brief, facts, raw, source: "listing", placeId: assembled.place.placeId };
-    }
-    return { brief: listingFactsToBrief(facts, overrides), facts, raw, source: "listing" };
+    const resolved = await resolveListingBrief({
+      listingUrl: treatwellUrl,
+      overrides,
+      places: placesMode
+        ? { placeId: values["place-id"], query: values.query, useFixture, instagram }
+        : undefined,
+    });
+    return { ...resolved, source: "listing" };
   }
 
   if (!placesMode) {
     return { brief: buildManualBrief(), source: "manual" };
   }
 
-  const instagram = {
-    handle: values.ig ?? values.instagram,
-    bio: values["ig-bio"],
-    captions: parseCaptions(values["ig-captions"]),
-  };
-
-  // A dry run never hits Google; the fixture Place stands in. --fixture-place
-  // forces the fixture even on a real (LLM) run, which is the no-key e2e path.
-  const useFixture = values["dry-run"] || values["fixture-place"];
   const assembled = useFixture
     ? await assembleBriefFromFixture({ instagram, overrides })
     : await assembleBriefFromPlaces({ placeId: values["place-id"], query: values.query, instagram, overrides });
@@ -217,13 +201,20 @@ async function main() {
         : "";
   console.log(`\n→ ${modeLabel} for "${brief.name}" [${source}${srcLabel}]\n`);
 
-  // Scrape-fidelity guard (deterministic, no LLM). A Treatwell page carries the
-  // salon's scalars twice — window.__state__ and JSON-LD — so we re-extract each
-  // independently and flag any silent disagreement (a state parse broken by a
-  // layout change). Printed before generation so a broken scrape surfaces before
-  // any LLM cost. Warn, don't block — operator judgment, like checkAboutFidelity.
-  if (raw && facts) {
-    const fidelity = crossCheckListing(raw, facts);
+  const run = await runMockupPipeline({ brief, facts, raw, dryRun });
+  const { config, gates } = run;
+
+  if (!dryRun) {
+    console.log(
+      `   model produced a valid SiteConfig in ${run.attempts} attempt(s)` +
+        (run.usage ? ` · ${run.usage.inputTokens} in / ${run.usage.outputTokens} out tokens` : ""),
+    );
+  }
+
+  // Scrape-fidelity guard (deterministic, no LLM): window.__state__ vs JSON-LD.
+  // Warn, don't block — operator judgment, like the about check below.
+  const fidelity = gates.scrapeFidelity;
+  if (fidelity) {
     if (fidelity.verdict === "mismatch") {
       console.warn(`⚠ Scrape-fidelity: ${fidelity.summary}`);
       for (const m of fidelity.mismatches) {
@@ -231,48 +222,29 @@ async function main() {
       }
       console.warn(`   → De Treatwell-scrape kan stuk zijn (layout gewijzigd?). Controleer vóór verzending.\n`);
     } else if (fidelity.verdict === "uncheckable") {
-      console.log(`   scrape-fidelity: – ${fidelity.summary}\n`);
+      console.log(`   scrape-fidelity: – ${fidelity.summary}`);
     } else {
-      console.log(`   scrape-fidelity: ✓ ${fidelity.summary}\n`);
+      console.log(`   scrape-fidelity: ✓ ${fidelity.summary}`);
     }
   }
 
-  let config: SiteConfig;
-  let model = "dry-run-stub";
-  if (dryRun) {
-    config = stubMockup(brief);
-    // Apply the real facts even to the stub, so --dry-run --treatwell is a
-    // zero-cost offline preview of the deterministic passthrough.
-    if (facts) config = SiteConfigSchema.parse(applyListingFacts(config, facts));
-  } else {
-    const result = await generateMockup(brief, undefined, facts);
-    config = result.config;
-    model = loadLLMSettings().model;
-    console.log(
-      `   model produced a valid SiteConfig in ${result.attempts} attempt(s)` +
-        (result.usage ? ` · ${result.usage.inputTokens} in / ${result.usage.outputTokens} out tokens` : ""),
-    );
+  // About-fidelity guard: invented concrete claims in the LLM-authored prose.
+  const about = gates.aboutFidelity;
+  if (about?.verdict === "fabrication") {
+    console.warn(`\n⚠ About-tekst: ${about.claims.length} mogelijk verzonnen claim(s) [${about.model}]:`);
+    for (const c of about.claims) {
+      console.warn(`   • "${c.quote}"`);
+      console.warn(`     ${c.issue}`);
+    }
+    console.warn(`   → Controleer/herschrijf de about of genereer opnieuw vóór verzending.`);
+  } else if (about) {
+    console.log(`   about-fidelity: clean`);
+  } else if (!dryRun && facts && gates.aboutFidelitySkipped) {
+    console.warn(`   about-fidelity check overgeslagen: ${gates.aboutFidelitySkipped}`);
   }
 
-  // About-fidelity guard. Facts are deterministic, but the LLM-authored about-prose can
-  // still invent a concrete claim (a music genre, an award, a year). Catch it with a cheap
-  // text check before the mockup is sent. Warn, don't block — operator judgment.
-  if (!dryRun && facts?.description) {
-    try {
-      const fidelity = await checkAboutFidelity({ config, facts });
-      if (fidelity.verdict === "fabrication") {
-        console.warn(`\n⚠ About-tekst: ${fidelity.claims.length} mogelijk verzonnen claim(s) [${fidelity.model}]:`);
-        for (const c of fidelity.claims) {
-          console.warn(`   • "${c.quote}"`);
-          console.warn(`     ${c.issue}`);
-        }
-        console.warn(`   → Controleer/herschrijf de about of genereer opnieuw vóór verzending.`);
-      } else {
-        console.log(`   about-fidelity: clean`);
-      }
-    } catch (err) {
-      console.warn(`   about-fidelity check overgeslagen: ${(err as Error).message}`);
-    }
+  if (gates.verdict === "needs_review") {
+    console.warn(`\n⚠ Verdict: NEEDS REVIEW — ${gates.reasons.join(" · ")}`);
   }
 
   // Resolve --out against REPO_ROOT (not cwd) — pnpm -F shifts cwd into the
@@ -288,7 +260,28 @@ async function main() {
 
   if (values.push) {
     const client = createServiceClient(); // throws a helpful error if Supabase env is missing
-    const row = await upsertMockupBySlug(client, { slug: config.slug, config, source, placeId, brief, model });
+
+    // The batch worker protects lead-owned slugs (pickMockupSlug); the CLI must
+    // not bypass that — a colliding hand-run push would replace another salon's
+    // mockup behind its live mock URL. Allowed only when it's provably the SAME
+    // salon (the --treatwell URL matches the lead's listing).
+    const existing = await getMockupBySlug(client, config.slug);
+    if (existing?.lead_id) {
+      const lead = await getLeadById(client, existing.lead_id);
+      const sameSalon =
+        values.treatwell && lead?.listing_url && normalizeTreatwellUrl(values.treatwell) === lead.listing_url;
+      if (!sameSalon) {
+        console.error(
+          `\n✗ Slug '${config.slug}' hoort bij batch-lead ${existing.lead_id} (${lead?.listing_url ?? "listing onbekend"}).` +
+            `\n  Push geweigerd — anders overschrijft deze run die mockup achter zijn live URL.` +
+            `\n  Zelfde salon? Run dan met --treatwell ${lead?.listing_url ?? "<listing-url>"} zodat het aantoonbaar matcht.` +
+            `\n  Andere salon? Geef deze een eigen slug (bijv. via --name met plaatsnaam) en push opnieuw.`,
+        );
+        process.exit(1);
+      }
+    }
+
+    const row = await upsertMockupBySlug(client, { slug: config.slug, config, source, placeId, brief, model: run.model });
     console.log(`✓ Pushed to Supabase 'mockups' (id ${row.id}, source ${row.source})`);
     const base = process.env.REVIVO_MOCK_BASE_URL ?? "http://localhost:4321";
     console.log(`\nShareable mockup URL:\n   ${base.replace(/\/$/, "")}/${config.slug}\n`);
@@ -300,6 +293,13 @@ async function main() {
 }
 
 main().catch((err) => {
+  // A scrape-fidelity MISMATCH found before a failed generation rides on the
+  // error (see runMockupPipeline) — surface it, it's the more important signal.
+  const fidelity = (err as { scrapeFidelity?: FidelityReport }).scrapeFidelity;
+  if (fidelity?.verdict === "mismatch") {
+    console.warn(`\n⚠ Scrape-fidelity: ${fidelity.summary}`);
+    console.warn(`   → De Treatwell-scrape kan stuk zijn (layout gewijzigd?). Controleer vóór een nieuwe poging.`);
+  }
   console.error("\n✗ " + (err as Error).message + "\n");
   process.exit(1);
 });

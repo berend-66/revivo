@@ -7,11 +7,19 @@ The mockup generator: turns a short salon brief into a complete, Zod-valid `Site
 The generator depends ONLY on the `LLMClient` interface (`src/client.ts`). It never imports a provider SDK. Switching provider is an `.env` change, never a code change — this matters because OpenRouter has a markup we may not keep paying.
 
 ```
-config.ts   → reads LLM_PROVIDER / LLM_API_KEY / LLM_MODEL / LLM_BASE_URL into LLMSettings
-client.ts   → createLLMClient(settings) returns an LLMClient
-              · OpenAICompatibleClient covers openrouter AND openai (same wire format)
-              · anthropic provider currently throws — add adapters/anthropic.ts to enable
-                native prompt caching at scale
+config.ts         → reads LLM_PROVIDER / LLM_API_KEY / LLM_MODEL / LLM_BASE_URL into LLMSettings
+client.ts         → createLLMClient(settings) returns an LLMClient
+                    · OpenAICompatibleClient covers openrouter AND openai (same wire format)
+                    · anthropic provider currently throws — add adapters/anthropic.ts to enable
+                      native prompt caching at scale
+mockup-generator.ts → generateMockup(brief, client?, facts?) + applyListingFacts (facts passthrough)
+check-about.ts    → checkAboutFidelity — the about-prose fabrication guard
+dry-run.ts        → stubMockup(brief) — deterministic config, no LLM, no cost
+run-mockup.ts     → THE shared pipeline (B3): resolveListingBrief / runMockupPipeline /
+                    generateMockupForListing — CLI and batch worker both run this path
+run-mockup-job.ts → runGenerateMockupJob(db, job): one claimed generate_mockup job start
+                    to finish; the ONE db-composing module in src/ (see rules below)
+bin/gen-mockup.ts → the operator CLI: arg parsing + sinks ONLY, calls run-mockup.ts
 ```
 
 Default today: `LLM_PROVIDER=openrouter`, `LLM_MODEL=anthropic/claude-sonnet-4.5` (Claude quality through the user's existing OpenRouter key). To move off OpenRouter later: set `LLM_PROVIDER=anthropic` + implement the native adapter (then prompt caching becomes available — the system prompt is a large stable prefix built for exactly that).
@@ -61,7 +69,46 @@ pnpm gen-mockup --name "VOLT" --city Rotterdam \
 ## Places mode + Supabase sink (built)
 
 - **`SalonBrief` + `slugify` now live in `@revivo/shared`** (not here). This package consumes the brief; `@revivo/sourcing` produces it. The system prompt's inline schema is still the prose copy of `SiteConfig` — keep it in sync.
-- **Places mode** lives in `@revivo/sourcing` (Google Place + Instagram-light → `SalonBrief`). The **`bin/` CLI orchestrates** sourcing + db; the library `src/` stays provider/pipeline-pure (only `LLMClient` + the generator). `--place-id`/`--query`/`--fixture-place` build the brief, then the unchanged `generateMockup` runs; `--push` upserts via `@revivo/db`.
+- **Places mode** lives in `@revivo/sourcing` (Google Place + Instagram-light → `SalonBrief`). The **`bin/` CLI is arg-parsing + sinks ONLY**; every mode funnels into `runMockupPipeline` (`src/run-mockup.ts`) — the same path the batch worker runs, so CLI and batch behaviour cannot drift. `--place-id`/`--query`/`--fixture-place` build the brief, then the shared pipeline runs; `--push` upserts via `@revivo/db`.
+
+## Batch worker core (B3)
+
+- **`run-mockup.ts` is the single generation path.** `resolveListingBrief` (listing URL → brief
+  + facts, optional places-combo for Google postcode/coords), `runMockupPipeline` (cross-check →
+  generate/stub → about-fidelity → gate verdict), `generateMockupForListing` (composed — what the
+  worker and the future C1 cron call). It returns **structured gate reports** (`MockupGates`) and
+  never prints, exits, or reads env beyond the default client — formatting/disposition belongs to
+  the callers. Don't add a batch-only or CLI-only generation branch; extend the pipeline.
+- **Gates are SOFT.** `verdict: "needs_review"` on a scrape cross-check MISMATCH or an
+  about-prose FABRICATION; an uncheckable/errored check is *reported* (`aboutFidelitySkipped`)
+  but never gates — degraded coverage is not disagreement. The worker still pushes the mockup
+  (the operator reviews the live mock URL) and parks the lead `needs_review` + `review_reason`.
+- **`run-mockup-job.ts` is the ONE module in `src/` that composes `@revivo/db`** (the rest of
+  src/ stays provider/pipeline-pure). It still creates no clients and reads no env — the caller
+  (scripts/generate-pending.ts today, the C1 cron later) owns the Supabase client. It lives here,
+  not in `scripts/`, because the cron must import it — a scripts/ copy would be the second code
+  path the roadmap bans.
+- **The worker only processes leads still `pending`.** Jobs outlive runs (bounded drain, retry
+  backoff); a claimed job whose lead the operator meanwhile moved (`dropped`/`needs_review`/
+  `mockup_generated`) completes as outcome "skipped" — no generation, no lead mutation. The lead
+  status is the operator's control surface; never make the worker override it. A stub run
+  (`opts.dryRun`) pushes the stub mockup but leaves the lead `pending` for the same reason.
+- **Slug stability is enforced, not assumed.** A lead with an existing mockup row keeps that
+  row's slug whatever the model picked this run (the prompt's slug is a guideline, not
+  deterministic) — re-runs, incl. stub → real, overwrite in place and never orphan a row behind
+  its live URL. Only a first-ever mockup goes through `pickMockupSlug`, which claims a slug that
+  is free or already this lead's (desired → `-city`, boundary-aware → `-N`); a batch run must
+  never overwrite a hand-made mockup (`lead_id` null) or another lead's. The CLI `--push` honors
+  the same rule: it refuses a lead-owned slug unless the `--treatwell` URL matches that lead's
+  listing (provably the same salon).
+
+## Tests
+
+`pnpm -F @revivo/llm test` (vitest, offline — no keys, no tokens): a queue-based fake
+`LLMClient` + a stubbed global `fetch` over sourcing's committed real listing fixture cover the
+facts passthrough (dry-run + LLM paths), fabrication → `needs_review`, errored-check →
+skipped-not-verdict, gate aggregation, slug claiming, disposition mapping, and
+`resolveListingBrief` incl. the places combo.
 
 ## Not built yet (future)
 

@@ -3,7 +3,8 @@ import type { ListingFacts } from "@revivo/shared";
 
 /**
  * The `leads` table — prospect salons discovered by sourcing (Stage 4). Mirrors
- * supabase/migrations/20260609100000_leads_jobs.sql — change both together.
+ * supabase/migrations/20260609100000_leads_jobs.sql (+ 20260609100200, which adds
+ * the 'needs_review' status and review_reason) — change both together.
  *
  * Dedup is per source (partial unique indexes): `listing_url` for marketplace,
  * `place_id` for google_places. PostgREST cannot target a partial unique index
@@ -17,6 +18,7 @@ export type LeadStatus =
   | "pending" // discovered, nothing done yet
   | "qualified" // passed qualification (KvK SBI filter — roadmap D1)
   | "mockup_generated" // a mockups row exists for this lead
+  | "needs_review" // parked for the operator (gate finding / job exhausted); see review_reason
   | "outreach_sent" // opener sent (WhatsApp/IG/email)
   | "replied" // the salon answered — operator takes over
   | "dropped"; // out of funnel; see drop_reason
@@ -42,6 +44,9 @@ export interface LeadRow {
   place_details_json: Record<string, unknown> | null;
   status: LeadStatus;
   drop_reason: string | null;
+  /** Why the lead is parked when status = "needs_review" (gate findings or the
+   * terminal job error). Cleared when a later clean run moves the lead on. */
+  review_reason: string | null;
   /** RESERVED, currently unused — lead-level scheduling (D1 KvK retry, outreach
    * follow-ups). Job execution backoff lives on jobs.next_retry_at, not here. */
   next_retry_at: string | null;
@@ -148,15 +153,17 @@ export async function listLeadsByStatus(
   return (data as LeadRow[]) ?? [];
 }
 
-/** Move a lead through the funnel. `dropReason` only means something with "dropped". */
+/** Move a lead through the funnel. `dropReason` only means something with "dropped";
+ * `reviewReason` with "needs_review" (pass `null` to clear a stale one on a clean run). */
 export async function setLeadStatus(
   client: SupabaseClient,
   id: string,
   status: LeadStatus,
-  opts: { dropReason?: string; listingFacts?: ListingFacts } = {},
+  opts: { dropReason?: string; reviewReason?: string | null; listingFacts?: ListingFacts } = {},
 ): Promise<LeadRow> {
   const patch: Record<string, unknown> = { status };
   if (opts.dropReason !== undefined) patch.drop_reason = opts.dropReason;
+  if (opts.reviewReason !== undefined) patch.review_reason = opts.reviewReason;
   if (opts.listingFacts !== undefined) patch.listing_facts_json = opts.listingFacts;
   const { data, error } = await client.from(TABLE).update(patch).eq("id", id).select().single();
   if (error) throw new Error(`setLeadStatus(${id} → ${status}) failed: ${error.message}`);

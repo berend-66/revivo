@@ -38,6 +38,8 @@ export interface AboutFidelityReport {
   verdict: "clean" | "fabrication";
   claims: AboutClaim[];
   model: string;
+  /** Tokens this check itself spent — counted into the batch cost estimate. */
+  usage?: { inputTokens: number; outputTokens: number };
 }
 
 export interface AboutFidelityInput {
@@ -132,5 +134,5 @@ export async function checkAboutFidelity(input: AboutFidelityInput): Promise<Abo
   const parsed = ModelSchema.parse(extractJsonObject(res.text));
   // Derive verdict from claims in code (don't trust the model's own bookkeeping).
   const verdict = parsed.claims.length > 0 ? "fabrication" : "clean";
-  return { verdict, claims: parsed.claims, model: client.model };
+  return { verdict, claims: parsed.claims, model: client.model, usage: res.usage };
 }
