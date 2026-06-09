@@ -1,4 +1,4 @@
-import { SalonBriefSchema, type SalonBrief } from "@revivo/shared";
+import { SalonBriefSchema, isDutchMobile, type SalonBrief } from "@revivo/shared";
 import type { PlaceDetails } from "./places";
 import type { InstagramLight } from "./instagram";
 
@@ -35,17 +35,8 @@ function deriveSalonType(place: PlaceDetails): SalonBrief["type"] {
   return "hair";
 }
 
-/**
- * A Dutch MOBILE number is 06 / +316 (then 8 digits). Anything else on +31 is a
- * geographic landline (e.g. +31 30 = Utrecht), which cannot host a WhatsApp
- * account — so we explicitly warn the generator not to derive contact.whatsapp
- * from it.
- */
-function isDutchMobile(phone?: string): boolean {
-  if (!phone) return false;
-  const d = phone.replace(/[^\d+]/g, "");
-  return /^(?:\+316|00316|06)\d{8}$/.test(d);
-}
+// isDutchMobile moved to @revivo/shared (phone.ts) — the opener builder gates
+// wa.me links on the same definition; one source of truth.
 
 /** A website that is really just the Instagram profile isn't a real website. */
 function hasRealWebsite(place: PlaceDetails): boolean {

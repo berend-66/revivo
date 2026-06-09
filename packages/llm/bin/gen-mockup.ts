@@ -4,7 +4,7 @@ import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
-import { SalonBriefSchema, type SalonBrief } from "@revivo/shared";
+import { SalonBriefSchema, buildOpener, DEFAULT_MOCK_BASE_URL, type SalonBrief } from "@revivo/shared";
 import {
   assembleBriefFromPlaces,
   assembleBriefFromFixture,
@@ -283,8 +283,23 @@ async function main() {
 
     const row = await upsertMockupBySlug(client, { slug: config.slug, config, source, placeId, brief, model: run.model });
     console.log(`✓ Pushed to Supabase 'mockups' (id ${row.id}, source ${row.source})`);
-    const base = process.env.REVIVO_MOCK_BASE_URL ?? "http://localhost:4321";
-    console.log(`\nShareable mockup URL:\n   ${base.replace(/\/$/, "")}/${config.slug}\n`);
+    // A pushed mockup is live on the DEPLOYED mock app — the shareable URL and
+    // the opener must never default to localhost (a pasted localhost link is a
+    // wasted opener; the wa.me message would carry it verbatim).
+    const base = process.env.REVIVO_MOCK_BASE_URL ?? DEFAULT_MOCK_BASE_URL;
+    const mockUrl = `${base.replace(/\/$/, "")}/${config.slug}`;
+    console.log(`\nShareable mockup URL:\n   ${mockUrl}`);
+
+    // The opener (B4): the ready-to-send first message for THIS mockup. Same
+    // builder as scripts/build-openers.ts — deterministic, hook from real data.
+    const opener = buildOpener({ config, mockUrl, facts });
+    console.log(`\nOpener (hook: ${opener.hook}):`);
+    console.log(
+      opener.whatsappUrl
+        ? `   WhatsApp: ${opener.whatsappUrl}`
+        : `   WhatsApp: geen NL-mobiel bekend → gebruik IG-DM of e-mail`,
+    );
+    console.log("\n" + opener.plainText.split("\n").map((l) => `   ${l}`).join("\n") + "\n");
   } else {
     console.log("\nPreview it locally:");
     console.log(`   cd apps/customer-template && REVIVO_CONFIG="${relConfig}" pnpm dev`);

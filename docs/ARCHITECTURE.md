@@ -16,8 +16,8 @@ revivo/
 │   ├── sourcing/           # Google Places (New) + Instagram-light → SalonBrief; Treatwell listing scraper + directory crawler (BUILT); KvK is Stage 4
 │   ├── deploy/             # Vercel + TransIP API wrappers (NOT YET BUILT)
 │   ├── db/                 # Supabase client + mockups/leads/jobs table helpers (BUILT)
-│   └── shared/             # SiteConfig + SalonBrief contracts + shared types (BUILT)
-├── scripts/                # Hand-run operator scripts (BUILT — crawl-marketplace, generate-pending); cron/ scheduled jobs land in Phase C
+│   └── shared/             # SiteConfig + SalonBrief contracts + pure helpers (slugify, phone, B4 opener builder) (BUILT)
+├── scripts/                # Hand-run operator scripts (BUILT — crawl-marketplace, generate-pending, build-openers); cron/ scheduled jobs land in Phase C
 ├── supabase/migrations/    # SQL migrations (BUILT — mockups, leads, jobs); auto-applied via the GitHub Action on push to main
 ├── docs/                   # Living documentation
 └── revivo-proposal.pdf     # Customer-facing proposal — brand & spec reference

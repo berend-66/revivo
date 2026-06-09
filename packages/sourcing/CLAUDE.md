@@ -35,6 +35,8 @@ fixtures.ts        → FIXTURE_PLACE / FIXTURE_INSTAGRAM (offline + --dry-run + 
   "Contact-aanwijzingen" guards mirroring the prompt's no-fabrication rules against THIS salon's
   data: a non-mobile phone (`isDutchMobile` false) → "zet contact.whatsapp NIET"; no real website
   (`hasRealWebsite` false) → "verzin GEEN e-mailadres". Keep these in sync with the prompt.
+  (`isDutchMobile` itself lives in `@revivo/shared` since B4 — the opener's wa.me gate uses the
+  SAME definition; never re-add a local copy here.)
 - **Places API (New), not legacy.** `places.googleapis.com/v1` with header auth + a field mask
   per call. Field masks are mandatory and also cap billing. No SDK — `fetch` only.
 - **`SalonBrief` lives in `@revivo/shared`**, not here. This package is a *producer* of briefs;

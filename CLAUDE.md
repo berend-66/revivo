@@ -66,6 +66,10 @@ pnpm crawl-marketplace --help
 pnpm generate-pending --dry-run                    # report pending leads + due jobs, no writes
 pnpm generate-pending --max-jobs 5                 # bound one run's LLM spend
 pnpm generate-pending --stub-llm                   # full loop, stub configs, €0 (infra test)
+
+# Openers — mockup_generated leads → ready-to-send Dutch openers (no LLM). From repo root.
+pnpm build-openers                                 # print openers; status unchanged
+pnpm build-openers --out openers.txt --mark-sent   # write file + flip leads → outreach_sent
 ```
 
 ## Hard rules
