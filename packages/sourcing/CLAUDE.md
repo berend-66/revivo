@@ -3,8 +3,9 @@
 Turns external salon data into a `SalonBrief` (the generator's input contract) and,
 for the salon's REAL facts, a `ListingFacts`. Two source modes today: **places mode**
 (a Google Place + Instagram-light → `SalonBrief`) and **Treatwell mode** (a salon's
-public listing → real menu/prices/team/hours/reviews/photos). Stage 4 adds KvK
-enrichment + the cron that batch-sources leads through this same code.
+public listing → real menu/prices/team/hours/reviews/photos). Stage 4 lead sourcing
+starts here too: the **marketplace directory crawler** enumerates prospect listing
+URLs (the same URLs the Treatwell scraper consumes). KvK enrichment + the cron come later.
 
 ```
 config.ts          → GOOGLE_PLACES_API_KEY → SourcingSettings
@@ -13,6 +14,8 @@ instagram.ts       → Instagram-light: normalize handle + paste-through bio/cap
 places-to-brief.ts → placeToBrief(PlaceDetails, InstagramLight?) → SalonBrief
 treatwell.ts       → fetchTreatwellListing / parseTreatwellHtml / treatwellListingToFacts → ListingFacts; listingFactsToBrief (REAL data, deterministic, NO LLM)
 fact-check.ts      → crossCheckListing(raw, facts) → state↔JSON-LD scalar agreement report (deterministic scrape-fidelity backstop, NO LLM/vision)
+marketplace/
+  treatwell-directory.ts → crawlTreatwellDirectory({cities,treatments}) → DirectoryLead stream (canonical /salon/<slug>/ URLs + name/rating); parseTreatwellDirectoryHtml is the pure offline-testable core
 pipeline.ts        → assembleBriefFromPlaces() / assembleBriefFromFixture()  ← the entry points
 fixtures.ts        → FIXTURE_PLACE / FIXTURE_INSTAGRAM (offline + --dry-run + the e2e LLM test)
 ```
@@ -53,6 +56,24 @@ fixtures.ts        → FIXTURE_PLACE / FIXTURE_INSTAGRAM (offline + --dry-run + 
   covered by the golden snapshot test, and about-PROSE by `checkAboutFidelity` (`@revivo/llm`). The
   screenshot-vision comparator that was built + measured (Phase 6) proved false-positive-prone and stays a
   manual spot-check only (`@revivo/verify`); this is the structured replacement for it.
+- **The directory crawler enumerates URLs only — facts are scraped at generation time.** A
+  directory page is server-rendered with the same `window.__state__` posture (`browse.results`
+  venue cards + `browse.pagination`); pagination follows the page's own `<link rel="next">`
+  (absent on the last page). Degradation: no state blob → plain `/salon/<slug>/` anchor hrefs
+  (URLs only, warns, never invents names/ratings). `DirectoryLead.listingUrl` is canonical
+  (query strings stripped) because it is the **leads dedup key** AND the URL the listing
+  scraper later fetches — the two normalizations must agree. Politeness is part of the design:
+  sequential, `delayMs` between pages (**default 5000 ms — treatwell.nl/robots.txt publishes
+  `Crawl-delay: 5`; the browse paths themselves are allowed, and honoring the delay is what keeps
+  the posture defensible**), `maxPagesPerCity` cap (warns when it drops coverage), same browser
+  UA. The knobs **fail closed**: a NaN/negative value clamps to the default rather than silently
+  disabling the cap/delay. Two more degrade-loudly guards: a page whose state signals an
+  **expanded search** (`browse.expandedSearch` / `implicitModifications`) is skipped entirely —
+  Treatwell widened a sparse query, so its results may be wrong-city salons that would poison the
+  funnel; and when pagination metadata says more pages exist but no `rel=next` was found, the
+  crawl warns that coverage is incomplete. This module imports NO `@revivo/llm` and NO
+  `@revivo/db` — it's a pure library; the thin `scripts/crawl-marketplace.ts` (repo root, covered
+  by the root `tsconfig.json` typecheck) does the `insertLeadIfNew` writes.
 - **Treatwell is the source of truth for menu/prices/team/hours/reviews; Google stays for
   coords/postcode/extra photos.** `ListingFacts` is the real-data contract (lives in
   `@revivo/shared`); `@revivo/llm`'s `applyListingFacts` writes it into the config deterministically.
@@ -87,6 +108,11 @@ silently-broken scraper ships a mockup that is confidently wrong about the salon
   warns, and **omits** services/team/reviews rather than inventing them.
 - `fact-check.test.ts` covers `crossCheckListing`: PASS on the faithful page, MISMATCH when the
   state hours are deliberately mangled (JSON-LD intact), and UNCHECKABLE when only one source exists.
+- `treatwell-directory.test.ts` covers the B2 crawler against 3 captured directory pages
+  (Utrecht × kapper: first/middle/last — 66 venues): state-blob parsing + a frozen URL snapshot,
+  last-page end detection (no rel=next), the anchor-href fallback (state marker renamed in-test,
+  no 4th fixture), rel=next chain crawling with a stubbed fetch, cross-page/cross-city dedup,
+  the page cap (warns about dropped coverage), and fail-fast on a non-OK response.
 
 ## Not built yet
 

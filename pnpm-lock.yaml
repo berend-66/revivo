@@ -8,6 +8,21 @@ importers:
 
   .:
     devDependencies:
+      '@revivo/db':
+        specifier: workspace:*
+        version: link:packages/db
+      '@revivo/sourcing':
+        specifier: workspace:*
+        version: link:packages/sourcing
+      '@types/node':
+        specifier: ^22.19.19
+        version: 22.19.19
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.6.1
+      tsx:
+        specifier: ^4.19.0
+        version: 4.22.3
       typescript:
         specifier: ^5.7.2
         version: 5.9.3

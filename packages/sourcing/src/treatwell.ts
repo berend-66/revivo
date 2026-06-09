@@ -35,7 +35,8 @@ import type { PlaceToBriefOverrides } from "./places-to-brief";
  * are minimal (one marker + JSON.parse) so cosmetic HTML changes don't break it.
  */
 
-const BROWSER_UA =
+/** Shared with the directory crawler (marketplace/treatwell-directory.ts) — one UA posture. */
+export const BROWSER_UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
 export interface RawListing {
@@ -437,7 +438,9 @@ function extractAssignedObject(src: string, marker: string): string | null {
   return null;
 }
 
-function extractStateObject(html: string): any | null {
+/** Exported for reuse by the directory crawler — one balanced-brace scanner for
+ * every `window.__state__` consumer. */
+export function extractStateObject(html: string): any | null {
   const raw = extractAssignedObject(html, "window.__state__");
   if (!raw) return null;
   try {

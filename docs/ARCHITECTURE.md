@@ -13,12 +13,12 @@ revivo/
 │   └── admin/              # Next.js operator workspace (NOT YET BUILT)
 ├── packages/
 │   ├── llm/                # Mockup generator + model-agnostic LLM client (BUILT — manual + places mode)
-│   ├── sourcing/           # Google Places (New) + Instagram-light → SalonBrief (BUILT); KvK is Stage 4
+│   ├── sourcing/           # Google Places (New) + Instagram-light → SalonBrief; Treatwell listing scraper + directory crawler (BUILT); KvK is Stage 4
 │   ├── deploy/             # Vercel + TransIP API wrappers (NOT YET BUILT)
-│   ├── db/                 # Supabase client + mockups table helpers (BUILT)
+│   ├── db/                 # Supabase client + mockups/leads/jobs table helpers (BUILT)
 │   └── shared/             # SiteConfig + SalonBrief contracts + shared types (BUILT)
-├── scripts/cron/           # Scheduled jobs (NOT YET BUILT)
-├── supabase/migrations/    # SQL migrations (BUILT — mockups); auto-applied via the Supabase↔GitHub integration on push to main
+├── scripts/                # Hand-run operator scripts (BUILT — crawl-marketplace); cron/ scheduled jobs land in Phase C
+├── supabase/migrations/    # SQL migrations (BUILT — mockups, leads, jobs); auto-applied via the GitHub Action on push to main
 ├── docs/                   # Living documentation
 └── revivo-proposal.pdf     # Customer-facing proposal — brand & spec reference
 ```

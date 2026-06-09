@@ -1,0 +1,26 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`parseTreatwellDirectoryHtml > parses a first page: 20 venues from the state blob, pagination, next link 1`] = `
+[
+  "https://www.treatwell.nl/salon/karinka-hairsalon/",
+  "https://www.treatwell.nl/salon/sipan-style/",
+  "https://www.treatwell.nl/salon/o-h-haar-salon/",
+  "https://www.treatwell.nl/salon/parbella-hair-and-beauty-professionals/",
+  "https://www.treatwell.nl/salon/salon-dani/",
+  "https://www.treatwell.nl/salon/hair-beauty-by-lina/",
+  "https://www.treatwell.nl/salon/barbershop-hairsalon-goldenhands/",
+  "https://www.treatwell.nl/salon/wax-and-more/",
+  "https://www.treatwell.nl/salon/cremode/",
+  "https://www.treatwell.nl/salon/kapsalon-venise/",
+  "https://www.treatwell.nl/salon/haarfijn-kappers-centraal-station-utrecht/",
+  "https://www.treatwell.nl/salon/libelle-salon/",
+  "https://www.treatwell.nl/salon/utrecht-hairstyle/",
+  "https://www.treatwell.nl/salon/metamorfosa-hair-nails-1/",
+  "https://www.treatwell.nl/salon/haarfijn-kappers-overvecht/",
+  "https://www.treatwell.nl/salon/kapsalon-kanal/",
+  "https://www.treatwell.nl/salon/beautysalon-amira-1/",
+  "https://www.treatwell.nl/salon/luzia-hairstyling/",
+  "https://www.treatwell.nl/salon/davey-de-barber/",
+  "https://www.treatwell.nl/salon/kapsalon-ikke/",
+]
+`;

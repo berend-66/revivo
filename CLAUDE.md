@@ -56,6 +56,11 @@ pnpm gen-mockup --help
 
 # Mock app (mock.revivo.nl/{slug}) — SSR; reads Supabase, else local example JSON
 cd apps/mockups && pnpm dev            # http://localhost:4321/<slug>
+
+# Lead sourcing — crawl a Treatwell marketplace directory into the leads table. From repo root.
+pnpm crawl-marketplace --city utrecht --dry-run    # crawl + print, no DB writes
+pnpm crawl-marketplace --city utrecht              # insert deduped pending leads (Supabase env)
+pnpm crawl-marketplace --help
 ```
 
 ## Hard rules

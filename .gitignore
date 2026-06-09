@@ -42,3 +42,6 @@ coverage/
 
 # Generated mockup configs — reproducible via `pnpm gen-mockup`, not source
 apps/customer-template/examples/generated/
+
+# Throwaway post-push verification script (delete after the B1 live test)
+packages/db/b1-live-test.ts

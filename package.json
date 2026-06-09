@@ -2,6 +2,7 @@
   "name": "revivo",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "packageManager": "pnpm@11.3.0",
   "engines": {
     "node": ">=20"
@@ -12,9 +13,15 @@
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "gen-mockup": "pnpm -F @revivo/llm gen-mockup",
-    "verify-mockup": "pnpm -F @revivo/verify verify"
+    "verify-mockup": "pnpm -F @revivo/verify verify",
+    "crawl-marketplace": "tsx scripts/crawl-marketplace.ts"
   },
   "devDependencies": {
+    "@revivo/db": "workspace:*",
+    "@revivo/sourcing": "workspace:*",
+    "@types/node": "^22.19.19",
+    "dotenv": "^16.4.5",
+    "tsx": "^4.19.0",
     "typescript": "^5.7.2"
   }
 }
