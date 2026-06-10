@@ -155,8 +155,9 @@ export function treatwellListingToFacts(raw: RawListing): ListingFacts {
   const hours = hoursFromState(v) ?? hoursFromJsonLd(biz);
   if (hours) facts.hours = hours;
 
-  const team = teamFromState(v);
-  if (team) facts.team = team;
+  const salonName = typeof facts.name === "string" ? facts.name : undefined;
+  const team = teamFromState(v)?.filter((m) => !isNonPersonTeamName(m.name, salonName));
+  if (team?.length) facts.team = team;
 
   const reputation = reputationFromState(v) ?? reputationFromJsonLd(biz);
   if (reputation) facts.reputation = reputation;
@@ -323,6 +324,41 @@ function teamFromState(v: any): TeamMember[] | null {
     team.push(m);
   }
   return team.length ? team : null;
+}
+
+// Treatwell "employees" are bookable resources, not necessarily people: salons
+// register the business itself ("Karinka Hair Experience", logo avatar and
+// all), chairs ("salon 1".."salon 3"), interns ("stage 1"), groups ("team",
+// "N Team"), bare role words ("Barber"), even services ("wenkbrauwen").
+// Measured across all 14 live leads: 6 salons carried such entries; rendering
+// one as a named stylist is the confidently-wrong class. Real single names
+// (incl. an owner sharing the salon's brand word, e.g. "Dani" at Salon Dani)
+// must survive — hence exact-word and token rules, never substring matching.
+const NON_PERSON_EXACT = new Set([
+  "team", "salon", "kapsalon", "medewerker", "medewerkers", "staff",
+  "iedereen", "geen voorkeur", "any", "anyone", "no preference",
+  "barber", "kapper", "kapster", "stylist", "dames", "heren", "stage",
+  "wenkbrauwen", "nagels", "wimpers", "knippen", "massage",
+]);
+// A token that marks a multi-word name as a BUSINESS name ("Karinka Hair
+// Experience", "X Hairsalon BV") — single-word names never hit this list.
+const BUSINESS_TOKENS = new Set([
+  "salon", "kapsalon", "hairsalon", "haarsalon", "barbershop", "studio",
+  "experience", "team", "bv", "b.v.",
+]);
+
+/** True when a Treatwell employee name is a placeholder/business entry, not a
+ * person. Exported for tests. `salonName` catches the salon-as-employee case
+ * even when no business token matches. */
+export function isNonPersonTeamName(name: string, salonName?: string): boolean {
+  const norm = name.trim().toLowerCase().replace(/\s+/g, " ");
+  if (!/\p{L}/u.test(norm)) return true; // ".." — no letters at all
+  if (NON_PERSON_EXACT.has(norm)) return true;
+  if (/^(salon|stage|stoel|chair)\s*\d+$/.test(norm)) return true; // "salon 2", "stage 1"
+  if (salonName && norm === salonName.trim().toLowerCase().replace(/\s+/g, " ")) return true;
+  const tokens = norm.split(/[\s&/-]+/);
+  if (tokens.length > 1 && tokens.some((t) => BUSINESS_TOKENS.has(t))) return true;
+  return false;
 }
 
 function reputationFromState(v: any): Reputation | null {

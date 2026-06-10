@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it, vi } from "vitest";
-import { parseTreatwellHtml, treatwellListingToFacts } from "../src/treatwell";
+import { isNonPersonTeamName, parseTreatwellHtml, treatwellListingToFacts } from "../src/treatwell";
 
 /**
  * Regression anchor for the moat's load-bearing extractor.
@@ -156,5 +156,55 @@ describe("treatwellListingToFacts — graceful degradation when window.__state__
     expect(facts.services).toBeUndefined();
     expect(facts.team).toBeUndefined();
     expect(facts.reviews).toBeUndefined();
+  });
+});
+
+describe("isNonPersonTeamName — Treatwell employees that aren't people", () => {
+  // Ground truth: every team entry measured across the 14 live Utrecht leads
+  // (2026-06-10). Treatwell "employees" are bookable resources — salons
+  // register the business itself, chairs, interns, groups, and services.
+  const drops: Array<[string, string?]> = [
+    ["Karinka Hair Experience", "Karinka Hairsalon"], // the salon as "Kapster"
+    ["team", undefined],
+    ["N Team", undefined],
+    ["Barber", undefined], // bare role word as name
+    ["Stage 2", undefined], // intern placeholder
+    ["stage 1", undefined],
+    ["Salon", undefined],
+    ["wenkbrauwen", undefined], // a service, not a person
+    ["salon 1", undefined],
+    ["salon 2", undefined],
+    ["salon 3", undefined],
+    ["..", undefined], // no letters at all
+  ];
+  const keeps: Array<[string, string?]> = [
+    ["Dani", "Salon Dani"], // owner sharing the salon's brand word
+    ["Paolo", undefined],
+    ["Waleed", undefined],
+    ["victoria", undefined],
+    ["Hassan 2", undefined], // second Hassan, not a placeholder pattern
+    ["Hassan Ibach", undefined],
+    ["Nails Fariba 🇦🇫🇳🇱🇹🇷🇬🇷🇮🇷", undefined], // messy display name, real person
+    ["Sam Master 🇮🇷🇳🇱🇬🇧", undefined],
+    ["Manoj Aesthetic 🇬🇧🇪🇸🇫🇷", undefined],
+    ["Amineh Rain", undefined],
+    ["Ousama Suliman", undefined],
+    ["parzijn", undefined],
+    ["ter Haar", undefined], // real Dutch surname — "haar" must not be a business token
+  ];
+
+  it.each(drops)("drops %j", (name, salonName) => {
+    expect(isNonPersonTeamName(name, salonName)).toBe(true);
+  });
+
+  it.each(keeps)("keeps %j", (name, salonName) => {
+    expect(isNonPersonTeamName(name, salonName)).toBe(false);
+  });
+
+  it("an all-placeholder team is omitted entirely (render-if-present downstream)", () => {
+    // venise: ["Salon", "wenkbrauwen"] / Haarfijn: ["salon 1".."salon 3"] —
+    // filtering must yield NO team field, not an empty array.
+    const entries = ["Salon", "wenkbrauwen"].filter((n) => !isNonPersonTeamName(n));
+    expect(entries).toHaveLength(0);
   });
 });
