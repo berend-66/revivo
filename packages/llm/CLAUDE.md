@@ -12,8 +12,10 @@ client.ts         → createLLMClient(settings) returns an LLMClient
                     · OpenAICompatibleClient covers openrouter AND openai (same wire format)
                     · anthropic provider currently throws — add adapters/anthropic.ts to enable
                       native prompt caching at scale
-mockup-generator.ts → generateMockup(brief, client?, facts?) + applyListingFacts (facts passthrough)
+mockup-generator.ts → generateMockup(brief, client?, facts?, curation?) + applyListingFacts (facts passthrough)
 check-about.ts    → checkAboutFidelity — the about-prose fabrication guard
+curate-photos.ts  → classifyListingPhotos (ONE vision call: kind/heroScore/duplicates per photo)
+                    + curatePhotoSlots (PURE slotting rules: hero/gallery/portrait)
 dry-run.ts        → stubMockup(brief) — deterministic config, no LLM, no cost
 run-mockup.ts     → THE shared pipeline (B3): resolveListingBrief / runMockupPipeline /
                     generateMockupForListing — CLI and batch worker both run this path
@@ -56,6 +58,7 @@ pnpm gen-mockup --name "VOLT" --city Rotterdam \
 
 - **`checkAboutFidelity(config, facts)` (`src/check-about.ts`) is the reliable fabrication guard.** Facts are pinned deterministically, so the LLM can only be "confidently wrong about the owner's business" in the about-PROSE. This is a TEXT check: it compares the about-copy (+ tagline/headlines) against the salon's real `facts.description` + known structured facts and flags concrete unsupported claims (music/drinks/awards/year/experience/backstory). `gen-mockup` runs it automatically when `facts.description` exists and **warns, doesn't block**. Validated both directions (clean about → clean; injected "Spaanse muziek"/year/award → flagged). It is the durable replacement for the shelved screenshot-vision gate (see below). Derives `verdict` from claim count in code; no-op when there's no real description.
 - **The vision client (`createVisionClient`, `CompleteOptions.images`, `VISION_LLM_MODEL`) exists, but screenshot-vision verification is NOT a runtime gate — it's a manual spot-check only (`@revivo/verify`).** Measured on a fully-hand-verified-correct mockup it produced 3/3 false positives (misread price/hours/phone off a downscaled page). The vision capability stays here (model-agnostic, no SDK leak) for that spot-check tool and future uses; `@revivo/verify` depends on this package, never the reverse — don't add `--verify` to `gen-mockup` (it would cycle the graph).
+- **Photo curation (`curate-photos.ts`) IS a runtime vision use — and that's consistent with the above.** The shelved comparator failed at fine-grained OCR; curation is coarse scene classification ("haircut, room, or shampoo bottle?") whose labels feed DETERMINISTIC slotting rules, never a verdict. Measured rationale (2026-06-10, all 159 photos of the 14 live mockups): 3% work shots, 28% product bottles, avg 2.2/4 hero slots usable, best shots often last. Rules: hero = usable work → usable interiors → 0-scored work/interior, never exterior/product/menu; gallery = work+interior+team score-ranked, products only pad below 4; portrait = team, else interior outside the hero; vision-flagged duplicates dropped (URL dupes never get here — the scraper dedupes those). Runs in `runMockupPipeline` BEFORE generation so the grounding lists the final gallery slots and the model writes captions that match the photo content. Any classification failure (bad coverage, model error, missing key) degrades to listing order — reported via `MockupGates.photoCuration`, NEVER gating the verdict. ~€0.01/salon on the vision model.
 
 ## Conventions / gotchas
 

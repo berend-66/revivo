@@ -1,6 +1,7 @@
 import { SiteConfigSchema, slugify, type SiteConfig, type SalonBrief, type ListingFacts } from "@revivo/shared";
 import { createLLMClient, type LLMClient } from "./client";
 import { MOCKUP_SYSTEM_PROMPT } from "./prompts/mockup-system";
+import { GALLERY_SCHEMA_MIN, type PhotoCuration, type PhotoKind } from "./curate-photos";
 
 export interface GenerateResult {
   config: SiteConfig;
@@ -26,8 +27,9 @@ export async function generateMockup(
   brief: SalonBrief,
   client: LLMClient = createLLMClient(),
   facts?: ListingFacts,
+  curation?: PhotoCuration,
 ): Promise<GenerateResult> {
-  const userMessage = briefToMessage(brief, facts);
+  const userMessage = briefToMessage(brief, facts, curation);
   let lastError = "";
   // Accumulated over ALL attempts — a schema retry costs a second full
   // completion, and the spend estimate downstream must not undercount it.
@@ -77,7 +79,9 @@ export async function generateMockup(
       continue;
     }
 
-    const config = facts ? SiteConfigSchema.parse(applyListingFacts(result.data, facts)) : result.data;
+    const config = facts
+      ? SiteConfigSchema.parse(applyListingFacts(result.data, facts, curation))
+      : result.data;
     return {
       config,
       usage: sawUsage ? { inputTokens: totalIn, outputTokens: totalOut } : undefined,
@@ -88,7 +92,7 @@ export async function generateMockup(
   throw new Error(`Mockup generation failed schema validation after 2 attempts:\n${lastError}`);
 }
 
-function briefToMessage(brief: SalonBrief, facts?: ListingFacts): string {
+function briefToMessage(brief: SalonBrief, facts?: ListingFacts, curation?: PhotoCuration): string {
   const lines = [
     `Naam: ${brief.name}`,
     `Stad: ${brief.city}`,
@@ -118,7 +122,7 @@ function briefToMessage(brief: SalonBrief, facts?: ListingFacts): string {
   if (brief.notes) lines.push(`Notities: ${brief.notes}`);
 
   let msg = `Briefing voor de salon:\n${lines.join("\n")}`;
-  if (facts) msg += `\n\n${factsToGrounding(facts)}`;
+  if (facts) msg += `\n\n${factsToGrounding(facts, curation)}`;
   return msg;
 }
 
@@ -129,7 +133,7 @@ function briefToMessage(brief: SalonBrief, facts?: ListingFacts): string {
  * It is told to omit team/reputation/testimonials (filled from facts) and to
  * spend its effort on the parts that are genuinely its job.
  */
-function factsToGrounding(facts: ListingFacts): string {
+function factsToGrounding(facts: ListingFacts, curation?: PhotoCuration): string {
   const L: string[] = [];
   if (facts.reputation) {
     const r = facts.reputation;
@@ -167,6 +171,22 @@ function factsToGrounding(facts: ListingFacts): string {
       `Locatie: ${facts.address}${facts.city ? `, ${facts.city}` : ""}${coords} — beschrijf de ligging NIET verder dan dit adres + stad (geen "hartje"/"centrum"/"loopafstand"/wijk; de salon zit mogelijk buiten het centrum).`,
     );
   }
+  // Caption grounding: the gallery is slotted deterministically AFTER the
+  // model answers, so without this list the model writes captions blind — a
+  // "ons werk"-caption over a shampoo shelf is the same misstatement class as
+  // a wrong price. The list is in FINAL slot order so captions map 1:1.
+  // Gated at the same threshold applyListingFacts uses: a sub-min curated
+  // gallery (one unique photo) is never applied, and "geef exact 1 item"
+  // would make an obedient model FAIL the schema's gallery.min(2) — the
+  // review fleet reproduced that as a hard generation failure.
+  if (curation && curation.slots.gallery.length >= GALLERY_SCHEMA_MIN) {
+    const slots = curation.slots.gallery
+      .map((g, i) => `${i + 1}. ${PHOTO_KIND_NL[g.kind]}${g.note ? ` — ${g.note}` : ""}`)
+      .join("\n");
+    L.push(
+      `Foto's: de galerij toont straks PRECIES deze ${curation.slots.gallery.length} echte salonfoto's, in deze volgorde:\n${slots}\nGeef exact ${curation.slots.gallery.length} gallery-items en schrijf elke caption passend bij de foto-inhoud hierboven (dus geen "ons werk"-caption bij een interieur- of productfoto). Verzin geen details die niet in de omschrijving staan.`,
+    );
+  }
   if (facts.description) {
     L.push(
       `Over de salon (ECHTE omschrijving, door de salon zélf geschreven — dit is je ENIGE bron voor de about-copy): "${facts.description
@@ -181,6 +201,16 @@ function factsToGrounding(facts: ListingFacts): string {
     ...L,
   ].join("\n");
 }
+
+const PHOTO_KIND_NL: Record<PhotoKind, string> = {
+  work: "werkresultaat",
+  interior: "interieur",
+  exterior: "gevel",
+  team: "teamfoto",
+  product: "producten",
+  menu: "prijslijst",
+  other: "overig",
+};
 
 function fmtRating(n: number): string {
   return String(n).replace(".", ",");
@@ -199,7 +229,11 @@ function fmtEuro(n: number): string {
  * gracefully (and a salon with no listing keeps the hardened omit-don't-invent
  * behaviour). Returns a new config; the caller re-validates it.
  */
-export function applyListingFacts(config: SiteConfig, facts: ListingFacts): SiteConfig {
+export function applyListingFacts(
+  config: SiteConfig,
+  facts: ListingFacts,
+  curation?: PhotoCuration,
+): SiteConfig {
   const next: SiteConfig = structuredClone(config);
 
   if (facts.services?.length) next.services = facts.services;
@@ -234,19 +268,41 @@ export function applyListingFacts(config: SiteConfig, facts: ListingFacts): Site
 
   // Photos, sized dynamically to however many the listing has. The picsum
   // placeholders from `normalizeImagesInPlace` survive only when there are none.
+  // With a curation (vision labels + deterministic slotting) the slots decide
+  // which photo goes where; without one — classifier failed, dry run — the
+  // original listing-order behaviour stands (degraded, never blocked).
   if (facts.photos?.length) {
     const photos = facts.photos;
-    next.hero.images = photos.slice(0, Math.min(4, photos.length));
-    if (photos.length >= 2) {
-      next.gallery = photos.map((url, i) => {
+    const slots = curation?.slots;
+
+    if (slots?.hero.length) {
+      next.hero.images = slots.hero;
+      // Curated portrait: team shot > interior outside the hero (see curatePhotoSlots).
+      next.about.portrait = slots.portrait ?? photos[Math.min(4, photos.length - 1)];
+    } else {
+      next.hero.images = photos.slice(0, Math.min(4, photos.length));
+      // The editorial portrait (atelier's About) is also an image — without this
+      // the model's picsum placeholder survives and renders on a real mockup.
+      // Prefer one beyond the hero set for variety; fall back to the last available.
+      next.about.portrait = photos[Math.min(4, photos.length - 1)];
+    }
+
+    // The curated gallery can dip under the schema min(2) only when the salon
+    // has <2 unique photos — then repeating the listing set still beats picsum.
+    // (factsToGrounding stands down at the same threshold, so the model was
+    // never told to caption the curated slots in this case.)
+    const galleryUrls =
+      slots && slots.gallery.length >= GALLERY_SCHEMA_MIN
+        ? slots.gallery.map((g) => g.url)
+        : photos.length >= 2
+          ? photos
+          : null;
+    if (galleryUrls) {
+      next.gallery = galleryUrls.map((url, i) => {
         const caption = config.gallery[i]?.caption;
         return { url, aspect: "landscape" as const, ...(caption ? { caption } : {}) };
       });
     }
-    // The editorial portrait (atelier's About) is also an image — without this
-    // the model's picsum placeholder survives and renders on a real mockup.
-    // Prefer one beyond the hero set for variety; fall back to the last available.
-    next.about.portrait = photos[Math.min(4, photos.length - 1)];
   }
 
   return next;

@@ -243,6 +243,19 @@ async function main() {
     console.warn(`   about-fidelity check overgeslagen: ${gates.aboutFidelitySkipped}`);
   }
 
+  // Photo curation: report-only (a failed classification degrades to listing
+  // order — warn the operator, never block).
+  const pc = gates.photoCuration;
+  if (pc.status === "applied") {
+    const mix = Object.entries(pc.counts ?? {})
+      .map(([kind, n]) => `${kind} ${n}`)
+      .join(", ");
+    const dupes = pc.droppedDuplicates ? ` · ${pc.droppedDuplicates} duplicaat/duplicaten weggelaten` : "";
+    console.log(`   foto-curatie: ✓ [${pc.model}] ${mix}${dupes}`);
+  } else if (pc.status === "failed") {
+    console.warn(`   foto-curatie mislukt — foto's in listingvolgorde: ${pc.reason}`);
+  }
+
   if (gates.verdict === "needs_review") {
     console.warn(`\n⚠ Verdict: NEEDS REVIEW — ${gates.reasons.join(" · ")}`);
   }

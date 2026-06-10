@@ -120,10 +120,17 @@ let scriptErrors = 0;
 
 /** Degraded gate coverage must reach the operator, not just the gate verdict —
  * "report, never gate" means the ✓ line says when a check didn't run. */
-function gateNotes(gates: { aboutFidelitySkipped?: string; scrapeFidelity?: { verdict: string } }): string {
+function gateNotes(gates: {
+  aboutFidelitySkipped?: string;
+  scrapeFidelity?: { verdict: string };
+  photoCuration?: { status: string; reason?: string };
+}): string {
   const notes: string[] = [];
   if (!stubLlm && gates.aboutFidelitySkipped) notes.push(`about-check overgeslagen: ${gates.aboutFidelitySkipped}`);
   if (gates.scrapeFidelity?.verdict === "uncheckable") notes.push("scrape-cross-check niet mogelijk");
+  if (!stubLlm && gates.photoCuration?.status === "failed") {
+    notes.push(`foto-curatie mislukt (listingvolgorde gebruikt): ${gates.photoCuration.reason ?? "?"}`);
+  }
   return notes.length ? ` (let op: ${notes.join("; ")})` : "";
 }
 

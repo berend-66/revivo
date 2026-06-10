@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ListingFactsSchema, SalonBriefSchema, type ListingFacts, type SalonBrief } from "@revivo/shared";
 import type { FidelityReport } from "@revivo/sourcing";
-import type { CompleteResult, LLMClient } from "../src/client";
+import type { CompleteOptions, CompleteResult, LLMClient } from "../src/client";
 import { stubMockup } from "../src/dry-run";
 import {
   aggregateGates,
@@ -11,6 +11,14 @@ import {
   runMockupPipeline,
 } from "../src/run-mockup";
 import { decideLeadDisposition, pickMockupSlug } from "../src/run-mockup-job";
+
+// The photo-curation step defaults to createVisionClient() (env-configured).
+// Scrub any key inherited from the dev shell so a unit test that forgets to
+// inject a vision double degrades (caught, reported) instead of escalating
+// into a real network call.
+delete process.env.LLM_API_KEY;
+delete process.env.OPENROUTER_API_KEY;
+delete process.env.OPENAI_API_KEY;
 
 /**
  * B3 regression anchor: the extracted generation core (`runMockupPipeline` /
@@ -22,15 +30,19 @@ import { decideLeadDisposition, pickMockupSlug } from "../src/run-mockup-job";
 
 /** Queue-based LLM test double: each complete() call consumes the next queued
  * response, regardless of prompt wording — order is generate first, then the
- * about-fidelity check. */
-function fakeClient(responses: Array<string | object>): LLMClient & { calls: number } {
+ * about-fidelity check. Records every call's options for prompt assertions. */
+function fakeClient(
+  responses: Array<string | object>,
+): LLMClient & { calls: number; prompts: CompleteOptions[] } {
   const queue = [...responses];
   const client = {
     provider: "fake",
     model: "fake-model",
     calls: 0,
-    async complete(): Promise<CompleteResult> {
+    prompts: [] as CompleteOptions[],
+    async complete(opts: CompleteOptions): Promise<CompleteResult> {
       client.calls++;
+      client.prompts.push(opts);
       const next = queue.shift();
       if (next === undefined) throw new Error("fakeClient: no response queued for this call");
       return {
@@ -157,6 +169,105 @@ describe("runMockupPipeline", () => {
     expect(run.usage).toEqual({ inputTokens: 300, outputTokens: 600 });
   });
 
+  // FACTS has two photos; this labelling makes the slotting observable (the
+  // product shot leads on the listing, the striking interior must win).
+  const LABELS_PRODUCT_INTERIOR = {
+    photos: [
+      { n: 1, kind: "product", heroScore: 0, note: "flessen op plank" },
+      { n: 2, kind: "interior", heroScore: 2, note: "stoelen en spiegels" },
+    ],
+  };
+
+  it("photo curation: vision labels reorder the slots, spend counted, gate reports the mix", async () => {
+    const client = fakeClient([stubMockup(BRIEF), CLEAN_ABOUT]);
+    const visionClient = fakeClient([LABELS_PRODUCT_INTERIOR]);
+    const run = await runMockupPipeline({ brief: BRIEF, facts: FACTS, client, visionClient });
+
+    // The product shot may not lead: hero = the striking interior only.
+    expect(run.config.hero.images).toEqual([FACTS.photos![1]]);
+    // Gallery: interior first (ranked), product only as padding; portrait =
+    // the only photo outside the hero.
+    expect(run.config.gallery.map((g) => g.url)).toEqual([FACTS.photos![1], FACTS.photos![0]]);
+    expect(run.config.about.portrait).toBe(FACTS.photos![0]);
+    expect(run.gates.photoCuration).toMatchObject({
+      status: "applied",
+      model: "fake-model",
+      counts: { product: 1, interior: 1 },
+      droppedDuplicates: 0,
+    });
+    // vision + generate + about, each 100/200.
+    expect(run.usage).toEqual({ inputTokens: 300, outputTokens: 600 });
+    // One multimodal call: every photo, listing order, low detail.
+    expect(visionClient.prompts[0]?.images?.map((i) => i.url)).toEqual(FACTS.photos);
+    expect(visionClient.prompts[0]?.images?.every((i) => i.detail === "low")).toBe(true);
+  });
+
+  it("photo curation: the generate prompt grounds gallery captions in slot order", async () => {
+    const client = fakeClient([stubMockup(BRIEF), CLEAN_ABOUT]);
+    const visionClient = fakeClient([LABELS_PRODUCT_INTERIOR]);
+    await runMockupPipeline({ brief: BRIEF, facts: FACTS, client, visionClient });
+
+    const generateUser = client.prompts[0]!.user;
+    expect(generateUser).toContain("PRECIES deze 2 echte salonfoto's");
+    expect(generateUser).toContain("1. interieur — stoelen en spiegels");
+    expect(generateUser).toContain("2. producten — flessen op plank");
+  });
+
+  it("photo curation: a single-unique-photo salon gets NO caption grounding and a valid gallery", async () => {
+    // Review-fleet repro: a 1-item curated gallery (2 photos, one a vision-
+    // flagged duplicate) must not make the grounding demand "Geef exact 1
+    // gallery-items" — an obedient model would fail the schema's gallery.min(2)
+    // and the whole generation would hard-fail instead of degrading.
+    const client = fakeClient([stubMockup(BRIEF), CLEAN_ABOUT]);
+    const visionClient = fakeClient([
+      {
+        photos: [
+          { n: 1, kind: "interior", heroScore: 1 },
+          { n: 2, kind: "interior", heroScore: 1, duplicateOf: 1 },
+        ],
+      },
+    ]);
+    const run = await runMockupPipeline({ brief: BRIEF, facts: FACTS, client, visionClient });
+
+    expect(client.prompts[0]!.user).not.toContain("Geef exact");
+    expect(client.prompts[0]!.user).not.toContain("PRECIES");
+    // Hero/portrait still curated (the unique photo); gallery falls back to
+    // listing order, which honours the schema min.
+    expect(run.config.hero.images).toEqual([FACTS.photos![0]]);
+    expect(run.config.gallery.map((g) => g.url)).toEqual(FACTS.photos);
+    expect(run.gates.photoCuration).toMatchObject({ status: "applied", droppedDuplicates: 1 });
+  });
+
+  it("photo curation: a failing vision call degrades to listing order — reported, never gating", async () => {
+    const client = fakeClient([stubMockup(BRIEF), CLEAN_ABOUT]);
+    const visionClient: LLMClient = {
+      provider: "fake",
+      model: "fake-vision",
+      async complete() {
+        throw new Error("vision 503");
+      },
+    };
+    const run = await runMockupPipeline({ brief: BRIEF, facts: FACTS, client, visionClient });
+
+    expect(run.gates.photoCuration.status).toBe("failed");
+    expect(run.gates.photoCuration.reason).toContain("503");
+    expect(run.gates.verdict).toBe("ok");
+    // Old behaviour stands: photos slot in listing order.
+    expect(run.config.hero.images[0]).toBe(FACTS.photos![0]);
+    expect(run.usage).toEqual({ inputTokens: 200, outputTokens: 400 });
+  });
+
+  it("photo curation: dry run skips it (no LLM) and says so", async () => {
+    const run = await runMockupPipeline({ brief: BRIEF, facts: FACTS, dryRun: true });
+    expect(run.gates.photoCuration).toEqual({ status: "skipped", reason: "dry run (geen LLM)" });
+  });
+
+  it("photo curation: no listing photos → skipped with the reason", async () => {
+    const client = fakeClient([stubMockup(BRIEF)]);
+    const run = await runMockupPipeline({ brief: BRIEF, client });
+    expect(run.gates.photoCuration).toEqual({ status: "skipped", reason: "geen listingfoto's" });
+  });
+
   it("a generation failure carries the precomputed scrape-fidelity report on the error", async () => {
     const throwing: LLMClient = {
       provider: "fake",
@@ -219,6 +330,7 @@ describe("decideLeadDisposition", () => {
   it("needs_review verdict → parked with joined reasons", () => {
     const d = decideLeadDisposition({
       aboutFidelity: null,
+      photoCuration: { status: "skipped" },
       verdict: "needs_review",
       reasons: ["a", "b"],
     });
@@ -226,7 +338,12 @@ describe("decideLeadDisposition", () => {
   });
 
   it("ok verdict → mockup_generated and the stale review_reason cleared", () => {
-    const d = decideLeadDisposition({ aboutFidelity: null, verdict: "ok", reasons: [] });
+    const d = decideLeadDisposition({
+      aboutFidelity: null,
+      photoCuration: { status: "skipped" },
+      verdict: "ok",
+      reasons: [],
+    });
     expect(d).toEqual({ status: "mockup_generated", reviewReason: null });
   });
 });

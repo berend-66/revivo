@@ -104,6 +104,7 @@ export interface GenerateJobOpts {
    * so the next real run replaces it (same slug — see the pinning below). */
   dryRun?: boolean;
   client?: LLMClient;
+  visionClient?: LLMClient;
 }
 
 export type GenerateJobOutcome =
@@ -168,6 +169,7 @@ export async function runGenerateMockupJob(
       listingUrl: lead.listing_url,
       dryRun: opts.dryRun,
       client: opts.client,
+      visionClient: opts.visionClient,
     });
   } catch (err) {
     // A scrape-fidelity MISMATCH diagnosis rides on generation errors (see

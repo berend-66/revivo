@@ -13,6 +13,12 @@ import {
 import { createLLMClient, type LLMClient } from "./client";
 import { generateMockup, applyListingFacts } from "./mockup-generator";
 import { checkAboutFidelity, type AboutFidelityReport } from "./check-about";
+import {
+  classifyListingPhotos,
+  curatePhotoSlots,
+  type PhotoCuration,
+  type PhotoKind,
+} from "./curate-photos";
 import { stubMockup } from "./dry-run";
 
 /**
@@ -84,6 +90,19 @@ export async function resolveListingBrief(input: ListingBriefInput): Promise<Res
   return { brief: listingFactsToBrief(facts, overrides), facts, raw };
 }
 
+/** Outcome of the photo-curation step. NEVER gates the verdict — a failed
+ * classification degrades to listing-order photos (degraded coverage, not
+ * disagreement), exactly like an errored about-check. */
+export interface PhotoCurationGate {
+  status: "applied" | "skipped" | "failed";
+  /** Why it didn't run / failed (dry run, no listing photos, model error). */
+  reason?: string;
+  model?: string;
+  /** Post-dedupe kind counts — the operator-facing one-line summary. */
+  counts?: Partial<Record<PhotoKind, number>>;
+  droppedDuplicates?: number;
+}
+
 export interface MockupGates {
   /** Deterministic state↔JSON-LD scalar cross-check (sourcing's `crossCheckListing`).
    * Undefined when there is no raw listing to check (manual/places modes). */
@@ -93,6 +112,8 @@ export interface MockupGates {
   aboutFidelity: AboutFidelityReport | null;
   /** Why `aboutFidelity` is null (dry-run, no real description, or the check errored). */
   aboutFidelitySkipped?: string;
+  /** Vision photo classification + deterministic slotting (report only). */
+  photoCuration: PhotoCurationGate;
   verdict: "ok" | "needs_review";
   /** Human-readable, operator-facing reasons behind a "needs_review" verdict. */
   reasons: string[];
@@ -134,6 +155,9 @@ export interface RunMockupInput {
   /** Injected for tests; defaults to the env-configured client (also reused for
    * the about-fidelity check, so a test double covers the whole run). */
   client?: LLMClient;
+  /** Injected for tests; defaults to the env-configured VISION_LLM_MODEL client
+   * (a separate, cheaper multimodal model — see curate-photos.ts). */
+  visionClient?: LLMClient;
 }
 
 export interface MockupRun {
@@ -160,6 +184,40 @@ export async function runMockupPipeline(input: RunMockupInput): Promise<MockupRu
   let attempts = 0;
   let usage: MockupRun["usage"];
 
+  // Photo curation BEFORE generation: the labels feed the caption grounding in
+  // the generate prompt AND the deterministic slotting afterwards. Soft by
+  // construction — any failure leaves `curation` undefined and the photos in
+  // listing order (measured why that's not good enough: 3% work shots, avg 2.2
+  // of 4 hero slots usable; see curate-photos.ts).
+  let curation: PhotoCuration | undefined;
+  let photoCuration: PhotoCurationGate;
+  if (dryRun) {
+    photoCuration = { status: "skipped", reason: "dry run (geen LLM)" };
+  } else if (!facts?.photos?.length) {
+    photoCuration = { status: "skipped", reason: "geen listingfoto's" };
+  } else {
+    try {
+      const cls = await classifyListingPhotos({ photos: facts.photos, client: input.visionClient });
+      const slots = curatePhotoSlots(facts.photos, cls.labels);
+      curation = { labels: cls.labels, slots, model: cls.model, usage: cls.usage };
+      photoCuration = {
+        status: "applied",
+        model: cls.model,
+        counts: slots.counts,
+        droppedDuplicates: slots.droppedDuplicates,
+      };
+      // The vision call is real spend — count it, or the estimate lies.
+      if (cls.usage) {
+        usage = {
+          inputTokens: (usage?.inputTokens ?? 0) + cls.usage.inputTokens,
+          outputTokens: (usage?.outputTokens ?? 0) + cls.usage.outputTokens,
+        };
+      }
+    } catch (err) {
+      photoCuration = { status: "failed", reason: (err as Error).message };
+    }
+  }
+
   if (dryRun) {
     config = stubMockup(brief);
     // Apply the real facts even to the stub, so a dry run with a listing is a
@@ -169,7 +227,7 @@ export async function runMockupPipeline(input: RunMockupInput): Promise<MockupRu
     const client = input.client ?? createLLMClient();
     let result;
     try {
-      result = await generateMockup(brief, client, facts);
+      result = await generateMockup(brief, client, facts, curation);
     } catch (err) {
       // The deterministic cross-check already ran; a MISMATCH diagnosis must not
       // vanish just because generation then failed — ride it on the error so the
@@ -182,7 +240,13 @@ export async function runMockupPipeline(input: RunMockupInput): Promise<MockupRu
     config = result.config;
     model = client.model;
     attempts = result.attempts;
-    usage = result.usage;
+    // Sum onto the vision spend already accumulated above, don't overwrite it.
+    if (result.usage) {
+      usage = {
+        inputTokens: (usage?.inputTokens ?? 0) + result.usage.inputTokens,
+        outputTokens: (usage?.outputTokens ?? 0) + result.usage.outputTokens,
+      };
+    }
   }
 
   // About-fidelity guard. Facts are deterministic, but the LLM-authored prose can
@@ -213,6 +277,7 @@ export async function runMockupPipeline(input: RunMockupInput): Promise<MockupRu
     scrapeFidelity,
     aboutFidelity,
     aboutFidelitySkipped,
+    photoCuration,
     ...aggregateGates(scrapeFidelity, aboutFidelity),
   };
 
@@ -222,6 +287,7 @@ export async function runMockupPipeline(input: RunMockupInput): Promise<MockupRu
 export interface ListingMockupInput extends ListingBriefInput {
   dryRun?: boolean;
   client?: LLMClient;
+  visionClient?: LLMClient;
 }
 
 export interface ListingMockupResult extends MockupRun {
@@ -240,6 +306,7 @@ export async function generateMockupForListing(input: ListingMockupInput): Promi
     raw: resolved.raw,
     dryRun: input.dryRun,
     client: input.client,
+    visionClient: input.visionClient,
   });
   return { ...run, ...resolved };
 }
