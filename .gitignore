@@ -44,4 +44,3 @@ coverage/
 apps/customer-template/examples/generated/
 
 # Throwaway post-push verification script (delete after the B1 live test)
-packages/db/b1-live-test.ts
