@@ -160,7 +160,12 @@ function factsToGrounding(facts: ListingFacts): string {
   if (facts.address) {
     const coords =
       facts.lat !== undefined && facts.lng !== undefined ? ` (coördinaten ${facts.lat}, ${facts.lng})` : "";
-    L.push(`Locatie: ${facts.address}${facts.city ? `, ${facts.city}` : ""}${coords}`);
+    // The ligging pin lives HERE, next to the data, not only in the system
+    // prompt's rule list: the first hardened batch still produced "in het hart
+    // van Utrecht" in 6/14 generations on the system rule alone.
+    L.push(
+      `Locatie: ${facts.address}${facts.city ? `, ${facts.city}` : ""}${coords} — beschrijf de ligging NIET verder dan dit adres + stad (geen "hartje"/"centrum"/"loopafstand"/wijk; de salon zit mogelijk buiten het centrum).`,
+    );
   }
   if (facts.description) {
     L.push(
