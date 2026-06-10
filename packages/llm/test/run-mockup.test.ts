@@ -211,6 +211,9 @@ describe("runMockupPipeline", () => {
     expect(generateUser).toContain("PRECIES deze 2 echte salonfoto's");
     expect(generateUser).toContain("1. interieur — stoelen en spiegels");
     expect(generateUser).toContain("2. producten — flessen op plank");
+    // Live catch: the model captioned a staff portrait with a REAL team
+    // member's name ("Paolo, ...") — but who is in a photo is unverifiable.
+    expect(generateUser).toContain("GEEN namen van personen");
   });
 
   it("photo curation: a single-unique-photo salon gets NO caption grounding and a valid gallery", async () => {

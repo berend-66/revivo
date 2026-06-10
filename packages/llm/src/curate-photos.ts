@@ -118,41 +118,78 @@ export interface PhotoClassification {
 }
 
 /** One multimodal call: every listing photo → {kind, heroScore, duplicateOf, note}.
- * Throws on an incomplete/garbled labelling — the caller degrades to listing
- * order (a PARTIAL labelling would silently drop the unlabelled photos). */
+ * An invalid labelling gets ONE retry with the validation error fed back (the
+ * generateMockup pattern — live-measured: qwen labelled 8/10 photos on its
+ * first pass for a real salon). Still invalid → throws; the caller degrades to
+ * listing order (a PARTIAL labelling would silently drop the unlabelled photos). */
 export async function classifyListingPhotos(input: ClassifyPhotosInput): Promise<PhotoClassification> {
   const { photos } = input;
   if (!photos.length) throw new Error("classifyListingPhotos: geen foto's om te classificeren");
   const client = input.client ?? createVisionClient();
 
-  const res = await client.complete({
-    system: CLASSIFY_SYSTEM,
-    user: `Dit zijn de ${photos.length} foto's van de salon, foto 1 t/m ${photos.length} in deze volgorde. Geef het JSON-object.`,
-    json: true,
-    maxTokens: 3000,
-    temperature: 0,
-    // "low" is deliberate: scene classification needs no fine detail, and it
-    // caps the per-photo token cost (<€0.01 per salon all-in).
-    images: photos.map((url) => ({ url, detail: "low" as const })),
-  });
+  const baseUser = `Dit zijn de ${photos.length} foto's van de salon, foto 1 t/m ${photos.length} in deze volgorde. Geef het JSON-object.`;
+  let lastError = "";
+  // Accumulated across both attempts — a retry is real spend too.
+  let totalIn = 0;
+  let totalOut = 0;
+  let sawUsage = false;
 
-  const parsed = ModelSchema.parse(extractJsonObject(res.text));
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const res = await client.complete({
+      system: CLASSIFY_SYSTEM,
+      user:
+        attempt === 1
+          ? baseUser
+          : `${baseUser}\n\nJe vorige antwoord was ongeldig: ${lastError}. Lever opnieuw: het JSON-object met PRECIES één entry per foto, n = 1 t/m ${photos.length}.`,
+      json: true,
+      maxTokens: 3000,
+      temperature: 0,
+      // "low" is deliberate: scene classification needs no fine detail, and it
+      // caps the per-photo token cost (<€0.01 per salon all-in).
+      images: photos.map((url) => ({ url, detail: "low" as const })),
+    });
+    if (res.usage) {
+      sawUsage = true;
+      totalIn += res.usage.inputTokens;
+      totalOut += res.usage.outputTokens;
+    }
+
+    try {
+      return {
+        labels: parseLabels(res.text, photos.length),
+        model: client.model,
+        usage: sawUsage ? { inputTokens: totalIn, outputTokens: totalOut } : undefined,
+      };
+    } catch (err) {
+      lastError = (err as Error).message;
+    }
+  }
+
+  throw new Error(`foto-classificatie mislukt na 2 pogingen: ${lastError}`);
+}
+
+/** Parse + validate one labelling attempt. Throws a Dutch, feedback-ready
+ * message on any coverage violation. */
+function parseLabels(text: string, count: number): PhotoLabel[] {
+  const parsed = ModelSchema.parse(extractJsonObject(text));
 
   // All-or-nothing coverage: every photo labelled exactly once (1-based in the
-  // prompt — models miscount 0-based numbering), or reject the whole call.
+  // prompt — models miscount 0-based numbering), or reject the whole attempt.
   const byIndex = new Map<number, (typeof parsed.photos)[number]>();
   for (const p of parsed.photos) {
     const index = p.n - 1;
-    if (index < 0 || index >= photos.length || byIndex.has(index)) {
-      throw new Error(`foto-classificatie ongeldig (n=${p.n} bij ${photos.length} foto's)`);
+    if (index < 0 || index >= count || byIndex.has(index)) {
+      throw new Error(`foto-classificatie ongeldig (n=${p.n} bij ${count} foto's)`);
     }
     byIndex.set(index, p);
   }
-  if (byIndex.size !== photos.length) {
-    throw new Error(`foto-classificatie dekt ${byIndex.size}/${photos.length} foto's`);
+  if (byIndex.size !== count) {
+    const missing: number[] = [];
+    for (let i = 0; i < count; i++) if (!byIndex.has(i)) missing.push(i + 1);
+    throw new Error(`foto-classificatie dekt ${byIndex.size}/${count} foto's (mist n=${missing.join(", ")})`);
   }
 
-  const labels: PhotoLabel[] = [...byIndex.entries()]
+  return [...byIndex.entries()]
     .sort((a, b) => a[0] - b[0])
     .map(([index, p]) => {
       const heroScore = Math.max(0, Math.min(2, Math.round(p.heroScore))) as 0 | 1 | 2;
@@ -165,8 +202,6 @@ export async function classifyListingPhotos(input: ClassifyPhotosInput): Promise
       if (note) label.note = note.slice(0, 80);
       return label;
     });
-
-  return { labels, model: client.model, usage: res.usage };
 }
 
 // ── slotting (pure code — the rules, not the model) ─────────────────────────

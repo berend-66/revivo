@@ -184,7 +184,7 @@ function factsToGrounding(facts: ListingFacts, curation?: PhotoCuration): string
       .map((g, i) => `${i + 1}. ${PHOTO_KIND_NL[g.kind]}${g.note ? ` — ${g.note}` : ""}`)
       .join("\n");
     L.push(
-      `Foto's: de galerij toont straks PRECIES deze ${curation.slots.gallery.length} echte salonfoto's, in deze volgorde:\n${slots}\nGeef exact ${curation.slots.gallery.length} gallery-items en schrijf elke caption passend bij de foto-inhoud hierboven (dus geen "ons werk"-caption bij een interieur- of productfoto). Verzin geen details die niet in de omschrijving staan.`,
+      `Foto's: de galerij toont straks PRECIES deze ${curation.slots.gallery.length} echte salonfoto's, in deze volgorde:\n${slots}\nGeef exact ${curation.slots.gallery.length} gallery-items en schrijf elke caption passend bij de foto-inhoud hierboven (dus geen "ons werk"-caption bij een interieur- of productfoto). Noem in captions GEEN namen van personen — wie er op een foto staat is niet vast te stellen, en een verkeerde naam valt de eigenaar direct op. Verzin geen details die niet in de omschrijving staan.`,
     );
   }
   if (facts.description) {

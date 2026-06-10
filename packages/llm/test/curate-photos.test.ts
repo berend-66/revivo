@@ -161,15 +161,22 @@ describe("curatePhotoSlots", () => {
 
 // ── classifyListingPhotos (strict parse of the vision labelling) ────────────
 
-function visionFake(response: string | object): LLMClient & { prompts: CompleteOptions[] } {
+/** Single response = repeated on every call (covers the retry re-asking);
+ * array = consumed as a queue (first attempt, then the retry). */
+function visionFake(response: string | object | Array<string | object>): LLMClient & {
+  prompts: CompleteOptions[];
+} {
+  const queue = Array.isArray(response) ? [...response] : null;
   const client = {
     provider: "fake",
     model: "fake-vision",
     prompts: [] as CompleteOptions[],
     async complete(opts: CompleteOptions): Promise<CompleteResult> {
       client.prompts.push(opts);
+      const next = queue ? queue.shift() : response;
+      if (next === undefined) throw new Error("visionFake: queue exhausted");
       return {
-        text: typeof response === "string" ? response : JSON.stringify(response),
+        text: typeof next === "string" ? next : JSON.stringify(next),
         usage: { inputTokens: 50, outputTokens: 60 },
       };
     },
@@ -211,9 +218,21 @@ describe("classifyListingPhotos", () => {
     expect(r.labels).toHaveLength(3);
   });
 
-  it("incomplete coverage throws — a partial labelling would silently drop photos", async () => {
+  it("incomplete coverage on both attempts throws — a partial labelling would silently drop photos", async () => {
     const client = visionFake({ photos: [{ n: 1, kind: "work", heroScore: 1 }] });
-    await expect(classifyListingPhotos({ photos: photos3, client })).rejects.toThrow(/dekt 1\/3/);
+    await expect(classifyListingPhotos({ photos: photos3, client })).rejects.toThrow(/dekt 1\/3.*mist n=2, 3/);
+    // The invalid labelling got exactly one retry.
+    expect(client.prompts).toHaveLength(2);
+    expect(client.prompts[1]!.user).toContain("Je vorige antwoord was ongeldig");
+  });
+
+  it("an invalid first labelling recovers on the fed-back retry; spend covers both attempts", async () => {
+    // Live-measured failure mode: qwen labelled 8/10 photos on its first pass.
+    const client = visionFake([{ photos: [{ n: 1, kind: "work", heroScore: 1 }] }, VALID]);
+    const r = await classifyListingPhotos({ photos: photos3, client });
+    expect(r.labels).toHaveLength(3);
+    expect(r.usage).toEqual({ inputTokens: 100, outputTokens: 120 });
+    expect(client.prompts[1]!.user).toContain("mist n=2, 3");
   });
 
   it("duplicate or out-of-range numbering throws", async () => {
