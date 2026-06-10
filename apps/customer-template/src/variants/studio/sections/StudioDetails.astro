@@ -59,11 +59,13 @@ const mapSrc = `https://maps.google.com/maps?q=${mapQuery}&t=&z=15&ie=UTF8&iwloc
 
         <div>
           <div class="border rule-strong border-1">
+            {/* Photos carry studio's grayscale DNA (with hover reveal); the map
+                is a UTILITY — fully gray it reads as a broken embed. */}
             <iframe
               src={mapSrc}
               width="100%"
               height="420"
-              style="border:0; filter: grayscale(1) contrast(1.05);"
+              style="border:0;"
               loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
               title="Map"
