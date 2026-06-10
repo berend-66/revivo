@@ -191,7 +191,7 @@ function factsToGrounding(facts: ListingFacts, curation?: PhotoCuration): string
     L.push(
       `Over de salon (ECHTE omschrijving, door de salon zélf geschreven — dit is je ENIGE bron voor de about-copy): "${facts.description
         .slice(0, 700)
-        .trim()}". Herschrijf dit in je eigen woorden en toon, maar voeg GEEN concrete details toe die hier niet in staan — geen verzonnen muziekgenre, drankjes, geuren, inrichting, jaartallen of sfeerclaims. Elke feitelijke bewering in de about moet terug te voeren zijn op deze omschrijving of de bovenstaande gegevens.`,
+        .trim()}". Herschrijf dit in je eigen woorden en toon, maar voeg GEEN concrete details toe die hier niet in staan — geen verzonnen muziekgenre, drankjes, geuren, inrichting, jaartallen of sfeerclaims. Elke feitelijke bewering in de about moet terug te voeren zijn op deze omschrijving of de bovenstaande gegevens. Schrijf ALLE site-teksten (ook tagline en headlines) in de taal van de briefing — óók wanneer deze omschrijving in een andere taal is geschreven.`,
     );
   }
 

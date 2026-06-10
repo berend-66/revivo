@@ -57,6 +57,9 @@ export interface PhotoSlots {
   gallery: { url: string; kind: PhotoKind; note?: string }[];
   portrait?: string;
   droppedDuplicates: number;
+  /** Set when the model flagged an implausible share of the library as
+   * duplicates and ALL its flags were ignored (see the distrust cap). */
+  ignoredDuplicateFlags?: number;
   /** Post-dedupe kind counts — the operator-facing one-line summary. */
   counts: Partial<Record<PhotoKind, number>>;
 }
@@ -85,7 +88,7 @@ kind (precies één):
 heroScore — hoe goed staat deze foto groot bovenaan een website:
 2 = opvallend mooi (scherp, mooi licht, verkoopt de salon) · 1 = prima · 0 = ongeschikt (rommelig, donker, saai, lege ruimte, alleen flessen).
 
-duplicateOf: ALLEEN als de foto (vrijwel) identiek is aan een EERDERE foto — het nummer van die eerdere foto. Anders weglaten.
+duplicateOf: ALLEEN als de foto vrijwel pixel-identiek is aan een EERDERE foto (zelfde opname opnieuw geüpload, of minimaal bijgesneden) — het nummer van die eerdere foto. Dezelfde ruimte of hetzelfde onderwerp vanuit een andere hoek is GEEN duplicaat. Anders weglaten.
 
 note: 2–6 Nederlandse woorden over wat er te zien is (bijv. "balayage close-up", "wachtruimte met planten").
 
@@ -234,10 +237,20 @@ export function curatePhotoSlots(photos: string[], labels: PhotoLabel[]): PhotoS
     throw new Error(`curatePhotoSlots: ${labels.length} labels voor ${photos.length} foto's`);
   }
 
-  const keep = [...labels]
-    .sort((a, b) => a.index - b.index)
-    .filter((l) => l.duplicateOf === undefined);
-  const droppedDuplicates = labels.length - keep.length;
+  const sorted = [...labels].sort((a, b) => a.index - b.index);
+
+  // Distrust cap on duplicate flags. Measured ground truth: real re-uploads
+  // are 1-2 per salon — but qwen once flagged 11/15 DISTINCT shots of the
+  // same (visually uniform) salon as duplicates, starving the gallery. The
+  // failure asymmetry decides the rule: dropping a real photo loses content,
+  // keeping a true duplicate merely repeats an image — so when more than a
+  // third of the library is flagged, that's model confusion and ALL flags
+  // are ignored (pure code; reported, like everything else here).
+  const flagged = sorted.filter((l) => l.duplicateOf !== undefined).length;
+  const distrustFlags = flagged > Math.ceil(sorted.length / 3);
+
+  const keep = distrustFlags ? sorted : sorted.filter((l) => l.duplicateOf === undefined);
+  const droppedDuplicates = sorted.length - keep.length;
 
   const ranked = [...keep].sort((a, b) => b.heroScore - a.heroScore || a.index - b.index);
   const of = (...kinds: PhotoKind[]) => ranked.filter((l) => kinds.includes(l.kind));
@@ -281,6 +294,7 @@ export function curatePhotoSlots(photos: string[], labels: PhotoLabel[]): PhotoS
     })),
     ...(portraitLabel ? { portrait: photos[portraitLabel.index]! } : {}),
     droppedDuplicates,
+    ...(distrustFlags ? { ignoredDuplicateFlags: flagged } : {}),
     counts,
   };
 }

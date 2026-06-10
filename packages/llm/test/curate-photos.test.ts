@@ -83,6 +83,42 @@ describe("curatePhotoSlots", () => {
     expect(curatePhotoSlots(photos, labels).hero).toEqual([photos[1], photos[2], photos[0]]);
   });
 
+  it("mass duplicate-flagging is distrusted: all flags ignored, everything kept", () => {
+    // Live-measured: qwen flagged 11/15 DISTINCT shots of one visually
+    // uniform salon as duplicates. Losing real photos is worse than a
+    // repeated image, so > ceil(n/3) flags = model confusion.
+    const photos = urls(6);
+    const labels = [
+      L(0, "interior", 2),
+      L(1, "interior", 1, { duplicateOf: 0 }),
+      L(2, "interior", 1, { duplicateOf: 0 }),
+      L(3, "interior", 1, { duplicateOf: 0 }),
+      L(4, "work", 1),
+      L(5, "interior", 0),
+    ];
+    const slots = curatePhotoSlots(photos, labels);
+    expect(slots.droppedDuplicates).toBe(0);
+    expect(slots.ignoredDuplicateFlags).toBe(3);
+    expect(slots.gallery).toHaveLength(6);
+    expect(slots.counts.interior).toBe(5);
+  });
+
+  it("duplicate flags at or under the cap are honoured", () => {
+    // ceil(6/3) = 2 flags is plausible — drop them as usual.
+    const photos = urls(6);
+    const labels = [
+      L(0, "interior", 2),
+      L(1, "interior", 1, { duplicateOf: 0 }),
+      L(2, "interior", 1, { duplicateOf: 0 }),
+      L(3, "interior", 1),
+      L(4, "work", 1),
+      L(5, "interior", 0),
+    ];
+    const slots = curatePhotoSlots(photos, labels);
+    expect(slots.droppedDuplicates).toBe(2);
+    expect(slots.ignoredDuplicateFlags).toBeUndefined();
+  });
+
   it("vision-flagged duplicates are dropped everywhere and counted", () => {
     const photos = urls(4);
     const labels = [

@@ -101,6 +101,8 @@ export interface PhotoCurationGate {
   /** Post-dedupe kind counts — the operator-facing one-line summary. */
   counts?: Partial<Record<PhotoKind, number>>;
   droppedDuplicates?: number;
+  /** Set when the model's duplicate flags were collectively distrusted. */
+  ignoredDuplicateFlags?: number;
 }
 
 export interface MockupGates {
@@ -205,6 +207,7 @@ export async function runMockupPipeline(input: RunMockupInput): Promise<MockupRu
         model: cls.model,
         counts: slots.counts,
         droppedDuplicates: slots.droppedDuplicates,
+        ...(slots.ignoredDuplicateFlags ? { ignoredDuplicateFlags: slots.ignoredDuplicateFlags } : {}),
       };
       // The vision call is real spend — count it, or the estimate lies.
       if (cls.usage) {

@@ -251,7 +251,10 @@ async function main() {
       .map(([kind, n]) => `${kind} ${n}`)
       .join(", ");
     const dupes = pc.droppedDuplicates ? ` · ${pc.droppedDuplicates} duplicaat/duplicaten weggelaten` : "";
-    console.log(`   foto-curatie: ✓ [${pc.model}] ${mix}${dupes}`);
+    const ignored = pc.ignoredDuplicateFlags
+      ? ` · ${pc.ignoredDuplicateFlags} duplicaat-flags genegeerd (verdacht veel — alles behouden)`
+      : "";
+    console.log(`   foto-curatie: ✓ [${pc.model}] ${mix}${dupes}${ignored}`);
   } else if (pc.status === "failed") {
     console.warn(`   foto-curatie mislukt — foto's in listingvolgorde: ${pc.reason}`);
   }
