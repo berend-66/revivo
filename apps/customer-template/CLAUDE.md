@@ -97,5 +97,14 @@ The config path is resolved relative to `apps/customer-template/`.
 - **Don't share CSS across variants.** See above.
 - **Don't add features that only one variant uses to `SiteConfig`.** If "Atelier needs a quote section but Studio/Neon don't" — make all three handle a `testimonials` field (the existing pattern), or don't add the section. No variant-specific schema fields.
 - **Don't fetch from the network in `Layout.astro` or sections.** Astro frontmatter runs at build time; the LLM stage already did the data work. Sections read from `props.config` only.
+- **`location.postcode` is optional — render-if-present.** Treatwell listings carry no
+  postcode and a required field forced the generator's model to invent one (verifiably
+  wrong on 7 of the first 13 batch mockups). Address blocks render fine without it; the
+  Google-Maps queries build from `[postcode, city].filter(Boolean)` so "undefined" can
+  never reach the embed. Don't make it required again.
+- **`ServiceItem.from` renders as "vanaf €X" in all three variants.** Treatwell menus are
+  full of from-prices/ranges; showing the range-low as a flat price misstates the salon's
+  own menu. Each variant's `formatPrice` also renders NL decimals correctly (integers
+  bare €45; cents always two digits €67,50 — never €67,5 or €67.5).
 - **All three variants must handle `team` + `testimonials` (render-if-present).** Both are optional and arrive from real listing facts; each variant has its own `Team.astro` + `Testimonials.astro` in its DNA, gated in its `Layout.astro` with `{config.X && config.X.length > 0 && …}`. Absence renders nothing. When you add a render-if-present section, add it to **all three** — a section that exists in only one variant is the bug this round fixed (reviews used to render only in atelier).
 - **Studio's `NN / TT` section numbers are computed, not hardcoded.** Optional sections (Team, Testimonials) shift every later number *and* the total, so each numbered studio section imports `sections/_rail.ts` (`studioRail(config)`) for its number + `total`. If you add/remove/reorder a numbered studio section, update `_rail.ts` — do NOT reintroduce hardcoded `NN / 07` strings or per-section `config.team ? …` ternaries.

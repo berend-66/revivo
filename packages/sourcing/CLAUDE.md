@@ -76,6 +76,12 @@ fixtures.ts        → FIXTURE_PLACE / FIXTURE_INSTAGRAM (offline + --dry-run + 
   crawl warns that coverage is incomplete. This module imports NO `@revivo/llm` and NO
   `@revivo/db` — it's a pure library; the thin `scripts/crawl-marketplace.ts` (repo root, covered
   by the root `tsconfig.json` typecheck) does the `insertLeadIfNew` writes.
+- **Prices: the FULL menu price, never `minSalePriceAmount`.** Treatwell's state carries
+  both; the sale amount is Treatwell's own temporary promo (off-peak slots, % campaigns —
+  `yieldDiscountType: "offpeak"`), not the salon's menu. The live batch audit caught a
+  salon with every off-peak service at 0.9× the real price. Ranged or "… vanaf"-named
+  items get `from: true` on the `ServiceItem` so variants render "vanaf €X" — stripping
+  the qualifier turns a from-price into an apparent flat price.
 - **Treatwell is the source of truth for menu/prices/team/hours/reviews; Google stays for
   coords/postcode/extra photos.** `ListingFacts` is the real-data contract (lives in
   `@revivo/shared`); `@revivo/llm`'s `applyListingFacts` writes it into the config deterministically.

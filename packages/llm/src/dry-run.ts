@@ -66,7 +66,8 @@ export function stubMockup(brief: SalonBrief): SiteConfig {
     ],
     location: {
       address: brief.address ?? "Voorbeeldstraat 1",
-      postcode: brief.postcode ?? "1000 AA",
+      // Like the real generator: a postcode is verifiable — only from the brief.
+      ...(brief.postcode ? { postcode: brief.postcode } : {}),
       city: brief.city,
       country: "Nederland",
     },

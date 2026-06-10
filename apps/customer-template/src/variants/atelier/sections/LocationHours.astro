@@ -5,8 +5,9 @@ interface Props {
 }
 const { config } = Astro.props;
 
+// postcode is optional (render-if-present) — never let "undefined" reach the maps query.
 const mapQuery = encodeURIComponent(
-  `${config.location.address}, ${config.location.postcode} ${config.location.city}`,
+  `${config.location.address}, ${[config.location.postcode, config.location.city].filter(Boolean).join(" ")}`,
 );
 /* Embed with no API key — works for static pin display. */
 const mapSrc = `https://maps.google.com/maps?q=${mapQuery}&t=&z=15&ie=UTF8&iwloc=&output=embed`;

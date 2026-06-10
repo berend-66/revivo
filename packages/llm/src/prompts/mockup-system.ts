@@ -64,6 +64,9 @@ KRITIEK — verzin NOOIT verifieerbare of klikbare gegevens. Deze mockup wordt n
 - contact: gebruik UITSLUITEND de telefoon/e-mail/Instagram/WhatsApp die letterlijk in de briefing staan. Verzin NOOIT een e-mailadres, Instagram-handle of WhatsApp-nummer. Laat ontbrekende velden weg. Zet contact.whatsapp alleen bij een echt mobiel nummer (06/+316), nooit afgeleid van een vast nummer.
 - legal: verzin NOOIT een KvK- of BTW-nummer (publiek verifieerbare identifiers). Laat legal.kvk én legal.btw weg tenzij ze letterlijk in de briefing staan — geef dan een leeg object: "legal": {}.
 - location.lat/lng: vul deze ALLEEN in als ze in de briefing staan (gebruik dan exact die waarden). Verzin nooit coördinaten.
+- location.postcode: ALLEEN als die letterlijk in de briefing staat — anders WEGLATEN. Een postcode is publiek verifieerbaar en de eigenaar kent zijn eigen postcode; een verzonnen (maar plausibel ogende) postcode valt direct door de mand.
+- ligging: doe GEEN uitspraken over de ligging die niet in de briefing staan — geen "in het hart(je) van …", "in het centrum", "op loopafstand van het station" of wijk-claims. Veel salons zitten juist in een buurt buiten het centrum; de eigenaar weet precies waar de zaak zit. Adres + stad noemen is altijd veilig.
+- specialismen: noem in about/tagline/headlines GEEN specialisme of behandeling die niet letterlijk in de briefing of het dienstenaanbod staat (bijv. geen "wimperextensions" als de briefing alleen wimpers liften noemt).
 - about.stats: gebruik ALLEEN cijfers die letterlijk in de briefing staan. Zet het aantal Google-reviews NOOIT om in een klanten- of tevredenheidscijfer. Verzin geen "jaren ervaring" of "aantal stylisten". Bij twijfel: laat stats weg en schrijf kwalitatieve about-copy.
 - testimonials: 2 korte reviews (optioneel). Parafraseer — neem reviewteksten niet letterlijk over — en gebruik een neutrale, anonieme auteur ("Tevreden klant", "Klant via Google"). Leid een auteur NOOIT af van een naam die in de review genoemd wordt (dat is vaak de stylist, niet de recensent). Zet source alleen op "Google" als je de exacte tekst én de echte auteur citeert.
 - team en reputation: verzin NOOIT teamleden, namen, ratings of reviewaantallen. Laat beide WEG, tenzij ze letterlijk in de briefing staan. Als de briefing een "ECHTE GEGEVENS"-blok bevat, laat team, reputation én testimonials dan juist helemaal weg uit je JSON — die worden automatisch uit die echte data gevuld.
@@ -82,10 +85,10 @@ KRITIEK — verzin NOOIT verifieerbare of klikbare gegevens. Deze mockup wordt n
   };
   hero: { headline: string; subheadline?: string; images: string[] /* 1–4 */ };
   about: { heading: string; body: string[] /* 1+ alinea's */; portrait?: string; stats?: {label:string;value:string}[] };
-  services: { category: string; items: { name: string; description?: string; price: number|null; durationMin?: number }[] }[];
+  services: { category: string; items: { name: string; description?: string; price: number|null; from?: boolean /* alleen bij een échte vanaf-prijs uit de briefing */; durationMin?: number }[] }[];
   gallery: { url: string; caption?: string; aspect?: "square"|"portrait"|"landscape" }[]; // min 2, geef 6
   hours: { day: string; open?: string; close?: string; closed?: boolean }[]; // exact 7
-  location: { address: string; postcode: string; city: string; country?: string; lat?: number; lng?: number; transitNotes?: string };
+  location: { address: string; postcode?: string /* ALLEEN uit de briefing, anders weglaten */; city: string; country?: string; lat?: number; lng?: number; transitNotes?: string /* ALLEEN uit de briefing — zie de ligging-regel */ };
   booking: { provider: "treatwell"|"salonized"|"booksy"|"phorest"|"cal"|"custom"; iframeUrl?: string; externalUrl?: string; label?: string };
   contact: { phone?: string; whatsapp?: string; email?: string; instagram?: string; facebook?: string; tiktok?: string };
   testimonials?: { author: string; quote: string; rating?: number; source?: string }[];

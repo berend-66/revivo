@@ -88,6 +88,25 @@ describe("treatwellListingToFacts — Utrecht Hairstyle golden fixture", () => {
     }
   });
 
+  it("uses the FULL menu price, never Treatwell's promo sale price, and flags from-prices", () => {
+    const byName = new Map((facts.services ?? []).flatMap((c) => c.items).map((i) => [i.name, i]));
+    // "Kleuren - Eén kleur" carries a 25% off-peak promo in the fixture (sale
+    // €33,75 for the Kort haar option, full €45). The salon's menu price is
+    // €45 — the discount is Treatwell's temporary slot promo, and quoting it
+    // as the standard price misstates the salon's own pricing the moment the
+    // promo ends (the B-batch audit found this live: a salon with every
+    // off-peak service shown at 0.9× the price).
+    expect(byName.get("Kleuren - Eén kleur")).toMatchObject({ price: 45, from: true });
+    // Both from-flag triggers, pinned independently of the snapshot:
+    // a "… vanaf"-NAMED item (flat full-price range, flagged purely by name) …
+    expect(byName.get("Vrouwen - balayage")).toMatchObject({ price: 70, from: true });
+    // … and a genuinely RANGED item (no vanaf in the raw name, full €32–40).
+    expect(byName.get("Vrouwen - wassen en knippen")).toMatchObject({ price: 32, from: true });
+    expect(byName.get("Highlights")).toMatchObject({ price: 55, from: true }); // both triggers
+    // Flat-priced items never get the flag.
+    expect(byName.get("Mannen - knippen")?.from).toBeUndefined();
+  });
+
   it("curates reviews to >=4 stars, deduped by named author", () => {
     expect(facts.reviews?.length).toBeGreaterThan(0);
     expect(facts.reviews!.length).toBeLessThanOrEqual(6);

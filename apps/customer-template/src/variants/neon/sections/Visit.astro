@@ -4,7 +4,10 @@ interface Props {
   config: SiteConfig;
 }
 const { config } = Astro.props;
-const mapQuery = encodeURIComponent(`${config.location.address}, ${config.location.postcode} ${config.location.city}`);
+// postcode is optional (render-if-present) — never let "undefined" reach the maps query.
+const mapQuery = encodeURIComponent(
+  `${config.location.address}, ${[config.location.postcode, config.location.city].filter(Boolean).join(" ")}`,
+);
 const mapSrc = `https://maps.google.com/maps?q=${mapQuery}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
 ---
 

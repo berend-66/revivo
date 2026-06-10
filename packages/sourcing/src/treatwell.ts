@@ -224,8 +224,30 @@ function servicesFromState(v: any): ServiceCategory[] | null {
     for (const mi of g?.menuItems ?? []) {
       const d = mi?.data;
       if (!d?.name) continue;
-      const price = parseEuro(d?.priceRange?.minSalePriceAmount);
-      const item: ServiceItem = { name: cleanName(d.name), price: price ?? null };
+      // FULL price, never the sale price: minSalePriceAmount carries Treatwell's
+      // temporary promos (off-peak slots, % campaigns). A mockup quoting a
+      // discounted price as the standard menu price misstates the salon's own
+      // pricing the moment the promo ends — the cardinal sin.
+      const minFull = parseEuro(d?.priceRange?.minFullPriceAmount);
+      const maxFull = parseEuro(d?.priceRange?.maxFullPriceAmount);
+      const price = minFull ?? parseEuro(d?.priceRange?.minSalePriceAmount);
+      if (minFull === undefined && price !== undefined) {
+        // Degrade loudly: if Treatwell ever drops/renames the full-price field,
+        // every item silently becomes a promo price — make the drift visible.
+        console.warn(
+          `treatwell: menu-item "${String(d.name).trim()}" heeft geen minFullPriceAmount — sale-prijs gebruikt (velddrift? check op promo-prijzen)`,
+        );
+      }
+      const rawName = String(d.name).replace(/\s+/g, " ").trim();
+      const item: ServiceItem = { name: cleanName(rawName), price: price ?? null };
+      // From-price, not a flat price: the listing names it "... vanaf" or the
+      // full-price range is genuinely ranged. Variants render "vanaf €X".
+      // The SAME regex drives the name-strip in cleanName — strip and flag can
+      // never disagree (a stripped qualifier without the flag would render a
+      // from-price as flat, the exact bug this exists to prevent).
+      const namedVanaf = VANAF_SUFFIX.test(rawName);
+      const ranged = minFull !== undefined && maxFull !== undefined && maxFull > minFull;
+      if (price !== undefined && (namedVanaf || ranged)) item.from = true;
       const dur = num(d?.durationRange?.minDurationMinutes);
       if (dur !== undefined && dur > 0) item.durationMin = Math.round(dur);
       items.push(item);
@@ -480,12 +502,13 @@ function stripHtml(html: string): string {
     .trim();
 }
 
+/** A "… vanaf" / "… - vanaf" name suffix — shared by the name-strip (cleanName)
+ * and the from-price flag (servicesFromState) so they can never disagree. */
+const VANAF_SUFFIX = /\s*-?\s*vanaf$/i;
+
 /** Tidy a Treatwell treatment/category name: collapse spaces, drop a trailing "vanaf". */
 function cleanName(s: unknown): string {
-  return String(s ?? "")
-    .replace(/\s+/g, " ")
-    .replace(/\s*-?\s*vanaf$/i, "")
-    .trim();
+  return String(s ?? "").replace(/\s+/g, " ").trim().replace(VANAF_SUFFIX, "").trim();
 }
 
 function parseEuro(x: unknown): number | undefined {

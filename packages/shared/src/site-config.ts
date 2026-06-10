@@ -21,8 +21,12 @@ const ColorSchema = z.string().regex(/^#[0-9a-fA-F]{6}$/, "expected #rrggbb hex 
 export const ServiceItemSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
-  /** Price in EUR. Use `null` for "vanaf"/quote-only services. */
+  /** Price in EUR. Use `null` for quote-only services. */
   price: z.number().nullable(),
+  /** True when `price` is a from-price (the listing showed "vanaf" or a price
+   * range) — variants render "vanaf €X". Showing a from-price as a flat price
+   * misstates the salon's own menu, the cardinal sin. */
+  from: z.boolean().optional(),
   durationMin: z.number().int().positive().optional(),
 });
 
@@ -121,7 +125,11 @@ export const SiteConfigSchema = z.object({
 
   location: z.object({
     address: z.string(),
-    postcode: z.string(),
+    /** Optional by design: Treatwell listings carry NO postcode, and a required
+     * field forced the model to invent one — verifiably wrong on 7 of the first
+     * 13 batch mockups. Present only when a real source (Google Places, the
+     * operator) supplies it; variants render-if-present. */
+    postcode: z.string().optional(),
     city: z.string(),
     country: z.string().optional().default("Nederland"),
     lat: z.number().optional(),

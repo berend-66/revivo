@@ -94,11 +94,13 @@ exports[`treatwellListingToFacts — Utrecht Hairstyle golden fixture > matches 
       "items": [
         {
           "durationMin": 45,
+          "from": true,
           "name": "Vrouwen - wassen en knippen",
           "price": 32,
         },
         {
           "durationMin": 60,
+          "from": true,
           "name": "Vrouwen - wassen, knippen en modelföhnen",
           "price": 55,
         },
@@ -109,6 +111,7 @@ exports[`treatwellListingToFacts — Utrecht Hairstyle golden fixture > matches 
         },
         {
           "durationMin": 90,
+          "from": true,
           "name": "Permanent",
           "price": 100,
         },
@@ -149,26 +152,31 @@ exports[`treatwellListingToFacts — Utrecht Hairstyle golden fixture > matches 
       "items": [
         {
           "durationMin": 60,
+          "from": true,
           "name": "Kleuren - uitgroei",
           "price": 50,
         },
         {
           "durationMin": 60,
+          "from": true,
           "name": "Kleuren - Eén kleur",
-          "price": 33.75,
+          "price": 45,
         },
         {
           "durationMin": 60,
+          "from": true,
           "name": "Kleuren - Eén kleur -met Olaplex-behandeling",
           "price": 50,
         },
         {
           "durationMin": 150,
+          "from": true,
           "name": "Highlights",
           "price": 55,
         },
         {
           "durationMin": 60,
+          "from": true,
           "name": "Highlights - met muts",
           "price": 50,
         },
@@ -209,16 +217,19 @@ exports[`treatwellListingToFacts — Utrecht Hairstyle golden fixture > matches 
       "items": [
         {
           "durationMin": 120,
+          "from": true,
           "name": "Vrouwen - highlights",
           "price": 55,
         },
         {
           "durationMin": 150,
+          "from": true,
           "name": "Vrouwen - balayage",
           "price": 70,
         },
         {
           "durationMin": 120,
+          "from": true,
           "name": "Vrouwen - ombre",
           "price": 70,
         },

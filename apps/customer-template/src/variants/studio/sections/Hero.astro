@@ -70,7 +70,7 @@ const heroImg = config.hero.images[0];
       </div>
       <figcaption class="label-mono-mute mt-2 flex justify-between">
         <span>FIG. 01 — STUDIO</span>
-        <span>{config.location.postcode}</span>
+        <span>{config.location.postcode ?? config.location.city}</span>
       </figcaption>
     </figure>
   </div>

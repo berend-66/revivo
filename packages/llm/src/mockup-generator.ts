@@ -152,7 +152,9 @@ function factsToGrounding(facts: ListingFacts): string {
       .map((c) => c.items[0])
       .filter((i): i is NonNullable<typeof i> => Boolean(i))
       .slice(0, 6)
-      .map((i) => `${i.name} ${i.price != null ? fmtEuro(i.price) : "op aanvraag"}`);
+      // Keep the vanaf qualifier in the model's voice grounding too — echoing a
+      // from-price as a flat price in a headline is the same misstatement class.
+      .map((i) => `${i.name} ${i.price != null ? `${i.from ? "vanaf " : ""}${fmtEuro(i.price)}` : "op aanvraag"}`);
     if (samples.length) L.push(`Voorbeeldprijzen: ${samples.join(" · ")}`);
   }
   if (facts.address) {
@@ -213,12 +215,17 @@ export function applyListingFacts(config: SiteConfig, facts: ListingFacts): Site
   }
 
   // Location: overwrite only what the listing provides; keep the LLM/Google
-  // postcode + transitNotes (Treatwell has no postcode).
+  // postcode (Treatwell has no postcode; the brief carries Google's when known).
   if (facts.address) next.location.address = facts.address;
   if (facts.city) next.location.city = facts.city;
   if (facts.postcode) next.location.postcode = facts.postcode;
   if (facts.lat !== undefined) next.location.lat = facts.lat;
   if (facts.lng !== undefined) next.location.lng = facts.lng;
+  // Model-authored transitNotes are DROPPED in facts mode: no listing field
+  // carries transit info, so any value here is invented — the ligging-claim
+  // class the batch audit caught ("op loopafstand van het station" for a salon
+  // 3 km out). The prompt forbids it too, but this makes it deterministic.
+  delete next.location.transitNotes;
 
   // Photos, sized dynamically to however many the listing has. The picsum
   // placeholders from `normalizeImagesInPlace` survive only when there are none.

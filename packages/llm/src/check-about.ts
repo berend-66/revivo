@@ -18,6 +18,13 @@ import { createLLMClient, type LLMClient } from "./client";
  * screenshot-vision comparator (which, measured on the first real salon, produced a 100%
  * false-positive rate — misreading prices, hours, and phone digits off a downscaled page).
  * Generic tone words ("warm", "persoonlijk", "rustig") are NOT claims and are ignored.
+ *
+ * Guarded claim classes (keep in sync with the SYSTEM's WEL-markeren list): atmosphere
+ * details (music/drinks/scents/interior), awards, founding year, "X jaar ervaring",
+ * backstory/origin, menu-foreign specialisms, and — since the 2026-06-10 batch audit —
+ * LOCATION-character claims ("hartje Utrecht", "op loopafstand van het station", a wijk
+ * name) that the source doesn't support. The checked text includes location.transitNotes:
+ * that field is where invented transit claims historically landed.
  */
 
 export const AboutClaimSchema = z.object({
@@ -25,7 +32,13 @@ export const AboutClaimSchema = z.object({
   quote: z.string(),
   /** Why it isn't supported by the source material. */
   issue: z.string(),
-  kind: z.enum(["atmosphere", "award", "year", "experience", "backstory", "other"]).optional(),
+  // `.catch()` so an off-enum label from the model ("ligging") downgrades the
+  // KIND, never the CHECK — a parse throw would silently void a true catch
+  // (runMockupPipeline degrades an erroring check to skipped-not-gating).
+  kind: z
+    .enum(["atmosphere", "award", "year", "experience", "backstory", "location", "specialism", "other"])
+    .optional()
+    .catch("other"),
 });
 export type AboutClaim = z.infer<typeof AboutClaimSchema>;
 
@@ -48,17 +61,17 @@ export interface AboutFidelityInput {
   client?: LLMClient;
 }
 
-const SYSTEM = `Je bent een strenge feitencheck-redacteur voor revivo, dat op maat gemaakte salonwebsites levert. De "over ons"-tekst van een salon wordt naar de ÉCHTE salon-eigenaar gestuurd als opener. Daarom mag de tekst GEEN concrete, controleerbare bewering bevatten die niet uit het bronmateriaal volgt — één verzonnen detail (een specifiek muziekgenre, drankjes, geuren, inrichting, een award, een jaartal, "X jaar ervaring", een verzonnen achtergrondverhaal) verraadt meteen dat de tekst niet écht over deze salon gaat.
+const SYSTEM = `Je bent een strenge feitencheck-redacteur voor revivo, dat op maat gemaakte salonwebsites levert. De "over ons"-tekst van een salon wordt naar de ÉCHTE salon-eigenaar gestuurd als opener. Daarom mag de tekst GEEN concrete, controleerbare bewering bevatten die niet uit het bronmateriaal volgt — één verzonnen detail (een specifiek muziekgenre, drankjes, geuren, inrichting, een award, een jaartal, "X jaar ervaring", een verzonnen achtergrondverhaal, een ligging-claim als "hartje Utrecht" of "op loopafstand van het station") verraadt meteen dat de tekst niet écht over deze salon gaat.
 
 Je krijgt (1) het BRONMATERIAAL (de echte omschrijving van de salon + bekende feiten) en (2) de te controleren TEKST. Markeer ALLEEN concrete, verifieerbare beweringen in de TEKST die NIET door het bronmateriaal worden gedekt.
 
-WEL markeren: een specifiek muziekgenre, geserveerde drankjes, geuren, concrete inrichtingsdetails, awards/prijzen, een oprichtingsjaar of "sinds 19xx", "X jaar ervaring/bestaat al X jaar", een persoonlijk achtergrondverhaal of herkomst die niet in de bron staat, een specialisme dat de salon niet aanbiedt.
+WEL markeren: een specifiek muziekgenre, geserveerde drankjes, geuren, concrete inrichtingsdetails, awards/prijzen, een oprichtingsjaar of "sinds 19xx", "X jaar ervaring/bestaat al X jaar", een persoonlijk achtergrondverhaal of herkomst die niet in de bron staat, een specialisme dat de salon niet aanbiedt, en ligging-claims die niet in de bron staan ("in het hart(je) van …", "in het centrum", "op loopafstand van het station", een wijknaam) — de eigenaar weet precies waar de zaak zit en veel salons zitten juist buiten het centrum.
 
 NIET markeren: algemene toon en sfeerwoorden zonder controleerbare claim ("warm", "persoonlijk", "rustig", "vakkundig", "welkom"); herformuleringen van wat wél in de bron staat; algemene uitnodigingen ("kom langs"); feiten die in de bekende feiten staan (plaats, aangeboden diensten, teamleden, beoordeling).
 
 Geef ALLEEN een JSON-object terug, zonder tekst eromheen:
 {
-  "claims": [ { "quote": "<letterlijke zin/zinsdeel uit de TEKST>", "issue": "<waarom niet gedekt>", "kind": "atmosphere|award|year|experience|backstory|other" } ],
+  "claims": [ { "quote": "<letterlijke zin/zinsdeel uit de TEKST>", "issue": "<waarom niet gedekt>", "kind": "atmosphere|award|year|experience|backstory|location|specialism|other" } ],
   "verdict": "clean" | "fabrication"
 }
 "verdict" is "fabrication" zodra er minstens één claim is, anders "clean". Bij twijfel of iets een echte controleerbare claim is: NIET markeren (liever een gemiste dan een valse alarm).`;
@@ -94,6 +107,10 @@ function buildText(config: SiteConfig): string {
   if (config.hero.subheadline) parts.push(config.hero.subheadline);
   if (config.about.heading) parts.push(config.about.heading);
   parts.push(...config.about.body);
+  // The historical home of invented ligging claims ("5 minuten van het station").
+  // Facts mode deletes it deterministically (applyListingFacts); this covers
+  // every other path that runs the check.
+  if (config.location.transitNotes) parts.push(config.location.transitNotes);
   return parts.join("\n\n");
 }
 

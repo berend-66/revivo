@@ -5,9 +5,14 @@ interface Props {
 }
 const { config } = Astro.props;
 
-const formatPrice = (price: number | null): string => {
-  if (price === null) return "vanaf —";
-  return `€${price}`;
+// NL prices: integers bare (€45), cents always two digits (€67,50 — never €67.5).
+// `from` marks a real vanaf-prijs from the listing.
+const formatPrice = (item: { price: number | null; from?: boolean }): string => {
+  if (item.price === null) return "vanaf —";
+  const amount = Number.isInteger(item.price)
+    ? String(item.price)
+    : item.price.toLocaleString("nl-NL", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return `${item.from ? "vanaf " : ""}€${amount}`;
 };
 ---
 
@@ -57,7 +62,7 @@ const formatPrice = (price: number | null): string => {
                     class="font-display text-3xl md:text-4xl font-bold tabular-nums"
                     style="color: var(--color-primary); letter-spacing: -0.02em;"
                   >
-                    {formatPrice(item.price)}
+                    {formatPrice(item)}
                   </span>
                 </div>
               ))}
