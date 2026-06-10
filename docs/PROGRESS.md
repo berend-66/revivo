@@ -216,6 +216,8 @@ Plus prompt + about-check guardrails for the two voice-level audit findings: loc
 
 > **Deploy ordering (operational):** the deployed mock app bundles the schema at build time — **redeploy `apps/mockups` BEFORE regenerating** configs without postcode, or the old bundle's required-postcode parse hard-500s the live mock URLs (and silently strips `from` flags).
 
+All 14 mockups (13 audited + the stub) were regenerated post-deploy with the fixed generator and live-verified: postcode omitted 14/14, transitNotes gone, vanaf-prijzen rendering on every page (1-52 items each), 0 picsum, the three audit holds resolved (Lina full prices, Parbella/Metamorfosa clean about). The system-prompt ligging rule alone proved weak (6/14 violations), fixed by pinning the constraint inside the ECHTE GEGEVENS grounding line; geo flags were adjudicated against real coordinates (Dom/CS distance) — 3 true claims passed, 3 false regenerated clean. Note: the edge cache (s-maxage=3600 + SWR) can serve a pre-regeneration render for up to ~1h after an upsert.
+
 ## Manually pending (Berend's TODO)
 
 These steps need a human — Claude can't do them.
