@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+  <rect width="1080" height="1080" fill="#330005"></rect>
+  <g fill="#f0e4cc" text-anchor="middle">
+    <text x="540" y="500" font-family="Georgia, &#39;Times New Roman&#39;, serif" font-style="italic" font-weight="400" font-size="150" letter-spacing="4">your</text>
+    <text x="540" y="640" font-family="Georgia, &#39;Times New Roman&#39;, serif" font-weight="300" font-size="120" letter-spacing="22">BRAND</text>
+  </g>
+  <text x="540" y="760" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="26" letter-spacing="6" fill="#c8891e" opacity="0.85">SPLASH LOGO · 1:1</text>
+</svg>
