@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O&H Salon — by Osama &amp; Hanna · Utrecht</title>
+<meta name="description" content="O&H Salon by Osama & Hanna — persoonlijke kapsalon in Utrecht. Knippen, kleuren, balayage & behandelingen. Boek 24/7 online.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bordeaux:        #3d0a0e;
+    --bordeaux-soft:   #4e1418;
+    --bordeaux-deep:   #2a0608;
+    --creme:           #f0e4cc;
+    --warm-white:      #f5f0e8;
+    --beige:           #ede8df;
+    --chocolate:       #4a2416;
+    --amber:           #c8891e;
+    --amber-warm:      #fff8ee;
+    --wood:            #d4b896;
+    --ink:             #2a1208;
+    --ink-soft:        #5a3d2c;
+    --border:          #d9cfc2;
+    --splash-bg:       #1c0608;
+    --shadow-sm: 0 4px 16px rgba(61,10,14,.05);
+    --shadow-md: 0 8px 32px rgba(61,10,14,.08);
+    --shadow-lg: 0 16px 48px rgba(61,10,14,.12);
+    --ease: cubic-bezier(.4,0,.2,1);
+    --serif: "Cormorant Garamond","Garamond",Georgia,serif;
+    --sans:  "Jost",system-ui,-apple-system,sans-serif;
+  }
+
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    margin:0;font-family:var(--sans);font-weight:300;font-size:1rem;
+    line-height:1.7;color:var(--ink);background:var(--warm-white);
+    -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden;
+  }
+  img{max-width:100%;display:block}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+  ::selection{background:var(--bordeaux);color:var(--creme)}
+
+  h1,h2,h3,h4{
+    font-family:var(--serif);font-weight:300;margin:0;color:var(--ink);
+    text-wrap:balance;letter-spacing:.005em;
+  }
+  h1{font-size:clamp(3rem,6vw,5.5rem);line-height:1.05;font-weight:300}
+  h2{font-size:clamp(2rem,4vw,3.5rem);line-height:1.1;font-weight:400}
+  h3{font-size:clamp(1.4rem,2vw,1.875rem);line-height:1.2;font-weight:500}
+  p{text-wrap:pretty}
+
+  .caps{
+    font-family:var(--sans);font-weight:400;font-size:.75rem;
+    letter-spacing:.2em;text-transform:uppercase;
+  }
+  .italic-display{font-family:var(--serif);font-style:italic;font-weight:300}
+
+  .container{width:100%;max-width:1280px;margin:0 auto;padding:0 24px}
+  @media(min-width:768px){.container{padding:0 40px}}
+  @media(min-width:1280px){.container{padding:0 64px}}
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:10px;
+    min-height:48px;padding:14px 28px;
+    font-family:var(--sans);font-weight:400;font-size:.78rem;
+    letter-spacing:.18em;text-transform:uppercase;border-radius:2px;
+    transition:transform .25s var(--ease),background .25s var(--ease),color .25s var(--ease),box-shadow .25s var(--ease);
+    will-change:transform;
+  }
+  .btn-primary{background:var(--bordeaux);color:var(--creme);box-shadow:var(--shadow-sm)}
+  .btn-primary:hover{background:var(--bordeaux-soft);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+  .btn-ghost{background:transparent;color:var(--bordeaux);border:1px solid var(--bordeaux)}
+  .btn-ghost:hover{background:var(--bordeaux);color:var(--creme)}
+  .btn-xxl{min-height:72px;padding:24px 56px;font-size:.85rem;letter-spacing:.25em}
+  .btn:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+
+  .nav-book{min-width:220px}
+  @media(max-width:1023px){.nav-book{min-width:0;padding:14px 18px;font-size:.7rem}}
+  @media(max-width:520px){
+    .nav-book{font-size:0;min-height:44px;min-width:44px;padding:12px}
+    .nav-book::before{
+      content:"";width:18px;height:18px;display:inline-block;background:currentColor;
+      mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5'><rect x='3' y='5' width='18' height='16' rx='2'/><path d='M8 3v4M16 3v4M3 11h18'/></svg>") center/contain no-repeat;
+      -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5'><rect x='3' y='5' width='18' height='16' rx='2'/><path d='M8 3v4M16 3v4M3 11h18'/></svg>") center/contain no-repeat;
+    }
+  }
+  .lang-switch button{width:28px;text-align:center}
+
+  /* Splash */
+  #splash{
+    position:fixed;inset:0;background:var(--splash-bg);z-index:1000;
+    display:flex;align-items:center;justify-content:center;
+    transition:opacity .7s var(--ease),visibility .7s var(--ease);
+  }
+  #splash.hide{opacity:0;visibility:hidden}
+  #splash svg{
+    width:min(72vw,420px);height:auto;display:block;
+    opacity:0;transform:translateY(8px) scale(.98);
+    animation:splash-in .9s .15s var(--ease) forwards;
+  }
+  @keyframes splash-in{to{opacity:1;transform:none}}
+
+  /* Nav */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 0;
+    transition:background .35s var(--ease),box-shadow .35s var(--ease),padding .35s var(--ease),border-color .35s var(--ease);
+    border-bottom:1px solid transparent;
+  }
+  .nav.scrolled{
+    background:rgba(245,240,232,.92);backdrop-filter:saturate(1.2) blur(14px);
+    -webkit-backdrop-filter:saturate(1.2) blur(14px);
+    box-shadow:var(--shadow-sm);padding:14px 0;border-bottom-color:var(--border);
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .nav-brand{
+    font-family:var(--serif);font-weight:400;font-size:1.5rem;letter-spacing:.04em;
+    color:var(--creme);transition:color .35s var(--ease);line-height:1;
+  }
+  .nav-brand em{font-style:italic;font-weight:300}
+  .nav.scrolled .nav-brand{color:var(--bordeaux)}
+  .nav-links{display:none;gap:36px;align-items:center}
+  @media(min-width:1024px){.nav-links{display:flex}}
+  .nav-links a{
+    font-family:var(--sans);font-weight:400;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--creme);padding:8px 2px;position:relative;
+    transition:color .25s var(--ease);
+  }
+  .nav.scrolled .nav-links a{color:var(--ink)}
+  .nav-links a::after{
+    content:"";position:absolute;bottom:0;left:0;width:100%;height:1px;
+    background:currentColor;transform:scaleX(0);transform-origin:right;
+    transition:transform .35s var(--ease);
+  }
+  .nav-links a:hover::after{transform:scaleX(1);transform-origin:left}
+  .nav-right{display:flex;align-items:center;gap:18px}
+  .lang-switch{
+    display:flex;gap:6px;align-items:center;font-family:var(--sans);
+    font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--creme);
+    transition:color .35s var(--ease);
+  }
+  .nav.scrolled .lang-switch{color:var(--ink)}
+  .lang-switch button{color:inherit;font-weight:300;opacity:.55;padding:8px 4px;min-width:32px;transition:opacity .2s var(--ease),font-weight .2s var(--ease)}
+  .lang-switch button.active{opacity:1;font-weight:500}
+  .lang-switch button:hover{opacity:.9}
+  .lang-switch .dot{opacity:.5}
+  .hamburger{display:flex;flex-direction:column;gap:5px;padding:12px;width:44px;height:44px;align-items:center;justify-content:center}
+  @media(min-width:1024px){.hamburger{display:none}}
+  .hamburger span{display:block;width:22px;height:1px;background:var(--creme);transition:transform .3s var(--ease),background .35s var(--ease),opacity .25s var(--ease)}
+  .nav.scrolled .hamburger span{background:var(--ink)}
+  body.menu-open .hamburger span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+  body.menu-open .hamburger span:nth-child(2){opacity:0}
+  body.menu-open .hamburger span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+  body.menu-open .hamburger span{background:var(--ink)}
+  .mobile-menu{
+    position:fixed;inset:0;background:var(--warm-white);z-index:90;
+    padding:90px 32px 40px;display:flex;flex-direction:column;gap:28px;
+    transform:translateY(-100%);transition:transform .45s var(--ease);
+  }
+  body.menu-open .mobile-menu{transform:translateY(0)}
+  .mobile-menu a{
+    font-family:var(--serif);font-weight:300;font-size:2rem;color:var(--ink);
+    border-bottom:1px solid var(--border);padding-bottom:14px;
+  }
+  .mobile-menu a:last-of-type{border-bottom:none}
+
+  /* Hero */
+  .hero{
+    position:relative;min-height:100dvh;display:flex;align-items:center;
+    justify-content:center;overflow:hidden;color:var(--creme);isolation:isolate;
+  }
+  .hero-bg{position:absolute;inset:0;z-index:-2}
+  .hero-bg img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);animation:heroZoom 18s var(--ease) forwards}
+  @keyframes heroZoom{to{transform:scale(1)}}
+  .hero-bg::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(28,6,8,.55) 0%,rgba(28,6,8,.25) 35%,rgba(28,6,8,.6) 100%);
+    z-index:1;
+  }
+  .hero-content{
+    position:relative;z-index:2;text-align:center;padding:0 24px;max-width:1100px;
+    opacity:0;transform:translateY(20px);animation:rise 1.1s .3s var(--ease) forwards;
+  }
+  @keyframes rise{to{opacity:1;transform:none}}
+  .hero h1{
+    font-size:clamp(3rem,7vw,6.5rem);color:var(--creme);font-weight:300;
+    line-height:1.02;letter-spacing:-.005em;margin-bottom:28px;
+  }
+  .hero h1 em{font-style:italic;font-weight:300}
+  .hero-sub{
+    font-family:var(--sans);font-weight:300;font-size:.78rem;letter-spacing:.32em;
+    text-transform:uppercase;color:var(--creme);opacity:.92;
+  }
+  .hero-sub .dot{margin:0 14px;opacity:.5}
+  .scroll-cue{
+    position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:2;
+    color:var(--creme);opacity:.7;animation:scrollPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes scrollPulse{
+    0%,100%{transform:translate(-50%,0);opacity:.7}
+    50%{transform:translate(-50%,8px);opacity:1}
+  }
+  .scroll-cue svg{width:24px;height:36px;display:block}
+
+  /* Trust strip */
+  .trust{background:var(--warm-white);padding:34px 0;border-bottom:1px solid var(--border)}
+  .trust-row{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:18px 56px;text-align:center}
+  .trust-item{
+    display:inline-flex;align-items:center;gap:10px;font-family:var(--sans);
+    font-weight:400;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);
+  }
+  .trust-item svg{width:14px;height:14px;flex-shrink:0}
+  .trust-item .star{color:var(--amber)}
+
+  /* Sections */
+  section{position:relative}
+  .section{padding:clamp(80px,12vw,140px) 0;position:relative}
+  .eyebrow{
+    display:inline-block;font-family:var(--sans);font-weight:400;font-size:.7rem;
+    letter-spacing:.28em;text-transform:uppercase;color:var(--bordeaux);margin-bottom:18px;
+  }
+  .eyebrow::before{
+    content:"";display:inline-block;width:24px;height:1px;background:var(--bordeaux);
+    vertical-align:middle;margin-right:14px;transform:translateY(-2px);
+  }
+
+  /* Arch frame */
+  .arch-frame{border-radius:50% 50% 6px 6px / 30% 30% 0 0;overflow:hidden;display:block;position:relative}
+  .arch-frame img{width:100%;height:100%;object-fit:cover;transition:transform 1.4s var(--ease)}
+  .arch-frame:hover img{transform:scale(1.04)}
+  .deco-arch{position:absolute;pointer-events:none;opacity:.12;z-index:0}
+
+  /* About */
+  .about{background:var(--warm-white)}
+  .about-grid{display:grid;grid-template-columns:1fr;gap:48px;align-items:center}
+  @media(min-width:900px){.about-grid{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:96px}}
+  .about-figure{position:relative;aspect-ratio:4/5;max-width:540px;width:100%;margin:0 auto}
+  .about-figure .arch-frame{width:100%;height:100%;box-shadow:var(--shadow-md)}
+  .about-figure::before{
+    content:"";position:absolute;width:38%;height:18%;
+    border:1px solid var(--bordeaux);border-bottom:none;
+    border-radius:50% 50% 0 0 / 100% 100% 0 0;top:-6%;right:-4%;opacity:.35;
+  }
+  .about-text h2{margin-bottom:24px}
+  .about-text p{font-size:1.05rem;line-height:1.8;color:var(--ink-soft);margin:0 0 20px;max-width:46ch}
+  .about-meta{margin-top:36px;padding-top:24px;border-top:1px solid var(--border);display:flex;gap:36px;flex-wrap:wrap}
+  .about-meta div{display:flex;flex-direction:column;gap:4px}
+  .about-meta .caps{color:var(--ink-soft);opacity:.7}
+  .about-meta strong{font-family:var(--serif);font-weight:400;font-size:1.5rem;color:var(--ink)}
+
+  /* Services */
+  .services{background:var(--beige)}
+  .services .section-head{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:64px}
+  .services h2{margin-bottom:14px}
+  .services-sub{font-family:var(--serif);font-style:italic;font-weight:300;color:var(--ink-soft);font-size:1.2rem;max-width:50ch}
+  .tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:0;border-bottom:1px solid var(--border);margin-bottom:48px}
+  .tab{
+    font-family:var(--sans);font-weight:400;font-size:.78rem;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--ink-soft);padding:18px 26px;min-height:48px;
+    position:relative;transition:color .25s var(--ease);
+  }
+  .tab::after{content:"";position:absolute;bottom:-1px;left:50%;width:0;height:2px;background:var(--bordeaux);transition:width .35s var(--ease),left .35s var(--ease)}
+  .tab:hover{color:var(--ink)}
+  .tab.active{color:var(--bordeaux)}
+  .tab.active::after{width:100%;left:0}
+  .panel{display:none;max-width:780px;margin:0 auto;animation:panelIn .5s var(--ease)}
+  .panel.active{display:block}
+  @keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .treatment{display:grid;grid-template-columns:1fr auto;gap:24px;padding:22px 0;border-bottom:1px solid var(--border);align-items:baseline}
+  .treatment:last-of-type{border-bottom:none}
+  .treatment-name{font-family:var(--serif);font-weight:400;font-style:italic;font-size:1.3rem;color:var(--ink);line-height:1.3}
+  .treatment-meta{display:flex;align-items:baseline;gap:18px;font-family:var(--sans);white-space:nowrap}
+  .treatment-duration{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);opacity:.7}
+  .treatment-price{font-family:var(--serif);font-weight:500;font-size:1.4rem;color:var(--bordeaux);min-width:64px;text-align:right}
+  .panel-note{margin-top:24px;text-align:center;font-style:italic;color:var(--ink-soft);font-family:var(--serif);font-size:1.05rem}
+  .panel-foot{margin-top:48px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px}
+  .text-link{
+    font-family:var(--sans);font-weight:400;font-size:.74rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--ink);border-bottom:1px solid var(--ink);
+    padding-bottom:4px;transition:color .25s var(--ease),border-color .25s var(--ease);
+  }
+  .text-link:hover{color:var(--bordeaux);border-color:var(--bordeaux)}
+  @media(max-width:600px){
+    .tab{padding:16px 14px;font-size:.7rem}
+    .treatment{grid-template-columns:1fr;gap:8px}
+    .treatment-meta{justify-content:space-between}
+    .treatment-price{text-align:left;min-width:0}
+  }
+
+  /* Gallery */
+  .gallery{background:var(--warm-white)}
+  .gallery .section-head{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:56px}
+  .gallery h2{margin-bottom:14px}
+  .gallery-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  @media(min-width:768px){.gallery-grid{grid-template-columns:repeat(4,1fr);grid-auto-rows:200px;gap:18px}}
+  @media(min-width:1100px){.gallery-grid{grid-auto-rows:240px;gap:22px}}
+  .gtile{position:relative;overflow:hidden;border-radius:2px;background:var(--beige);box-shadow:var(--shadow-sm)}
+  .gtile img{width:100%;height:100%;object-fit:cover;transition:transform .9s var(--ease)}
+  .gtile::after{content:"";position:absolute;inset:0;background:rgba(240,228,204,0);transition:background .35s var(--ease);pointer-events:none}
+  .gtile:hover img{transform:scale(1.05)}
+  .gtile:hover::after{background:rgba(240,228,204,.18)}
+  .gtile.arch{border-radius:50% 50% 2px 2px / 18% 18% 0 0}
+  @media(min-width:768px){
+    .gtile.t1{grid-column:span 2;grid-row:span 2}
+    .gtile.t2{grid-column:span 1;grid-row:span 1}
+    .gtile.t3{grid-column:span 1;grid-row:span 2}
+    .gtile.t4{grid-column:span 1;grid-row:span 1}
+    .gtile.t5{grid-column:span 2;grid-row:span 1}
+    .gtile.t6{grid-column:span 1;grid-row:span 1}
+    .gtile.t7{grid-column:span 1;grid-row:span 1}
+    .gtile.t8{grid-column:span 2;grid-row:span 1}
+  }
+
+  /* Team */
+  .team{background:var(--beige)}
+  .team .section-head{text-align:center;margin-bottom:64px;display:flex;flex-direction:column;align-items:center}
+  .team-sub{font-family:var(--serif);font-style:italic;font-weight:300;color:var(--ink-soft);font-size:1.3rem;margin-top:14px;max-width:42ch}
+  .team-grid{display:grid;grid-template-columns:1fr;gap:64px;align-items:center}
+  @media(min-width:1024px){.team-grid{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:80px}}
+  .lead-card{display:grid;grid-template-columns:1fr;gap:36px;align-items:center}
+  @media(min-width:600px){.lead-card{grid-template-columns:minmax(220px,280px) 1fr;gap:48px}}
+  @media(min-width:1024px){.lead-card{grid-template-columns:minmax(280px,360px) 1fr}}
+  .lead-figure{aspect-ratio:4/5;width:100%}
+  .lead-figure .arch-frame{width:100%;height:100%;box-shadow:var(--shadow-md)}
+  .lead-info h3{font-size:clamp(2.2rem,3.4vw,3rem);font-weight:400;margin-bottom:8px}
+  .lead-info .caps{color:var(--bordeaux);margin-bottom:20px;display:block}
+  .lead-info p{color:var(--ink-soft);font-size:1.02rem;line-height:1.75;margin:0 0 28px;max-width:46ch}
+  .team-roster{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  .member{
+    background:var(--warm-white);padding:36px 24px 32px;text-align:center;
+    border-radius:2px;border:1px solid var(--border);
+    transition:transform .35s var(--ease),box-shadow .35s var(--ease);
+  }
+  .member:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+  .member-circle{
+    width:84px;height:84px;border-radius:50%;background:var(--bordeaux);color:var(--creme);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 18px;
+    font-family:var(--serif);font-weight:300;font-size:2.2rem;line-height:1;
+    box-shadow:inset 0 0 0 4px rgba(240,228,204,.06),0 6px 20px rgba(61,10,14,.18);
+  }
+  .member h4{font-family:var(--serif);font-weight:400;font-size:1.4rem;margin:0 0 4px;color:var(--ink)}
+  .member .caps{color:var(--ink-soft);opacity:.7;display:block}
+
+  /* Reviews */
+  .reviews{background:var(--bordeaux);color:var(--creme);overflow:hidden}
+  .reviews h2{color:var(--creme)}
+  .reviews .eyebrow{color:var(--creme);opacity:.85}
+  .reviews .eyebrow::before{background:var(--creme)}
+  .reviews-head{text-align:center;margin-bottom:64px;display:flex;flex-direction:column;align-items:center}
+  .score-row{display:inline-flex;align-items:baseline;gap:18px;margin-bottom:28px}
+  .score-num{font-family:var(--serif);font-weight:300;font-size:5rem;line-height:.9;color:var(--creme)}
+  .stars{display:inline-flex;gap:4px;color:var(--amber)}
+  .stars svg{width:16px;height:16px}
+  .score-meta{font-family:var(--sans);font-weight:300;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--creme);opacity:.78;margin-top:8px;display:block}
+  .reviews h2.italic-display{font-style:italic;font-size:clamp(2.2rem,4.2vw,3.6rem)}
+  .review-grid{display:grid;grid-template-columns:1fr;gap:22px}
+  @media(min-width:900px){.review-grid{grid-template-columns:repeat(3,1fr);gap:28px}}
+  .review{background:var(--bordeaux-soft);padding:40px 32px 32px;border:1px solid rgba(240,228,204,.12);border-radius:2px;position:relative;display:flex;flex-direction:column;gap:20px}
+  .review::before{content:"\201C";position:absolute;top:-22px;left:24px;font-family:var(--serif);font-weight:400;font-size:6rem;line-height:1;color:var(--amber);opacity:.85}
+  .review-text{font-family:var(--serif);font-weight:300;font-style:italic;font-size:1.18rem;line-height:1.6;color:var(--creme);margin:0}
+  .review-meta{display:flex;align-items:center;gap:12px;margin-top:auto}
+  .review-meta .stars{color:var(--amber)}
+  .review-meta .stars svg{width:12px;height:12px}
+  .review-author{font-family:var(--sans);font-weight:400;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--creme);opacity:.85}
+  .reviews-foot{margin-top:56px;text-align:center}
+  .reviews-foot a{font-family:var(--sans);font-weight:300;font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;color:var(--creme);border-bottom:1px solid rgba(240,228,204,.4);padding-bottom:4px;transition:border-color .25s var(--ease)}
+  .reviews-foot a:hover{border-color:var(--creme)}
+
+  /* CTA */
+  .cta{background:var(--amber-warm);text-align:center;overflow:hidden}
+  .cta-inner{max-width:720px;margin:0 auto;position:relative}
+  .cta h2{font-style:italic;font-weight:300;font-size:clamp(2.4rem,5.5vw,4.5rem);margin-bottom:20px;line-height:1.05}
+  .cta p{color:var(--ink-soft);font-size:1.1rem;margin:0 0 40px}
+  .cta .deco-arch{width:200px;height:140px;top:-10px;left:50%;transform:translateX(-50%);opacity:.06}
+
+  /* Contact */
+  .contact{background:var(--beige)}
+  .contact-grid{display:grid;grid-template-columns:1fr;gap:48px}
+  @media(min-width:900px){.contact-grid{grid-template-columns:1fr 1fr;gap:80px;align-items:start}}
+  .contact h2{margin-bottom:32px}
+  .hours{width:100%;border-collapse:collapse;margin-bottom:36px}
+  .hours tr{border-bottom:1px solid var(--border)}
+  .hours tr:last-child{border-bottom:none}
+  .hours td{padding:16px 0;font-family:var(--sans);font-weight:300;font-size:.95rem;color:var(--ink)}
+  .hours td:first-child{font-family:var(--sans);font-weight:400;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft)}
+  .hours td:last-child{text-align:right}
+  .contact-info{margin-top:36px;padding-top:28px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:20px}
+  .contact-info .row{display:flex;gap:18px;align-items:flex-start}
+  .contact-info svg{width:18px;height:18px;color:var(--bordeaux);flex-shrink:0;margin-top:3px}
+  .contact-info a{border-bottom:1px solid transparent;transition:border-color .25s var(--ease)}
+  .contact-info a:hover{border-bottom-color:var(--bordeaux)}
+  .contact-info .caps{color:var(--ink-soft);opacity:.7;display:block;margin-bottom:2px}
+  .map-wrap{position:relative;aspect-ratio:4/5;width:100%;overflow:hidden;border-radius:2px;box-shadow:var(--shadow-md);background:var(--warm-white);border:1px solid var(--border)}
+  .map-wrap iframe{width:100%;height:100%;border:0;filter:grayscale(.25) contrast(1.02) saturate(.85)}
+
+  /* Footer */
+  footer{background:var(--bordeaux);color:var(--creme);padding:96px 0 32px;text-align:center}
+  .footer-brand{margin:0 auto 48px;font-family:var(--serif);font-weight:300;font-size:2.8rem;color:var(--creme);letter-spacing:.04em;line-height:1.1}
+  .footer-brand em{font-style:italic;font-weight:300}
+  .footer-brand small{display:block;font-family:var(--sans);font-size:.65rem;letter-spacing:.22em;text-transform:uppercase;opacity:.65;margin-top:8px;font-style:normal}
+  .footer-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:18px 36px;margin-bottom:36px}
+  .footer-nav a{font-family:var(--sans);font-weight:300;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--creme);opacity:.85;padding:6px 2px;transition:opacity .25s var(--ease)}
+  .footer-nav a:hover{opacity:1}
+  .footer-social{display:flex;justify-content:center;align-items:center;gap:14px;margin-bottom:48px;color:var(--creme)}
+  .footer-social a{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(240,228,204,.3);border-radius:50%;transition:background .25s var(--ease),border-color .25s var(--ease)}
+  .footer-social a:hover{background:rgba(240,228,204,.1);border-color:rgba(240,228,204,.6)}
+  .footer-social svg{width:18px;height:18px}
+  .footer-bottom{border-top:1px solid rgba(240,228,204,.18);padding-top:28px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;font-family:var(--sans);font-weight:300;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;opacity:.7}
+  .footer-bottom .credit{font-style:italic;font-family:var(--serif);text-transform:none;letter-spacing:.04em;opacity:.85;font-size:.85rem}
+
+  /* Reveal */
+  .reveal{opacity:0;transform:translateY(20px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+  .reveal.visible{opacity:1;transform:none}
+
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
+    .reveal{opacity:1;transform:none}
+    .hero-bg img{transform:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- Splash -->
+<div id="splash" aria-hidden="true">
+  <svg viewBox="0 0 480 320" xmlns="http://www.w3.org/2000/svg">
+    <text x="240" y="155" text-anchor="middle" font-family="Georgia,serif" font-size="104" fill="#f0e4cc" font-weight="300" letter-spacing="-2">O&amp;H</text>
+    <text x="240" y="205" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" fill="#f0e4cc" letter-spacing="12" font-weight="300">SALON</text>
+    <text x="240" y="244" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="15" fill="#c8891e" letter-spacing="3">by Osama &amp; Hanna</text>
+    <line x1="140" y1="268" x2="340" y2="268" stroke="#f0e4cc" stroke-width="0.5" opacity="0.25"/>
+    <text x="240" y="290" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#f0e4cc" letter-spacing="5" opacity="0.45">UTRECHT</text>
+  </svg>
+</div>
+
+<!-- Nav -->
+<nav class="nav" id="nav" aria-label="Hoofdnavigatie">
+  <div class="container nav-inner">
+    <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <a href="#top" class="nav-brand">O&amp;H <em>Salon</em></a>
+    <div class="nav-links">
+      <a href="#diensten" data-nl="Diensten" data-en="Services">Diensten</a>
+      <a href="#galerij" data-nl="Galerij" data-en="Gallery">Galerij</a>
+      <a href="#team" data-nl="Team" data-en="Team">Team</a>
+      <a href="#contact" data-nl="Contact" data-en="Contact">Contact</a>
+    </div>
+    <div class="nav-right">
+      <div class="lang-switch" role="group" aria-label="Taal">
+        <button data-lang="nl" class="active" aria-label="Nederlands">NL</button>
+        <span class="dot">·</span>
+        <button data-lang="en" aria-label="English">EN</button>
+      </div>
+      <a href="https://www.ohsalonbyosamahanna.nl/afspraak-maken" target="_blank" rel="noopener" class="btn btn-primary nav-book" data-nl="Maak een afspraak" data-en="Book now">Maak een afspraak</a>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#diensten" data-nl="Diensten" data-en="Services">Diensten</a>
+  <a href="#galerij" data-nl="Galerij" data-en="Gallery">Galerij</a>
+  <a href="#team" data-nl="Team" data-en="Team">Team</a>
+  <a href="#contact" data-nl="Contact" data-en="Contact">Contact</a>
+</div>
+
+<main id="top">
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true">
+    <img src="luxe_assets_standard/salon_mirror_02.jpg" alt="" width="1600" height="1000">
+  </div>
+  <div class="hero-content">
+    <h1 data-nl="Jouw haar, <em>jouw verhaal</em>" data-en="Your hair, <em>your story</em>">Jouw haar, <em>jouw verhaal</em></h1>
+    <p class="hero-sub">
+      <span data-nl="Utrecht" data-en="Utrecht">Utrecht</span><span class="dot">·</span><span data-nl="Amsterdamsestraatweg 294" data-en="Amsterdamsestraatweg 294">Amsterdamsestraatweg 294</span>
+    </p>
+  </div>
+  <div class="scroll-cue" aria-hidden="true">
+    <svg viewBox="0 0 24 36" fill="none" stroke="currentColor" stroke-width="1">
+      <rect x="6" y="2" width="12" height="20" rx="6"></rect>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <path d="M8 28l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+  </div>
+</section>
+
+<!-- Trust strip -->
+<section class="trust">
+  <div class="container">
+    <div class="trust-row">
+      <span class="trust-item">
+        <span class="star" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+        </span>
+        <span data-nl="4,9 · 77 reviews" data-en="4.9 · 77 reviews">4,9 · 77 reviews</span>
+      </span>
+      <span class="trust-item" aria-hidden="true">✦</span>
+      <span class="trust-item" data-nl="Persoonlijke aandacht · Op maat" data-en="Personal attention · Tailor-made">Persoonlijke aandacht · Op maat</span>
+      <span class="trust-item" aria-hidden="true">✦</span>
+      <span class="trust-item" data-nl="7 dagen per week open" data-en="Open 7 days a week">7 dagen per week open</span>
+    </div>
+  </div>
+</section>
+
+<!-- About -->
+<section class="about section" id="over-ons">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-figure reveal">
+        <div class="arch-frame">
+          <img src="luxe_assets_standard/model_hair_02.jpg" alt="O&H Salon Utrecht" width="900" height="1100" loading="lazy">
+        </div>
+      </div>
+      <div class="about-text reveal">
+        <span class="eyebrow" data-nl="Over ons" data-en="About us">Over ons</span>
+        <h2 data-nl="Meer dan een kapsalon — <em>een thuis</em>" data-en="More than a salon — <em>a home</em>">Meer dan een kapsalon — <em style="font-style:italic">een thuis</em></h2>
+        <p data-nl="Bij O&H Salon word je persoonlijk ontvangen door Osama en Hanna in een warme, ontspannen sfeer. Elk bezoek begint met een goed gesprek — zodat we precies weten wat jou gelukkig maakt." data-en="At O&H Salon, Osama and Hanna welcome you personally in a warm, relaxed atmosphere. Every visit starts with a good conversation — so we know exactly what makes you happy.">Bij O&H Salon word je persoonlijk ontvangen door Osama en Hanna in een warme, ontspannen sfeer. Elk bezoek begint met een goed gesprek — zodat we precies weten wat jou gelukkig maakt.</p>
+        <p data-nl="Met vakmanschap, oog voor detail en oprechte aandacht zorgen we ervoor dat je altijd met een glimlach de deur uit loopt. Van knippen en kleuren tot balayage en behandelingen — alles op maat." data-en="With craftsmanship, attention to detail and genuine care, we make sure you always leave with a smile. From cuts and colour to balayage and treatments — everything tailored to you.">Met vakmanschap, oog voor detail en oprechte aandacht zorgen we ervoor dat je altijd met een glimlach de deur uit loopt. Van knippen en kleuren tot balayage en behandelingen — alles op maat.</p>
+        <div class="about-meta">
+          <div>
+            <span class="caps" data-nl="Locatie" data-en="Location">Locatie</span>
+            <strong>Utrecht</strong>
+          </div>
+          <div>
+            <span class="caps" data-nl="Reviews" data-en="Reviews">Reviews</span>
+            <strong>4,9 / 77</strong>
+          </div>
+          <div>
+            <span class="caps" data-nl="Openingstijden" data-en="Hours">Openingstijden</span>
+            <strong data-nl="7 dagen" data-en="7 days">7 dagen</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Services -->
+<section class="services section" id="diensten">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow" data-nl="Diensten" data-en="Services">Diensten</span>
+      <h2 data-nl="Onze <em>Diensten</em>" data-en="Our <em>Services</em>">Onze <em style="font-style:italic">Diensten</em></h2>
+      <p class="services-sub" data-nl="Vakkundig, persoonlijk en altijd op maat voor jouw haar." data-en="Skilled, personal and always tailored to your hair.">Vakkundig, persoonlijk en altijd op maat voor jouw haar.</p>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Diensten categorieën">
+      <button class="tab active" role="tab" data-tab="one" aria-selected="true" data-nl="Haar Styling" data-en="Hair Styling">Haar Styling</button>
+      <button class="tab" role="tab" data-tab="two" aria-selected="false" data-nl="Haarkleuring" data-en="Hair Colour">Haarkleuring</button>
+      <button class="tab" role="tab" data-tab="three" aria-selected="false" data-nl="Behandelingen" data-en="Treatments">Behandelingen</button>
+    </div>
+
+    <div class="panel active reveal" id="panel-one" role="tabpanel">
+      <div class="treatment">
+        <div class="treatment-name" data-nl="Föhnen — Kort" data-en="Blow-dry — Short">Föhnen — Kort</div>
+        <div class="treatment-meta"><span class="treatment-duration">30 min</span><span class="treatment-price">€30</span></div>
+      </div>
+      <div class="treatment">
+        <div class="treatment-name" data-nl="Föhnen — Medium" data-en="Blow-dry — Medium">Föhnen — Medium</div>
+        <div class="treatment-meta"><span class="treatment-duration">30 min</span><span class="treatment-price">€30</span></div>
+      </div>
+      <div class="treatment">
+        <div class="treatment-name" data-nl="Föhnen — Lang" data-en="Blow-dry — Long">Föhnen — Lang</div>
+        <div class="treatment-meta"><span class="treatment-duration">30 min</span><span class="treatment-price">v.a. €35</span></div>
+      </div>
+      <div class="treatment">
+        <div class="treatment-name" data-nl="Haar knippen" data-en="Haircut">Haar knippen</div>
+        <div class="treatment-meta"><span class="treatment-duration">30 min</span><span class="treatment-price">€30</span></div>
+      </div>
+      <div class="treatment">
+        <div class="treatment-name" data-nl="Knippen &amp; Föhnen" data-en="Cut &amp; Blow-dry">Knippen &amp; Föhnen</div>
+        <div class="treatment-meta"><span class="treatment-duration">40 min</span><span class="treatment-price">€60</span></div>
+      </div>
+      <div class="treatment">
+        <div class="treatment-name" data-nl="Haar opsteken" data-en="Updo / Upstyle">Haar opsteken</div>
+        <div class="treatment-meta"><span class="treatment-duration">—</span><span class="treatment-price">v.a. €60</span></div>
+      </div>
+      <div class="panel-foot">
+        <a href="https://www.ohsalonbyosamahanna.nl/afspraak-maken" target="_blank" rel="noopener" class="text-link" data-nl="Boek direct →" data-en="Book directly →">Boek direct →</a>
+        <a href="https://www.ohsalonbyosamahanna.nl/afspraak-maken" target="_blank" rel="noopener" class="btn btn-ghost" data-nl="Maak een afspraak" data-en="Book now">Maak een afspraak</a>
+      </div>
+    </div>
+
+    <div class="panel reveal" id="panel-two" role="tabpanel">
+      <div class="treatment">
+        <div class="treatment-name" data-nl="Enkele kleur" data-en="Single colour">Enkele kleur</div>
+        <div class="treatment-meta"><span class="treatment-duration">—</span><span class="treatment-price">v.a. €70</span></div>
+      </div>
+      <div class="treatment">
+        <div class="treatment-name" data-nl="Uitgroei — Enkele kleur" data-en="Root touch-up">Uitgroei — Enkele kleur</div>
+        <div class="treatment-meta"><span class="treatment-duration">—</span><span class="treatment-price">€40</span></div>
+      </div>
+      <div class="treatment">
+        <div class="treatment-name" data-nl="Uitgroei Highlights" data-en="Root Highlights">Uitgroei Highlights</div>
+        <div class="treatment-meta"><span class="treatment-duration">2u – 2u 45m</span><span class="treatment-price">v.a. €150</span></div>
+      </div>
+      <div class="treatment">
+        <div class="treatment-name" data-nl="Balayage Highlight" data-en="Balayage Highlight">Balayage Highlight</div>
+        <div class="treatment-meta"><span class="treatment-duration">2u 15m – 2u 45m</span><span class="treatment-price">v.a. €200</span></div>
+      </div>
+      <div class="treatment">
+        <div class="treatment-name" data-nl="Kleurspoeling" data-en="Colour rinse">Kleurspoeling</div>
+        <div class="treatment-meta"><span class="treatment-duration">—</span><span class="treatment-price">€40</span></div>
+      </div>
+      <p class="panel-note" data-nl="Prijzen zijn afhankelijk van haarlengte en gewenst resultaat." data-en="Prices depend on hair length and desired result.">Prijzen zijn afhankelijk van haarlengte en gewenst resultaat.</p>
+      <div class="panel-foot">
+        <a href="https://www.ohsalonbyosamahanna.nl/afspraak-maken" target="_blank" rel="noopener" class="text-link" data-nl="Boek direct →" data-en="Book directly →">Boek direct →</a>
+        <a href="https://www.ohsalonbyosamahanna.nl/afspraak-maken" target="_blank" rel="noopener" class="btn btn-ghost" data-nl="Maak een afspraak" data-en="Book now">Maak een afspraak</a>
+      </div>
+    </div>
+
+    <div class="panel reveal" id="panel-three" role="tabpanel">
+      <div class="treatment">
+        <div class="treatment-name" data-nl="Haarkeratinebehandeling" data-en="Keratin treatment">Haarkeratinebehandeling</div>
+        <div class="treatment-meta"><span class="treatment-duration">—</span><span class="treatment-price">v.a. €130</span></div>
+      </div>
+      <div class="treatment">
+        <div class="treatment-name" data-nl="Proteïne behandeling" data-en="Protein treatment">Proteïne behandeling</div>
+        <div class="treatment-meta"><span class="treatment-duration">—</span><span class="treatment-price">v.a. €130</span></div>
+      </div>
+      <div class="treatment">
+        <div class="treatment-name" data-nl="Olaplex-behandeling" data-en="Olaplex treatment">Olaplex-behandeling</div>
+        <div class="treatment-meta"><span class="treatment-duration">—</span><span class="treatment-price">€40</span></div>
+      </div>
+      <div class="treatment">
+        <div class="treatment-name" data-nl="Botoxbehandeling" data-en="Botox treatment">Botoxbehandeling</div>
+        <div class="treatment-meta"><span class="treatment-duration">—</span><span class="treatment-price">€35</span></div>
+      </div>
+      <div class="treatment">
+        <div class="treatment-name" data-nl="Haarmasker" data-en="Hair mask">Haarmasker</div>
+        <div class="treatment-meta"><span class="treatment-duration">20 min</span><span class="treatment-price">€20</span></div>
+      </div>
+      <p class="panel-note" data-nl="Volledig aanbod en online boeking via onze website." data-en="Full menu and online booking via our website.">Volledig aanbod en online boeking via onze website.</p>
+      <div class="panel-foot">
+        <a href="https://www.ohsalonbyosamahanna.nl/afspraak-maken" target="_blank" rel="noopener" class="text-link" data-nl="Boek direct →" data-en="Book directly →">Boek direct →</a>
+        <a href="https://www.ohsalonbyosamahanna.nl/afspraak-maken" target="_blank" rel="noopener" class="btn btn-ghost" data-nl="Maak een afspraak" data-en="Book now">Maak een afspraak</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Gallery -->
+<section class="gallery section" id="galerij">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow" data-nl="Galerij" data-en="Gallery">Galerij</span>
+      <h2>The <em style="font-style:italic">Gallery</em></h2>
+    </div>
+    <div class="gallery-grid">
+      <a class="gtile t1 reveal" href="https://www.instagram.com/salonosamahanna" target="_blank" rel="noopener"><img src="luxe_assets_standard/salon_interior_01.jpg" alt="Luxe kapsalon Utrecht" width="900" height="1100" loading="lazy"></a>
+      <a class="gtile t2 reveal" href="https://www.instagram.com/salonosamahanna" target="_blank" rel="noopener"><img src="luxe_assets_standard/13_serum_dropper_luxury.jpg" alt="Haarproducten" width="600" height="600" loading="lazy"></a>
+      <a class="gtile t3 reveal" href="https://www.instagram.com/salonosamahanna" target="_blank" rel="noopener"><img src="luxe_assets_standard/salon_mirror_01.jpg" alt="Salon spiegel" width="600" height="900" loading="lazy"></a>
+      <a class="gtile t4 reveal" href="https://www.instagram.com/salonosamahanna" target="_blank" rel="noopener"><img src="luxe_assets_standard/scissors_02.jpg" alt="Professionele kapper" width="600" height="600" loading="lazy"></a>
+      <a class="gtile t5 reveal" href="https://www.instagram.com/salonosamahanna" target="_blank" rel="noopener"><img src="luxe_assets_standard/salon_interior_03.jpg" alt="Salon interieur" width="1200" height="600" loading="lazy"></a>
+      <a class="gtile t6 reveal" href="https://www.instagram.com/salonosamahanna" target="_blank" rel="noopener"><img src="luxe_assets_standard/model_hair_03.jpg" alt="Haar look" width="600" height="600" loading="lazy"></a>
+      <a class="gtile t7 reveal" href="https://www.instagram.com/salonosamahanna" target="_blank" rel="noopener"><img src="luxe_assets_standard/03_minimal_spa_room.jpg" alt="Kapsalon interieur" width="600" height="600" loading="lazy"></a>
+      <a class="gtile t8 reveal" href="https://www.instagram.com/salonosamahanna" target="_blank" rel="noopener"><img src="luxe_assets_standard/06_lash_eye_detail.jpg" alt="Haar model" width="1200" height="600" loading="lazy"></a>
+    </div>
+  </div>
+</section>
+
+<!-- Team -->
+<section class="team section" id="team">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow" data-nl="Het team" data-en="The team">Het team</span>
+      <h2 data-nl="Meet <em>Osama &amp; Hanna</em>" data-en="Meet <em>Osama &amp; Hanna</em>">Meet <em style="font-style:italic">Osama &amp; Hanna</em></h2>
+      <p class="team-sub" data-nl="Twee professionals, één passie: jouw haar op zijn best." data-en="Two professionals, one passion: your hair at its best.">Twee professionals, één passie: jouw haar op zijn best.</p>
+    </div>
+
+    <div class="team-grid">
+      <div class="lead-card reveal">
+        <div class="lead-figure">
+          <div class="arch-frame">
+            <img src="luxe_assets_standard/scissors_02.jpg" alt="Osama — co-founder O&H Salon" width="900" height="1100" loading="lazy">
+          </div>
+        </div>
+        <div class="lead-info">
+          <h3>Osama</h3>
+          <span class="caps" data-nl="Co-founder · Hairstylist" data-en="Co-founder · Hairstylist">Co-founder · Hairstylist</span>
+          <p data-nl="Osama heeft een onmiskenbaar oog voor detail en staat bekend om zijn precisie. Of het nu gaat om een klassieke coupe of een moderne kleurbehandeling — elke klant krijgt zijn volledige aandacht en vakmanschap." data-en="Osama has an unmistakable eye for detail and is known for his precision. Whether it's a classic cut or a modern colour treatment — every client gets his full attention and craftsmanship.">Osama heeft een onmiskenbaar oog voor detail en staat bekend om zijn precisie. Of het nu gaat om een klassieke coupe of een moderne kleurbehandeling — elke klant krijgt zijn volledige aandacht en vakmanschap.</p>
+          <a href="https://www.ohsalonbyosamahanna.nl/afspraak-maken" target="_blank" rel="noopener" class="btn btn-ghost" data-nl="Boek bij Osama →" data-en="Book with Osama →">Boek bij Osama →</a>
+        </div>
+      </div>
+
+      <div class="team-roster reveal">
+        <div class="member">
+          <div class="member-circle"><span>H</span></div>
+          <h4>Hanna</h4>
+          <span class="caps" data-nl="Co-founder · Hairstylist" data-en="Co-founder · Hairstylist">Co-founder · Hairstylist</span>
+        </div>
+        <div class="member">
+          <div class="member-circle" style="background:var(--amber);"><span style="font-size:1.6rem;">✦</span></div>
+          <h4 data-nl="Jij?" data-en="You?">Jij?</h4>
+          <span class="caps" data-nl="We zoeken talent" data-en="We're hiring">We zoeken talent</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Reviews -->
+<section class="reviews section" id="reviews">
+  <div class="container">
+    <div class="reviews-head reveal">
+      <div class="score-row">
+        <span class="score-num">4,9</span>
+        <span class="stars" aria-label="4.9 sterren">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+        </span>
+      </div>
+      <span class="score-meta" data-nl="77 reviews · Treatwell" data-en="77 reviews · Treatwell">77 reviews · Treatwell</span>
+      <h2 class="italic-display" style="margin-top:36px;" data-nl="Wat onze <em>klanten</em> zeggen" data-en="What our <em>clients</em> say">Wat onze <em style="font-style:italic">klanten</em> zeggen</h2>
+    </div>
+
+    <div class="review-grid">
+      <article class="review reveal">
+        <p class="review-text" data-nl="Super blij met mijn nieuwe kleur! Hanna heeft precies begrepen wat ik wilde. Het resultaat is prachtig — warm, natuurlijk en precies goed." data-en="So happy with my new colour! Hanna understood exactly what I wanted. The result is beautiful — warm, natural and just right.">Super blij met mijn nieuwe kleur! Hanna heeft precies begrepen wat ik wilde. Het resultaat is prachtig — warm, natuurlijk en precies goed.</p>
+        <div class="review-meta">
+          <span class="stars">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+          </span>
+          <span class="review-author">Leen</span>
+        </div>
+      </article>
+      <article class="review reveal">
+        <p class="review-text" data-nl="Osama heeft me fantastisch geholpen. De knipbeurt was precies goed en hij luistert echt naar wat je wilt. Al mijn vriendinnen krijgen dit adres!" data-en="Osama helped me fantastically. The haircut was just right and he really listens to what you want. All my friends are getting this address!">Osama heeft me fantastisch geholpen. De knipbeurt was precies goed en hij luistert echt naar wat je wilt. Al mijn vriendinnen krijgen dit adres!</p>
+        <div class="review-meta">
+          <span class="stars">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+          </span>
+          <span class="review-author">Emily</span>
+        </div>
+      </article>
+      <article class="review reveal">
+        <p class="review-text" data-nl="Geweldig kapsalon met heel persoonlijke aanpak. Je voelt je direct op je gemak. Mijn balayage overtrof alle verwachtingen — absoluut een aanrader!" data-en="Amazing salon with a very personal approach. You feel at ease immediately. My balayage exceeded all expectations — absolutely recommended!">Geweldig kapsalon met heel persoonlijke aanpak. Je voelt je direct op je gemak. Mijn balayage overtrof alle verwachtingen — absoluut een aanrader!</p>
+        <div class="review-meta">
+          <span class="stars">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+          </span>
+          <span class="review-author">Silina</span>
+        </div>
+      </article>
+    </div>
+
+    <div class="reviews-foot reveal">
+      <a href="https://www.treatwell.nl/salon/o-h-haar-salon/" target="_blank" rel="noopener" data-nl="Lees alle reviews op Treatwell →" data-en="Read all reviews on Treatwell →">Lees alle reviews op Treatwell →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta section" id="boek">
+  <svg class="deco-arch" viewBox="0 0 200 140" fill="none" stroke="#3d0a0e" stroke-width="1" aria-hidden="true">
+    <path d="M10 140 V70 a90 90 0 0 1 180 0 V140"></path>
+  </svg>
+  <div class="container">
+    <div class="cta-inner reveal">
+      <span class="eyebrow" data-nl="Boek nu" data-en="Book now">Boek nu</span>
+      <h2 data-nl="Klaar voor jouw <em>transformatie?</em>" data-en="Ready for your <em>transformation?</em>">Klaar voor jouw <em style="font-style:italic">transformatie?</em></h2>
+      <p data-nl="Boek je afspraak 24/7 online — waar en wanneer je maar wilt." data-en="Book your appointment 24/7 online — wherever and whenever you want.">Boek je afspraak 24/7 online — waar en wanneer je maar wilt.</p>
+      <a href="https://www.ohsalonbyosamahanna.nl/afspraak-maken" target="_blank" rel="noopener" class="btn btn-primary btn-xxl" data-nl="Maak een afspraak" data-en="Book Now">Maak een afspraak</a>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section class="contact section" id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="reveal">
+        <span class="eyebrow" data-nl="Contact" data-en="Contact">Contact</span>
+        <h2 data-nl="Bezoek <em>de salon</em>" data-en="Visit <em>the salon</em>">Bezoek <em style="font-style:italic">de salon</em></h2>
+
+        <table class="hours" aria-label="Openingstijden">
+          <tr><td data-nl="Maandag" data-en="Monday">Maandag</td><td>10:00 – 20:00</td></tr>
+          <tr><td data-nl="Dinsdag" data-en="Tuesday">Dinsdag</td><td>10:00 – 20:00</td></tr>
+          <tr><td data-nl="Woensdag" data-en="Wednesday">Woensdag</td><td>10:00 – 20:00</td></tr>
+          <tr><td data-nl="Donderdag" data-en="Thursday">Donderdag</td><td>10:00 – 20:00</td></tr>
+          <tr><td data-nl="Vrijdag" data-en="Friday">Vrijdag</td><td>10:00 – 20:00</td></tr>
+          <tr><td data-nl="Zaterdag" data-en="Saturday">Zaterdag</td><td>10:00 – 20:00</td></tr>
+          <tr><td data-nl="Zondag" data-en="Sunday">Zondag</td><td>11:00 – 19:00</td></tr>
+        </table>
+
+        <div class="contact-info">
+          <div class="row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+              <path d="M12 22s-7-7.5-7-13a7 7 0 1 1 14 0c0 5.5-7 13-7 13z"></path><circle cx="12" cy="9" r="2.5"></circle>
+            </svg>
+            <div>
+              <span class="caps" data-nl="Adres" data-en="Address">Adres</span>
+              <a href="https://maps.google.com/?q=Amsterdamsestraatweg+294,+3551+CS+Utrecht" target="_blank" rel="noopener">Amsterdamsestraatweg 294, 3551 CS Utrecht</a>
+            </div>
+          </div>
+          <div class="row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+            <div>
+              <span class="caps" data-nl="Telefoon" data-en="Phone">Telefoon</span>
+              <a href="tel:+31634746576">+31 6 34 74 65 76</a>
+            </div>
+          </div>
+          <div class="row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r=".7" fill="currentColor"></circle>
+            </svg>
+            <div>
+              <span class="caps">Instagram</span>
+              <a href="https://www.instagram.com/salonosamahanna" target="_blank" rel="noopener">@salonosamahanna</a>
+            </div>
+          </div>
+          <div class="row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+              <path d="M3 6.5l9 6 9-6"></path><rect x="3" y="5" width="18" height="14" rx="2"></rect>
+            </svg>
+            <div>
+              <span class="caps">Email</span>
+              <a href="mailto:salonosamahanna@gmail.com">salonosamahanna@gmail.com</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="map-wrap reveal" aria-label="Locatie O&H Salon Utrecht">
+        <iframe
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://maps.google.com/maps?q=Amsterdamsestraatweg+294,+3551+CS+Utrecht&output=embed&z=16"
+          title="O&H Salon — Amsterdamsestraatweg 294, Utrecht"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-brand">
+      O&amp;H <em>Salon</em>
+      <small>by Osama &amp; Hanna · Utrecht</small>
+    </div>
+
+    <nav class="footer-nav" aria-label="Footer navigatie">
+      <a href="#diensten" data-nl="Diensten" data-en="Services">Diensten</a>
+      <a href="#galerij" data-nl="Galerij" data-en="Gallery">Galerij</a>
+      <a href="#team" data-nl="Team" data-en="Team">Team</a>
+      <a href="#reviews" data-nl="Reviews" data-en="Reviews">Reviews</a>
+      <a href="#contact" data-nl="Contact" data-en="Contact">Contact</a>
+      <a href="https://www.ohsalonbyosamahanna.nl/afspraak-maken" target="_blank" rel="noopener" data-nl="Boek nu" data-en="Book now">Boek nu</a>
+    </nav>
+
+    <div class="footer-social" aria-label="Social media">
+      <a href="https://www.instagram.com/salonosamahanna" target="_blank" rel="noopener" aria-label="Instagram @salonosamahanna">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r=".7" fill="currentColor"></circle>
+        </svg>
+      </a>
+    </div>
+
+    <div class="footer-bottom">
+      <span data-nl="© 2025 O&H Salon by Osama &amp; Hanna" data-en="© 2025 O&H Salon by Osama &amp; Hanna">© 2025 O&amp;H Salon by Osama &amp; Hanna</span>
+      <span class="credit" data-nl="Website door Revivo" data-en="Website by Revivo">Website door Revivo</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  const splash = document.getElementById('splash');
+  const SHOWN_KEY = 'oh-splash-v1';
+  const reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  function hideSplash(){
+    if(!splash) return;
+    splash.classList.add('hide');
+    setTimeout(()=>{ splash.remove(); }, 800);
+    try{ sessionStorage.setItem(SHOWN_KEY,'1'); }catch(e){}
+  }
+  if(sessionStorage.getItem(SHOWN_KEY)==='1'||reduce){
+    if(splash) splash.remove();
+  } else {
+    setTimeout(hideSplash, 2000);
+  }
+
+  const nav = document.getElementById('nav');
+  const onScroll = ()=>{
+    if(window.scrollY>40) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, {passive:true});
+
+  const burger = document.getElementById('hamburger');
+  const mobile = document.getElementById('mobile-menu');
+  burger.addEventListener('click', ()=>{
+    const open = document.body.classList.toggle('menu-open');
+    burger.setAttribute('aria-expanded', open?'true':'false');
+  });
+  mobile.querySelectorAll('a').forEach(a=>{
+    a.addEventListener('click', ()=>{
+      document.body.classList.remove('menu-open');
+      burger.setAttribute('aria-expanded','false');
+    });
+  });
+
+  const tabs = document.querySelectorAll('.tab');
+  const panels = {
+    one:   document.getElementById('panel-one'),
+    two:   document.getElementById('panel-two'),
+    three: document.getElementById('panel-three'),
+  };
+  tabs.forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      tabs.forEach(t=>{ t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+      tab.classList.add('active'); tab.setAttribute('aria-selected','true');
+      const key = tab.dataset.tab;
+      Object.entries(panels).forEach(([k,p])=>{ p.classList.toggle('active', k===key); });
+    });
+  });
+
+  if('IntersectionObserver' in window && !reduce){
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }
+      });
+    },{threshold:0.12,rootMargin:'0px 0px -40px 0px'});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'));
+  }
+
+  const langBtns = document.querySelectorAll('.lang-switch button');
+  function applyLang(lang){
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-nl][data-en]').forEach(el=>{
+      const v = el.dataset[lang];
+      if(v!=null) el.innerHTML = v;
+    });
+    langBtns.forEach(b=>{ b.classList.toggle('active', b.dataset.lang===lang); });
+  }
+  langBtns.forEach(b=>{ b.addEventListener('click', ()=>applyLang(b.dataset.lang)); });
+
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click',(e)=>{
+      const href = a.getAttribute('href');
+      if(href==='#'||href.endsWith('-link')) return;
+      const target = document.querySelector(href);
+      if(target){
+        e.preventDefault();
+        document.body.classList.remove('menu-open');
+        burger.setAttribute('aria-expanded','false');
+        const top = target.getBoundingClientRect().top + window.scrollY - 60;
+        window.scrollTo({top, behavior:reduce?'auto':'smooth'});
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
