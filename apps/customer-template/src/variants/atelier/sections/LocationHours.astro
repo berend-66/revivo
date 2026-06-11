@@ -5,74 +5,115 @@ interface Props {
 }
 const { config } = Astro.props;
 
-// postcode is optional (render-if-present) — never let "undefined" reach the maps query.
-const mapQuery = encodeURIComponent(
-  `${config.location.address}, ${[config.location.postcode, config.location.city].filter(Boolean).join(" ")}`,
-);
-/* Embed with no API key — works for static pin display. */
+// Postcode is optional by design (Treatwell carries none) — never render
+// "undefined" into the address line or the maps query.
+const addressLine = `${config.location.address}, ${[config.location.postcode, config.location.city]
+  .filter(Boolean)
+  .join(" ")}`;
+const mapQuery = encodeURIComponent(addressLine);
 const mapSrc = `https://maps.google.com/maps?q=${mapQuery}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+const mapsLink = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+
+const igHandle = config.contact.instagram?.replace(/^@+/, "");
+const phone = config.contact.phone;
+const email = config.contact.email;
 ---
 
-<section id="location" class="section-pad bg-surface-deep">
-  <div class="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16">
-    <div class="md:col-span-5">
-      <p class="eyebrow-mono mb-6">— Openingstijden</p>
-      <h2
-        class="font-display text-4xl md:text-5xl text-ink leading-[1.05]"
-        style="font-variation-settings: 'opsz' 144, 'SOFT' 60;"
-      >
-        Wanneer we open zijn.
-      </h2>
+<section class="contact section" id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="reveal">
+        <span class="eyebrow">Contact</span>
+        <h2>Bezoek <em style="font-style:italic">de salon</em></h2>
 
-      <dl class="mt-12 divide-y divide-rule border-y border-rule">
-        {
-          config.hours.map((h) => (
-            <div class="flex items-baseline justify-between py-4">
-              <dt class="text-lg text-ink">{h.day}</dt>
-              <dd
-                class="font-display italic text-lg text-ink-soft"
-                style="font-variation-settings: 'opsz' 144, 'SOFT' 80;"
-              >
-                {h.closed ? "gesloten" : `${h.open} — ${h.close}`}
-              </dd>
+        <table class="hours" aria-label="Openingstijden">
+          {
+            config.hours.map((row) => (
+              <tr>
+                <td>{row.day}</td>
+                {row.closed ? (
+                  <td class="closed">Gesloten</td>
+                ) : (
+                  <td>
+                    {row.open} – {row.close}
+                  </td>
+                )}
+              </tr>
+            ))
+          }
+        </table>
+
+        <div class="contact-info">
+          <div class="row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+              <path d="M12 22s-7-7.5-7-13a7 7 0 1 1 14 0c0 5.5-7 13-7 13z"></path>
+              <circle cx="12" cy="9" r="2.5"></circle>
+            </svg>
+            <div>
+              <span class="caps">Adres</span>
+              <a href={mapsLink} target="_blank" rel="noopener">{addressLine}</a>
+              {
+                config.location.transitNotes && (
+                  <p style="margin: 6px 0 0; font-family: var(--serif); font-style: italic; color: var(--ink-soft); font-size: 0.98rem;">
+                    {config.location.transitNotes}
+                  </p>
+                )
+              }
             </div>
-          ))
-        }
-      </dl>
-    </div>
+          </div>
+          {
+            phone && (
+              <div class="row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
+                <div>
+                  <span class="caps">Telefoon</span>
+                  <a href={`tel:${phone.replace(/[\s()-]/g, "")}`}>{phone}</a>
+                </div>
+              </div>
+            )
+          }
+          {
+            igHandle && (
+              <div class="row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="5" />
+                  <circle cx="12" cy="12" r="4" />
+                  <circle cx="17.5" cy="6.5" r=".7" fill="currentColor" />
+                </svg>
+                <div>
+                  <span class="caps">Instagram</span>
+                  <a href={`https://instagram.com/${igHandle}`} target="_blank" rel="noopener">
+                    @{igHandle}
+                  </a>
+                </div>
+              </div>
+            )
+          }
+          {
+            email && (
+              <div class="row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+                  <path d="M3 6.5l9 6 9-6" />
+                  <rect x="3" y="5" width="18" height="14" rx="2" />
+                </svg>
+                <div>
+                  <span class="caps">E-mail</span>
+                  <a href={`mailto:${email}`}>{email}</a>
+                </div>
+              </div>
+            )
+          }
+        </div>
+      </div>
 
-    <div class="md:col-span-7">
-      <p class="eyebrow-mono mb-6">— Bezoek ons</p>
-      <address class="not-italic">
-        <p
-          class="font-display text-3xl md:text-4xl text-ink leading-snug"
-          style="font-variation-settings: 'opsz' 144, 'SOFT' 60;"
-        >
-          {config.location.address}<br />
-          <span class="text-ink-soft">
-            {config.location.postcode} {config.location.city}
-          </span>
-        </p>
-
-        {
-          config.location.transitNotes && (
-            <p class="font-display italic text-lg text-ink-mute mt-6 max-w-md">
-              {config.location.transitNotes}
-            </p>
-          )
-        }
-      </address>
-
-      <div class="mt-10 border border-rule">
+      <div class="map-wrap reveal" aria-label="Kaart">
         <iframe
-          src={mapSrc}
-          width="100%"
-          height="360"
-          style="border:0; filter: grayscale(0.3) sepia(0.15);"
           loading="lazy"
           referrerpolicy="no-referrer-when-downgrade"
-          title="Kaart van de salon"
-        ></iframe>
+          src={mapSrc}
+          title={`Kaart — ${addressLine}`}></iframe>
       </div>
     </div>
   </div>

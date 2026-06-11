@@ -4,59 +4,29 @@ interface Props {
   config: SiteConfig;
 }
 const { config } = Astro.props;
-const bookingHref =
-  config.booking.externalUrl ??
-  config.booking.iframeUrl ??
-  (config.contact.phone ? `tel:${config.contact.phone.replace(/\s/g, "")}` : "#");
-const ctaLabel = config.booking.label ?? "Boek je afspraak";
+
+// hero.cta override first, then a real booking URL, then a real phone, then
+// the contact section. Never a dead "#book-link".
+const bookUrl = config.hero.cta?.href ?? config.booking.externalUrl;
+const phone = config.contact.phone;
+const href = bookUrl ?? (phone ? `tel:${phone.replace(/[\s()-]/g, "")}` : "#contact");
+const label =
+  config.hero.cta?.label ?? config.booking.label ?? (bookUrl ? "Boek nu" : phone ? "Bel ons" : "Neem contact op");
+const external = /^https?:/.test(href);
 ---
 
-<section
-  id="booking"
-  class="section-pad relative overflow-hidden"
-  style="background-color: var(--color-primary); color: var(--color-surface);"
->
-  <div class="max-w-4xl text-center mx-auto">
-    <p class="eyebrow-mono mb-8" style="color: var(--color-surface); opacity: 0.65;">
-      — Tot snel
-    </p>
-
-    <h2
-      class="font-display text-4xl md:text-6xl lg:text-7xl leading-[1.05]"
-      style="font-variation-settings: 'opsz' 144, 'SOFT' 80;"
-    >
-      Zin om een keer<br />
-      <em
-        class="italic"
-        style="font-variation-settings: 'opsz' 144, 'SOFT' 100, 'WONK' 1; color: var(--color-accent, var(--color-surface));"
-      >
-        langs te komen?
-      </em>
-    </h2>
-
-    <p class="font-display italic text-xl md:text-2xl mt-8 max-w-2xl mx-auto" style="opacity: 0.85;">
-      We plannen graag een rustig moment in. Online boeken of even bellen — wat jij het fijnst vindt.
-    </p>
-
-    <div class="mt-12 flex flex-col sm:flex-row items-center justify-center gap-5">
-      <a
-        href={bookingHref}
-        class="inline-flex items-center gap-3 px-10 py-4 bg-surface text-ink hover:bg-white transition-colors"
-      >
-        <span class="font-display italic text-xl">{ctaLabel}</span>
+<section class="cta section" id="book">
+  <svg class="deco-arch" viewBox="0 0 200 140" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" style="color: var(--bordeaux);">
+    <path d="M10 140 V70 a90 90 0 0 1 180 0 V140"></path>
+  </svg>
+  <div class="container">
+    <div class="cta-inner reveal">
+      <span class="eyebrow">Boek nu</span>
+      <h2>Tijd voor <em style="font-style:italic">jou?</em></h2>
+      <p>Plan je bezoek aan {config.brand.name} in {config.location.city}.</p>
+      <a href={href} class="btn btn-primary btn-xxl" {...external ? { target: "_blank", rel: "noopener" } : {}}>
+        {label}
       </a>
-
-      {
-        config.contact.phone && (
-          <a
-            href={`tel:${config.contact.phone.replace(/\s/g, "")}`}
-            class="eyebrow-mono px-10 py-4 border border-current opacity-80 hover:opacity-100 transition-opacity"
-            style="color: var(--color-surface);"
-          >
-            Of bel — {config.contact.phone}
-          </a>
-        )
-      }
     </div>
   </div>
 </section>

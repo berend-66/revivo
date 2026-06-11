@@ -4,79 +4,41 @@ interface Props {
   config: SiteConfig;
 }
 const { config } = Astro.props;
-const heroImg = config.hero.images[0];
-const secondaryImg = config.hero.images[1];
+
+// The cinematic hero uses ONE background image; photo curation puts the
+// salon's best shot at hero.images[0].
+const bg = config.hero.images[0];
+
+// Luxe signature: the last word of the headline in italic serif. Pure
+// presentation — the words themselves are the (grounded) LLM headline.
+const headlineWords = config.hero.headline.trim().split(/\s+/);
+const headlineLead = headlineWords.slice(0, -1).join(" ");
+const headlineLast = headlineWords[headlineWords.length - 1];
+
 ---
 
-<section id="top" class="section-pad pt-20 md:pt-28">
-  <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-start">
-    <div class="md:col-span-7">
-      <p class="eyebrow-mono mb-8">
-        {String(new Date().getFullYear())} — {config.location.city}
-      </p>
-
-      <h1
-        class="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] leading-[1.02] text-ink"
-        style="font-variation-settings: 'opsz' 144, 'SOFT' 60, 'WONK' 0;"
-      >
-        {config.hero.headline}
-      </h1>
-
-      {
-        config.hero.subheadline && (
-          <p class="font-display italic text-2xl md:text-3xl text-ink-soft leading-snug mt-10 max-w-xl">
-            {config.hero.subheadline}
-          </p>
-        )
-      }
-
-      <div class="mt-12 flex flex-wrap items-center gap-6">
-        <a
-          href="#booking"
-          class="inline-flex items-center gap-3 text-ink hover:text-primary transition-colors group"
-        >
-          <span class="font-display italic text-2xl">{config.hero.cta?.label ?? "Boek je afspraak"}</span>
-          <span class="inline-block w-12 h-px bg-current group-hover:w-16 transition-all"></span>
-        </a>
-        {
-          config.brand.tagline && (
-            <span class="eyebrow-mono">{config.brand.tagline}</span>
-          )
-        }
-        {
-          config.reputation && (
-            <span class="eyebrow-mono">
-              {config.reputation.rating.toLocaleString("nl-NL", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}★
-              {config.reputation.source && ` op ${config.reputation.source}`}
-              {config.reputation.reviewCount != null &&
-                ` · ${new Intl.NumberFormat("nl-NL").format(config.reputation.reviewCount)} reviews`}
-            </span>
-          )
-        }
-      </div>
-    </div>
-
-    <div class="md:col-span-5 md:mt-12">
-      <figure class="relative">
-        <img
-          src={heroImg}
-          alt=""
-          class="w-full aspect-[4/5] object-cover"
-          style="filter: saturate(0.85) contrast(1.05);"
-          loading="eager"
-        />
-        {
-          secondaryImg && (
-            <img
-              src={secondaryImg}
-              alt=""
-              class="hidden md:block absolute -bottom-16 -left-20 w-44 aspect-[4/5] object-cover border-8 border-surface"
-              style="filter: saturate(0.85) contrast(1.05);"
-              loading="eager"
-            />
-          )
-        }
-      </figure>
-    </div>
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true">
+    <img src={bg} alt="" width="1600" height="1000" />
+  </div>
+  <div class="hero-content">
+    <h1>
+      {headlineWords.length > 1 ? <>{headlineLead}{" "}<em>{headlineLast}</em></> : config.hero.headline}
+    </h1>
+    {/* Short, always-true signature line — the Luxe style breaks on long
+        sentences (0.32em tracked uppercase), so the LLM subheadline stays out
+        of the hero; its voice lives in the headline and about-copy. */}
+    <p class="hero-sub">
+      <span>{config.location.city}</span>
+      <span class="dot">·</span>
+      <span>{config.location.address}</span>
+    </p>
+  </div>
+  <div class="scroll-cue" aria-hidden="true">
+    <svg viewBox="0 0 24 36" fill="none" stroke="currentColor" stroke-width="1">
+      <rect x="6" y="2" width="12" height="20" rx="6"></rect>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <path d="M8 28l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
   </div>
 </section>

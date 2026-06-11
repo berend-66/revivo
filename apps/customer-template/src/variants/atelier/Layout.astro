@@ -3,13 +3,14 @@ import "~/styles/atelier.css";
 import type { SiteConfig } from "@revivo/shared";
 import TopBar from "./sections/TopBar.astro";
 import Hero from "./sections/Hero.astro";
+import Trust from "./sections/Trust.astro";
 import About from "./sections/About.astro";
 import Services from "./sections/Services.astro";
 import Gallery from "./sections/Gallery.astro";
-import Testimonials from "./sections/Testimonials.astro";
 import Team from "./sections/Team.astro";
-import LocationHours from "./sections/LocationHours.astro";
+import Testimonials from "./sections/Testimonials.astro";
 import BookingCta from "./sections/BookingCta.astro";
+import LocationHours from "./sections/LocationHours.astro";
 import Footer from "./sections/Footer.astro";
 
 interface Props {
@@ -26,6 +27,12 @@ const brandStyles = [
   config.brand.colors.ink ? `--brand-ink: ${config.brand.colors.ink};` : "",
   config.brand.colors.surface ? `--brand-surface: ${config.brand.colors.surface};` : "",
 ].join(" ");
+
+// Typographic splash wordmark: first word italic when the name has several —
+// the Luxe signature. Most salons have no logo asset; the name IS the mark.
+const nameWords = config.brand.name.trim().split(/\s+/);
+const splashLead = nameWords.length > 1 ? nameWords[0] : null;
+const splashRest = nameWords.length > 1 ? nameWords.slice(1).join(" ") : config.brand.name;
 ---
 
 <!doctype html>
@@ -41,21 +48,159 @@ const brandStyles = [
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..700,0..100,0..1;1,9..144,300..700,0..100,0..1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap"
     />
+    {/* JS unavailable (privacy browsers, readers): the splash must never
+        wall off the page and reveal-content must be visible. */}
+    <noscript>
+      <style>
+        #splash {
+          display: none;
+        }
+        .reveal {
+          opacity: 1;
+          transform: none;
+        }
+      </style>
+    </noscript>
   </head>
   <body>
+    <div id="splash" aria-hidden="true" data-splash-key={`splash-${config.slug}`}>
+      {
+        config.brand.logoUrl ? (
+          <img src={config.brand.logoUrl} alt={config.brand.name} />
+        ) : (
+          <div class="splash-word">
+            {splashLead && <em>{splashLead}</em>}
+            {splashLead ? ` ${splashRest}` : splashRest}
+          </div>
+        )
+      }
+    </div>
+
     <TopBar config={config} />
-    <main>
+    <main id="top">
       <Hero config={config} />
+      <Trust config={config} />
       <About config={config} />
       <Services config={config} />
       <Gallery config={config} />
-      {config.testimonials && config.testimonials.length > 0 && <Testimonials config={config} />}
       {config.team && config.team.length > 0 && <Team config={config} />}
-      <LocationHours config={config} />
+      {config.testimonials && config.testimonials.length > 0 && <Testimonials config={config} />}
       <BookingCta config={config} />
+      <LocationHours config={config} />
     </main>
     <Footer config={config} />
+
+    <script is:inline>
+      (function () {
+        "use strict";
+
+        // ── Splash: once per browser session, keyed per slug — on the shared
+        // mock host, salon B's splash must not be suppressed by salon A's.
+        var splash = document.getElementById("splash");
+        var SHOWN_KEY = splash ? splash.dataset.splashKey : "splash";
+        var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        function hideSplash() {
+          if (!splash) return;
+          splash.classList.add("hide");
+          setTimeout(function () {
+            splash.remove();
+          }, 800);
+          try {
+            sessionStorage.setItem(SHOWN_KEY, "1");
+          } catch (e) {}
+        }
+        var shown = false;
+        try {
+          shown = sessionStorage.getItem(SHOWN_KEY) === "1";
+        } catch (e) {}
+        if (shown || reduce) {
+          if (splash) splash.remove();
+        } else {
+          setTimeout(hideSplash, 1800);
+        }
+
+        // ── Sticky nav
+        var nav = document.getElementById("nav");
+        var onScroll = function () {
+          if (window.scrollY > 40) nav.classList.add("scrolled");
+          else nav.classList.remove("scrolled");
+        };
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+
+        // ── Mobile menu
+        var burger = document.getElementById("hamburger");
+        var mobile = document.getElementById("mobile-menu");
+        burger.addEventListener("click", function () {
+          var open = document.body.classList.toggle("menu-open");
+          burger.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+        mobile.querySelectorAll("a").forEach(function (a) {
+          a.addEventListener("click", function () {
+            document.body.classList.remove("menu-open");
+            burger.setAttribute("aria-expanded", "false");
+          });
+        });
+
+        // ── Service tabs (generic over N categories)
+        var tabs = document.querySelectorAll(".tab");
+        var panels = document.querySelectorAll(".panel");
+        tabs.forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            tabs.forEach(function (t) {
+              t.classList.remove("active");
+              t.setAttribute("aria-selected", "false");
+            });
+            tab.classList.add("active");
+            tab.setAttribute("aria-selected", "true");
+            var key = tab.dataset.tab;
+            panels.forEach(function (p) {
+              p.classList.toggle("active", p.dataset.panel === key);
+            });
+          });
+        });
+
+        // ── Reveal on scroll
+        if ("IntersectionObserver" in window && !reduce) {
+          var io = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (e) {
+                if (e.isIntersecting) {
+                  e.target.classList.add("visible");
+                  io.unobserve(e.target);
+                }
+              });
+            },
+            { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
+          );
+          document.querySelectorAll(".reveal").forEach(function (el) {
+            io.observe(el);
+          });
+        } else {
+          document.querySelectorAll(".reveal").forEach(function (el) {
+            el.classList.add("visible");
+          });
+        }
+
+        // ── Smooth scroll for in-page anchors
+        document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+          a.addEventListener("click", function (e) {
+            var href = a.getAttribute("href");
+            if (href === "#") return;
+            var target = document.querySelector(href);
+            if (target) {
+              e.preventDefault();
+              document.body.classList.remove("menu-open");
+              burger.setAttribute("aria-expanded", "false");
+              var top = target.getBoundingClientRect().top + window.scrollY - 60;
+              window.scrollTo({ top: top, behavior: reduce ? "auto" : "smooth" });
+            }
+          });
+        });
+      })();
+    </script>
   </body>
 </html>

@@ -4,38 +4,82 @@ interface Props {
   config: SiteConfig;
 }
 const { config } = Astro.props;
-const items = config.testimonials!;
+
+// REAL reviews only (applyListingFacts writes the listing's own). Show the
+// three strongest; the score header renders only with a real reputation.
+const reviews = (config.testimonials ?? []).slice(0, 3);
+const rep = config.reputation;
+const rating = rep
+  ? rep.rating.toLocaleString("nl-NL", { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+  : null;
+const reviewCount = rep?.reviewCount ? new Intl.NumberFormat("nl-NL").format(rep.reviewCount) : null;
+const headerStars = rep ? Math.round(rep.rating) : 0;
+
+// "Lees alle reviews" may only point somewhere the reviews actually live.
+const allReviewsUrl =
+  config.booking.provider === "treatwell" && config.booking.externalUrl ? config.booking.externalUrl : null;
+
+const starPath = "M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z";
 ---
 
-<section id="testimonials" class="section-pad">
-  <div class="max-w-5xl">
-    <p class="eyebrow-mono mb-6">— Wat klanten zeggen</p>
-
-    <div class="space-y-20 mt-12">
+<section class="reviews section" id="reviews">
+  <div class="container">
+    <div class="reviews-head reveal">
       {
-        items.map((t) => (
-          <figure>
-            <span
-              class="font-display italic text-7xl text-primary leading-none block mb-2"
-              style="font-variation-settings: 'opsz' 144, 'SOFT' 100;"
-              aria-hidden="true"
-            >
-              "
+        rep && (
+          <>
+            <div class="score-row">
+              <span class="score-num">{rating}</span>
+              <span class="stars" aria-label={`${rating} sterren`}>
+                {Array.from({ length: headerStars }).map(() => (
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d={starPath} />
+                  </svg>
+                ))}
+              </span>
+            </div>
+            <span class="score-meta">
+              {reviewCount ? `${reviewCount} reviews` : "reviews"}
+              {rep.source ? ` · ${rep.source}` : ""}
             </span>
-            <blockquote
-              class="font-display text-2xl md:text-3xl lg:text-4xl text-ink leading-[1.25]"
-              style="font-variation-settings: 'opsz' 144, 'SOFT' 50;"
-            >
-              {t.quote}
-            </blockquote>
-            <figcaption class="mt-8 flex items-center gap-4">
-              <span class="eyebrow-mono">{t.author}</span>
-              <span class="w-10 h-px bg-rule"></span>
-              {t.source && <span class="eyebrow-mono">{t.source}</span>}
-            </figcaption>
-          </figure>
+          </>
+        )
+      }
+      <h2 class="italic-display" style="margin-top:36px;">
+        Wat onze <em style="font-style:italic">klanten</em> zeggen
+      </h2>
+    </div>
+
+    <div class="review-grid">
+      {
+        reviews.map((t) => (
+          <article class="review reveal">
+            <p class="review-text">{t.quote}</p>
+            <div class="review-meta">
+              {t.rating && (
+                <span class="stars" aria-label={`${t.rating} sterren`}>
+                  {Array.from({ length: t.rating }).map(() => (
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d={starPath} />
+                    </svg>
+                  ))}
+                </span>
+              )}
+              <span class="review-author">{t.author}</span>
+            </div>
+          </article>
         ))
       }
     </div>
+
+    {
+      allReviewsUrl && (
+        <div class="reviews-foot reveal">
+          <a href={allReviewsUrl} target="_blank" rel="noopener">
+            Lees alle reviews →
+          </a>
+        </div>
+      )
+    }
   </div>
 </section>

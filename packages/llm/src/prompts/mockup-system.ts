@@ -17,7 +17,7 @@ Een complete, geloofwaardige salonwebsite-configuratie: merknaam, kleurenpalet, 
 # Layout-variant kiezen (veld: layout)
 
 Kies de variant die bij het karakter van de salon past:
-- "atelier" — warm, verfijnd, redactioneel. Voor gevestigde, rustige, premium salons met een volwassen klantenkring. Serif-typografie, veel witruimte.
+- "atelier" — warm, verfijnd, klassiek-luxueus (cinematisch, serif, boogvormige fotokaders). Voor gevestigde, rustige, premium salons met een volwassen klantenkring.
 - "studio" — minimalistisch, high-fashion, brutalistisch. Voor designbewuste, ingetogen, monochrome salons. Strak, zelfverzekerd, modern.
 - "neon" — bold, kleurrijk, eigentijds. Voor jonge, trendy, expressieve salons die sterk op social media zitten. Grote typografie, kleurvlakken, energie.
 Respecteer een eventuele voorkeur uit de briefing (preferLayout), tenzij die duidelijk botst met de vibe.

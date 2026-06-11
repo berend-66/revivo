@@ -1,71 +1,94 @@
 ---
-import type { SiteConfig } from "@revivo/shared";
+import type { SiteConfig, TeamMember } from "@revivo/shared";
 interface Props {
   config: SiteConfig;
 }
 const { config } = Astro.props;
-const team = config.team!;
-const nf = new Intl.NumberFormat("nl-NL");
-const fmtRating = (r: number) => r.toLocaleString("nl-NL", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+// Lead card: the face of the salon, chosen among photo'd members only (no
+// photo → no lead card, never a placeholder portrait). Listing order is NOT
+// the signal — the live audit caught a junior stylist crowned over the
+// owner at "Salon Dani". Preference: owner role > name in the salon's brand
+// name > most-reviewed > first.
+const team: TeamMember[] = config.team ?? [];
+const photoed = team.filter((m) => m.photoUrl);
+const brandTokens = new Set(
+  config.brand.name
+    .toLowerCase()
+    .split(/[^\p{L}]+/u)
+    .filter(Boolean),
+);
+const lead =
+  photoed.find((m) => /eigenaar|eigenaresse|owner|oprichter/i.test(m.role ?? "")) ??
+  photoed.find((m) =>
+    m.name
+      .toLowerCase()
+      .split(/[^\p{L}]+/u)
+      .some((t) => t.length > 1 && brandTokens.has(t)),
+  ) ??
+  (photoed.length
+    ? photoed.reduce((a, b) => ((b.reviewCount ?? 0) > (a.reviewCount ?? 0) ? b : a))
+    : undefined);
+const roster = team.filter((m) => m !== lead);
+
+const fmtRating = (m: TeamMember): string | null =>
+  m.rating
+    ? `${m.rating.toLocaleString("nl-NL", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}★${
+        m.reviewCount ? ` · ${new Intl.NumberFormat("nl-NL").format(m.reviewCount)} reviews` : ""
+      }`
+    : null;
+
+const bookUrl = config.booking.externalUrl;
 ---
 
-<section id="team" class="section-pad">
-  <div class="max-w-6xl">
-    <p class="eyebrow-mono mb-6">— Het team</p>
+<section class="team section" id="team">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Het team</span>
+      <h2>Ons <em style="font-style:italic">team</em></h2>
+    </div>
 
-    <h2
-      class="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.05] text-ink max-w-3xl"
-      style="font-variation-settings: 'opsz' 144, 'SOFT' 60;"
-    >
-      De handen achter het werk.
-    </h2>
-
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-14 mt-16">
+    <div class={`team-grid${lead ? "" : " roster-only"}`}>
       {
-        team.map((m) => (
-          <figure>
-            {m.photoUrl ? (
-              <img
-                src={m.photoUrl}
-                alt={m.name}
-                loading="lazy"
-                class="w-full aspect-[3/4] object-cover"
-                style="filter: saturate(0.85) contrast(1.05);"
-              />
-            ) : (
-              <div
-                class="w-full aspect-[3/4] bg-surface-deep flex items-center justify-center font-display italic text-6xl text-primary"
-                style="font-variation-settings: 'opsz' 144, 'SOFT' 100, 'WONK' 1;"
-                aria-hidden="true"
-              >
-                {m.name.charAt(0)}
+        lead && (
+          <div class="lead-card reveal">
+            <div class="lead-figure">
+              <div class="arch-frame">
+                <img src={lead.photoUrl} alt={lead.name} width="900" height="1100" loading="lazy" />
               </div>
-            )}
+            </div>
+            <div class="lead-info">
+              <h3>{lead.name}</h3>
+              {(lead.role || fmtRating(lead)) && <span class="caps">{lead.role ?? fmtRating(lead)}</span>}
+              {lead.specialty && <p>{lead.specialty}</p>}
+              {bookUrl && (
+                <a href={bookUrl} target="_blank" rel="noopener" class="btn btn-ghost">
+                  Boek bij {lead.name} →
+                </a>
+              )}
+            </div>
+          </div>
+        )
+      }
 
-            <figcaption class="mt-5 border-t border-rule pt-4">
-              <p
-                class="font-display text-2xl text-ink leading-none"
-                style="font-variation-settings: 'opsz' 144, 'SOFT' 60;"
-              >
-                {m.name}
-              </p>
-              {m.role && <p class="eyebrow-mono mt-3">{m.role}</p>}
-              {m.specialty && (
-                <p
-                  class="font-display italic text-base text-ink-mute mt-3 leading-snug"
-                  style="font-variation-settings: 'opsz' 144, 'SOFT' 100;"
-                >
-                  {m.specialty}
-                </p>
-              )}
-              {m.rating != null && (
-                <p class="eyebrow-mono mt-4">
-                  {fmtRating(m.rating)}★{m.reviewCount != null && ` · ${nf.format(m.reviewCount)} reviews`}
-                </p>
-              )}
-            </figcaption>
-          </figure>
-        ))
+      {
+        roster.length > 0 && (
+          <div class="team-roster reveal">
+            {roster.map((m) => (
+              <div class="member">
+                <div class="member-circle">
+                  {m.photoUrl ? (
+                    <img src={m.photoUrl} alt={m.name} loading="lazy" />
+                  ) : (
+                    <span>{m.name.trim().charAt(0).toUpperCase()}</span>
+                  )}
+                </div>
+                <h4>{m.name}</h4>
+                {(m.role || fmtRating(m)) && <span class="caps">{m.role ?? fmtRating(m)}</span>}
+              </div>
+            ))}
+          </div>
+        )
       }
     </div>
   </div>

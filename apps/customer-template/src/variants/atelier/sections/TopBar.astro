@@ -4,24 +4,48 @@ interface Props {
   config: SiteConfig;
 }
 const { config } = Astro.props;
+
+// Wordmark: first word italic when the name has several (the Luxe signature).
+const words = config.brand.name.trim().split(/\s+/);
+const lead = words.length > 1 ? words[0] : null;
+const rest = words.length > 1 ? words.slice(1).join(" ") : config.brand.name;
+
+// Booking CTA: the schema's hero.cta override wins, then a real booking URL,
+// then the in-page contact section — never a dead placeholder link.
+const bookHref = config.hero.cta?.href ?? config.booking.externalUrl ?? "#contact";
+const bookLabel = config.hero.cta?.label ?? config.booking.label ?? "Maak een afspraak";
+const bookExternal = /^https?:/.test(bookHref);
+
+const links = [
+  { href: "#services", label: "Diensten" },
+  { href: "#gallery", label: "Galerij" },
+  ...(config.team && config.team.length > 0 ? [{ href: "#team", label: "Team" }] : []),
+  ...(config.testimonials && config.testimonials.length > 0 ? [{ href: "#reviews", label: "Reviews" }] : []),
+  { href: "#contact", label: "Contact" },
+];
 ---
 
-<header class="border-b border-rule px-6 md:px-16 py-5 flex items-center justify-between">
-  <a href="#top" class="font-display italic text-xl text-ink leading-none">
-    {config.brand.name}
-  </a>
+<nav class="nav" id="nav" aria-label="Hoofdmenu">
+  <div class="container nav-inner">
+    <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <a href="#top" class="nav-brand">{lead && <em>{lead}</em>}{lead ? ` ${rest}` : rest}</a>
+    <div class="nav-links">
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+    </div>
+    <div class="nav-right">
+      <a
+        href={bookHref}
+        class="btn btn-primary nav-book"
+        {...bookExternal ? { target: "_blank", rel: "noopener" } : {}}
+      >
+        {bookLabel}
+      </a>
+    </div>
+  </div>
+</nav>
 
-  <nav class="hidden md:flex items-center gap-9 eyebrow-mono">
-    <a href="#about" class="hover:text-ink transition-colors">Atelier</a>
-    <a href="#services" class="hover:text-ink transition-colors">Diensten</a>
-    <a href="#location" class="hover:text-ink transition-colors">Bezoek</a>
-    <a href="#booking" class="hover:text-ink transition-colors">Boeken</a>
-  </nav>
-
-  <a
-    href="#booking"
-    class="eyebrow-mono px-4 py-2 border border-current hover:bg-ink hover:text-surface transition-colors"
-  >
-    Maak afspraak
-  </a>
-</header>
+<div class="mobile-menu" id="mobile-menu">
+  {links.map((l) => <a href={l.href}>{l.label}</a>)}
+</div>

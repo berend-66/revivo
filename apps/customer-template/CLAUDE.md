@@ -35,11 +35,11 @@ Each variant `Layout.astro` is a **complete page**: `<html>`, `<head>`, fonts, b
 
 | Variant | Aesthetic | Display font | Body | Mono | Vibe |
 |---|---|---|---|---|---|
-| **atelier** | warm editorial magazine | Fraunces (var opsz/SOFT/WONK) | DM Sans | DM Mono | refined, mature, slow |
+| **atelier** | cinematic warm luxury ("Luxe") | Cormorant Garamond | Jost | — | refined, gracious, indulgent |
 | **studio** | brutalist high-fashion minimal | Bricolage Grotesque (var wdth) | IBM Plex Sans | IBM Plex Mono | confident, restrained, modern |
 | **neon** | contemporary maximalist | Unbounded | Hanken Grotesk | JetBrains Mono | energetic, bold, young |
 
-Brand color comes from `config.brand.colors.primary`. Atelier uses it as decorative accent; Studio uses it sparingly as a single sharp accent; Neon uses it dominantly (color-blocked sections, oversized prices, pill CTAs).
+Brand color comes from `config.brand.colors.primary`. Atelier derives a whole warm palette from it via `color-mix` and paints full-bleed primary sections (reviews, footer) — text-bearing primary surfaces go through a **darkness clamp** (`--primary-surface`, 35% black) so mid-tone brand primaries can never make creme text illegible; Studio uses it sparingly as a single sharp accent; Neon uses it dominantly (color-blocked sections, oversized prices, pill CTAs).
 
 ## `SiteConfig` is a contract
 
@@ -58,7 +58,7 @@ When you must change `SiteConfig`:
 (Don't do this unless asked.) Steps:
 
 1. Add the variant name to the `layout` enum in `src/types/site-config.ts`.
-2. Create `src/styles/<name>.css` — define a `@theme` block with brand tokens and any custom utilities. Pick fonts **distinct from existing variants**. Don't reuse Fraunces, Bricolage, or Unbounded.
+2. Create `src/styles/<name>.css` — define a `@theme` block with brand tokens and any custom utilities. Pick fonts **distinct from existing variants**. Don't reuse Cormorant Garamond, Bricolage, or Unbounded.
 3. Create `src/variants/<name>/Layout.astro` + `src/variants/<name>/sections/*.astro`. Reuse the standard sections (Hero, About, Services, Gallery, etc) or invent new ones — anything goes, but **every section must take `{ config: SiteConfig }`** and read only from that.
 4. Register in `src/pages/index.astro` variant map.
 5. Add an example config to `examples/<name>.json` with `"layout": "<name>"`.
@@ -70,7 +70,7 @@ When you must change `SiteConfig`:
 The example configs use `https://picsum.photos/seed/...` URLs — **placeholders, not the design intent**. Real salon sites will pull from the salon's Instagram photos via the mockup-generator pipeline. Don't replace picsum with stock images in the examples — keep them as obviously-placeholder seeded URLs so the design is clearly the point.
 
 Photo-quality risks to be aware of: salon Insta photos are mostly vertical/square/filtered. Hero sections that demand a horizontal landscape will look weird. Each variant's Hero handles this differently:
-- Atelier: tall portrait photo on right (matches Insta aspect)
+- Atelier: single full-bleed hero background (curation puts the best shot at `hero.images[0]`); the About portrait gets the signature arch frame
 - Studio: framed portrait inset bottom-right
 - Neon: rotated portrait with color-block offset
 
@@ -93,7 +93,7 @@ The config path is resolved relative to `apps/customer-template/`.
 
 ## Hard rules specific to this app
 
-- **Don't mix the revivo brand with customer brands.** revivo's burgundy + cream + Cormorant lives in `apps/marketing/`, not here. The customer-template has no revivo branding — these are *the salon's* sites.
+- **Don't mix the revivo brand with customer brands.** No revivo logo, name, or copy in customer sites — these are *the salon's* sites. (Amended 2026-06-11: the atelier variant now deliberately shares Cormorant Garamond with `apps/marketing/` — the Luxe template that replaced atelier was designed in it, every mockup re-skins to the salon's own palette, and the marketing site isn't deployed yet. If that visual kinship ever becomes a problem, re-font marketing, not atelier.)
 - **Don't share CSS across variants.** See above.
 - **Don't add features that only one variant uses to `SiteConfig`.** If "Atelier needs a quote section but Studio/Neon don't" — make all three handle a `testimonials` field (the existing pattern), or don't add the section. No variant-specific schema fields.
 - **Don't fetch from the network in `Layout.astro` or sections.** Astro frontmatter runs at build time; the LLM stage already did the data work. Sections read from `props.config` only.

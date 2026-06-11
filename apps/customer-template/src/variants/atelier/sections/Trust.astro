@@ -1,0 +1,51 @@
+---
+import type { SiteConfig } from "@revivo/shared";
+interface Props {
+  config: SiteConfig;
+}
+const { config } = Astro.props;
+
+// Every trust item must be TRUE and sourced: real reputation, the real
+// address, and (only when a real booking URL exists) the booking option.
+// No filler claims — the template's "Korte claim · Korte claim" slots are
+// deliberately not ported.
+const rep = config.reputation;
+const rating = rep
+  ? rep.rating.toLocaleString("nl-NL", { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+  : null;
+const items: Array<{ star?: boolean; text: string }> = [];
+if (rep) {
+  const count = rep.reviewCount ? ` · ${new Intl.NumberFormat("nl-NL").format(rep.reviewCount)} reviews` : "";
+  items.push({ star: true, text: `${rating}${count}${rep.source ? ` op ${rep.source}` : ""}` });
+}
+items.push({ text: `${config.location.address} · ${config.location.city}` });
+if (config.booking.externalUrl) items.push({ text: "Online boeken" });
+---
+
+<section class="trust">
+  <div class="container">
+    <div class="trust-row">
+      {
+        items.map((item, i) => (
+          <>
+            {i > 0 && (
+              <span class="trust-item" aria-hidden="true">
+                ✦
+              </span>
+            )}
+            <span class="trust-item">
+              {item.star && (
+                <span class="star" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z" />
+                  </svg>
+                </span>
+              )}
+              <span>{item.text}</span>
+            </span>
+          </>
+        ))
+      }
+    </div>
+  </div>
+</section>

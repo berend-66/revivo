@@ -4,58 +4,71 @@ interface Props {
   config: SiteConfig;
 }
 const { config } = Astro.props;
+
+const headingWords = config.about.heading.trim().split(/\s+/);
+const headingLead = headingWords.slice(0, -1).join(" ");
+const headingLast = headingWords[headingWords.length - 1];
+
+// The hero already shows hero.images[0] full-screen directly above — never
+// repeat it as the About portrait. Prefer the curated portrait, then a
+// different hero image; with neither, the figure is omitted entirely.
+const portrait = config.about.portrait ?? config.hero.images[1];
+
+// about-meta: sourced stats when the brief carried them; otherwise only
+// facts we genuinely have (address, reputation). The template's "Sinds 2022"
+// slot is NOT defaulted — a founding year we don't know is a fabrication.
+const rep = config.reputation;
+const rating = rep
+  ? rep.rating.toLocaleString("nl-NL", { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+  : null;
+const meta: Array<{ label: string; value: string }> = config.about.stats?.length
+  ? config.about.stats
+  : [
+      { label: "Locatie", value: config.location.address },
+      ...(rep ? [{ label: "Beoordeling", value: `${rating}★` }] : []),
+      ...(rep?.reviewCount ? [{ label: "Reviews", value: new Intl.NumberFormat("nl-NL").format(rep.reviewCount) }] : []),
+    ];
 ---
 
-<section id="about" class="section-pad bg-surface-deep">
-  <div class="max-w-6xl">
-    <p class="eyebrow-mono mb-6">— Atelier</p>
-
-    <h2
-      class="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.05] text-ink max-w-3xl"
-      style="font-variation-settings: 'opsz' 144, 'SOFT' 60;"
-    >
-      {config.about.heading}
-    </h2>
-
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 mt-16">
-      <div class="md:col-span-7 space-y-5 text-lg leading-relaxed text-ink-soft">
-        {config.about.body.map((p, i) => (
-          <p class={i === 0 ? "drop-cap" : ""}>{p}</p>
-        ))}
-      </div>
-
+<section class="about section" id="about">
+  <div class="container">
+    <div class={`about-grid${portrait ? "" : " no-figure"}`}>
       {
-        config.about.portrait && (
-          <figure class="md:col-span-5">
-            <img
-              src={config.about.portrait}
-              alt=""
-              class="w-full aspect-[3/4] object-cover"
-              style="filter: saturate(0.85) contrast(1.05);"
-            />
-            {config.brand.tagline && (
-              <figcaption class="font-display italic text-base text-ink-mute mt-4 max-w-xs">
-                {config.brand.tagline}
-              </figcaption>
-            )}
-          </figure>
+        portrait && (
+          <div class="about-figure reveal">
+            <div class="arch-frame">
+              <img src={portrait} alt={config.brand.name} width="900" height="1100" loading="lazy" />
+            </div>
+          </div>
         )
       }
-    </div>
-
-    {
-      config.about.stats && (
-        <dl class="grid grid-cols-2 sm:grid-cols-4 gap-8 mt-20 border-t border-rule pt-10">
-          {config.about.stats.map((s) => (
-            <div>
-              <dt class="eyebrow-mono">{s.label}</dt>
-              <dd class="font-display text-3xl md:text-4xl text-ink mt-2" style="font-variation-settings: 'opsz' 144, 'SOFT' 40;">
-                {s.value}
-              </dd>
+      <div class="about-text reveal">
+        <span class="eyebrow">Welkom</span>
+        <h2>
+          {
+            headingWords.length > 1 ? (
+              <>
+                {headingLead}{" "}<em style="font-style:italic">{headingLast}</em>
+              </>
+            ) : (
+              config.about.heading
+            )
+          }
+        </h2>
+        {config.about.body.map((paragraph) => <p>{paragraph}</p>)}
+        {
+          meta.length > 0 && (
+            <div class="about-meta">
+              {meta.map((m) => (
+                <div>
+                  <span class="caps">{m.label}</span>
+                  <strong>{m.value}</strong>
+                </div>
+              ))}
             </div>
-          ))}
-        </dl>
-      )
-    }
+          )
+        }
+      </div>
+    </div>
   </div>
 </section>
