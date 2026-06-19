@@ -6,36 +6,47 @@ interface Props {
 }
 const { config } = Astro.props;
 const rail = studioRail(config);
+const phone = config.contact.phone;
 const bookingHref =
+  config.hero.cta?.href ??
   config.booking.externalUrl ??
   config.booking.iframeUrl ??
-  (config.contact.phone ? `tel:${config.contact.phone.replace(/\s/g, "")}` : "#");
-const ctaLabel = config.booking.label ?? "Book now";
+  (phone ? `tel:${phone.replace(/\s/g, "")}` : "#");
+const bookExternal = /^https?:/.test(bookingHref);
+const primaryIsTel = bookingHref.startsWith("tel:");
+// Verb must match the action — a "Bel…" label may not ride an online link.
+const customLabel = config.hero.cta?.label ?? config.booking.label;
+const isCallVerb = customLabel ? /^\s*bel\b/i.test(customLabel) : false;
+const ctaLabel = bookExternal
+  ? customLabel && !isCallVerb
+    ? customLabel
+    : "Boek online"
+  : (customLabel ?? (primaryIsTel ? "Bel ons" : "Boek nu"));
 ---
 
 <section id="booking" class="studio-section border-t rule-strong border-t-1 bg-ink text-surface relative overflow-hidden">
   <div class="grid grid-cols-12 gap-4">
-    <div class="col-span-12 md:col-span-2 label-mono-mute" style="color: rgba(255,255,255,0.45);">
-      <div>{rail.booking} / {rail.total}</div>
-      <div class="mt-1">— BOOK</div>
+    <div class="col-span-12 md:col-span-2 label-mono-mute mb-8 md:mb-0" style="color: rgba(255,255,255,0.45);">
+      <div><span style="color: var(--color-accent-on-ink);">{rail.booking}</span> / {rail.total}</div>
+      <div class="mt-1">— BOEKEN</div>
     </div>
 
     <div class="col-span-12 md:col-span-10">
       <h2 class="font-display-tight text-6xl sm:text-7xl md:text-9xl lg:text-[12rem] leading-[0.9] uppercase" style="letter-spacing: -0.04em;">
-        <span style="color: var(--color-accent);">Book</span><br />
-        <span class="pl-[5%] md:pl-[10%]">a chair.</span>
+        <span style="color: var(--color-accent-on-ink);">Boek</span><br />
+        <span class="pl-[5%] md:pl-[10%]">een stoel.</span>
       </h2>
 
       <div class="mt-16 flex flex-col md:flex-row md:items-end justify-between gap-8 md:gap-16">
         <p class="text-lg md:text-xl text-surface/80 leading-snug max-w-md">
-          Sessions run on the hour. Online booking opens 4 weeks ahead. For weddings, editorial, or
-          collaborations — get in touch directly.
+          Plan je bezoek aan {config.brand.name} in {config.location.city}.
         </p>
 
         <div class="flex flex-col gap-3">
           <a
             href={bookingHref}
             class="label-mono inline-flex items-center gap-3 px-8 py-5 bg-surface text-ink hover:bg-accent hover:text-surface transition-colors"
+            {...bookExternal ? { target: "_blank", rel: "noopener" } : {}}
           >
             <span class="text-base">{ctaLabel}</span>
             <span class="text-base">→</span>
@@ -47,18 +58,18 @@ const ctaLabel = config.booking.label ?? "Book now";
                 class="label-mono-mute hover:text-surface text-right"
                 style="color: rgba(255,255,255,0.55);"
               >
-                — or {config.contact.email}
+                — of {config.contact.email}
               </a>
             )
           }
           {
-            config.contact.phone && (
+            phone && !primaryIsTel && (
               <a
-                href={`tel:${config.contact.phone.replace(/\s/g, "")}`}
+                href={`tel:${phone.replace(/\s/g, "")}`}
                 class="label-mono-mute hover:text-surface text-right"
                 style="color: rgba(255,255,255,0.55);"
               >
-                — or call {config.contact.phone}
+                — of bel {phone}
               </a>
             )
           }

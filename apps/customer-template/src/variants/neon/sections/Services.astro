@@ -8,68 +8,105 @@ const { config } = Astro.props;
 // NL prices: integers bare (€45), cents always two digits (€67,50 — never €67.5).
 // `from` marks a real vanaf-prijs from the listing.
 const formatPrice = (item: { price: number | null; from?: boolean }): string => {
-  if (item.price === null) return "vanaf —";
+  if (item.price === null) return "op aanvraag";
   const amount = Number.isInteger(item.price)
     ? String(item.price)
     : item.price.toLocaleString("nl-NL", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   return `${item.from ? "vanaf " : ""}€${amount}`;
 };
+
+// Stable per-salon radio-group id (one mockup page = one salon, but keep it
+// scoped anyway). The category pills are a radio group; only the checked
+// category's panel renders, so a long menu never sprawls.
+const gid = `svc-${config.slug}`;
+const cats = config.services;
+
+// Active-pill highlight + keyboard focus ring, emitted per index (the checked
+// radio lives in a separate container from the pills, so :has() bridges them).
+// Panel-switching itself is static CSS — this is cosmetic and safe to fail.
+const tabCss = cats
+  .map(
+    (_, i) =>
+      `.neon-tabs:has(#${gid}-${i}:checked) .svc-tab[data-i="${i}"]{background:var(--color-primary-fill);color:var(--color-on-primary);border-color:var(--color-primary-fill)}` +
+      `.neon-tabs:has(#${gid}-${i}:focus-visible) .svc-tab[data-i="${i}"]{outline:2px solid var(--color-primary-vivid);outline-offset:2px}`,
+  )
+  .join("");
 ---
 
 <section id="services" class="neon-section bg-paper">
   <div class="max-w-7xl">
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
       <div>
-        <span class="neon-label" style="color: var(--color-primary);">— Wat we doen</span>
+        <span class="neon-label inline-flex items-center gap-2" style="color: var(--color-accent-on-light);">
+          <span class="inline-block w-5 h-0.5" style="background: var(--color-accent-on-light);"></span>
+          Wat we doen
+        </span>
         <h2
-          class="font-display text-5xl md:text-7xl font-bold mt-6 text-ink leading-[0.95]"
+          class="font-display text-5xl md:text-7xl font-bold mt-5 text-ink leading-[0.95]"
           style="letter-spacing: -0.03em;"
         >
           De prijslijst.
         </h2>
       </div>
-      <p class="text-sm text-ink-soft max-w-sm md:text-right">
-        Eerlijke prijzen, geen verrassingen. Bij lang of dik haar bespreken we eventuele toeslag vooraf.
+      <p class="text-sm text-ink-soft max-w-xs md:text-right leading-relaxed">
+        Eerlijke prijzen, geen verrassingen.
       </p>
     </div>
 
-    <div class="space-y-16">
-      {
-        config.services.map((cat) => (
-          <div>
-            <div class="flex items-center gap-4 mb-8">
-              <h3
-                class="font-display text-2xl md:text-3xl font-bold inline-block px-5 py-2.5 rounded-full"
-                style="background-color: var(--color-primary); color: var(--color-on-primary);"
-              >
-                {cat.category}
-              </h3>
-            </div>
+    <div class="neon-tabs">
+      <div class="svc-tablist" role="tablist" aria-label="Categorieën">
+        {
+          cats.map((cat, i) => (
+            <label class="svc-tab" data-i={i} for={`${gid}-${i}`}>
+              {cat.category}
+            </label>
+          ))
+        }
+      </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-1">
-              {cat.items.map((item) => (
-                <div class="flex items-baseline justify-between gap-4 border-b border-ink/10 py-5">
-                  <div class="flex-1">
-                    <div class="font-display text-lg md:text-xl text-ink font-medium">{item.name}</div>
-                    {item.description && (
-                      <p class="text-sm text-ink-soft mt-1">{item.description}</p>
-                    )}
-                    {item.durationMin && (
-                      <span class="neon-label text-ink-soft mt-2 inline-block">{item.durationMin} min</span>
-                    )}
-                  </div>
-                  <span
-                    class="font-display text-3xl md:text-4xl font-bold tabular-nums"
-                    style="color: var(--color-primary); letter-spacing: -0.02em;"
-                  >
-                    {formatPrice(item)}
-                  </span>
+      <div class="svc-stack">
+        {
+          cats.map((cat, i) => (
+            <>
+              <input
+                class="svc-radio"
+                type="radio"
+                name={gid}
+                id={`${gid}-${i}`}
+                checked={i === 0}
+                aria-label={cat.category}
+              />
+              <div class="svc-panel" role="region" aria-label={cat.category}>
+                <div class={cat.items.length > 2 ? "grid grid-cols-1 md:grid-cols-2 gap-x-14" : "grid grid-cols-1"}>
+                  {cat.items.map((item) => (
+                    <div class="flex items-baseline justify-between gap-5 border-b border-ink/10 py-3.5">
+                      <div class="flex-1 min-w-0">
+                        <span class="font-body text-base md:text-lg font-semibold text-ink leading-tight block">
+                          {item.name}
+                        </span>
+                        {item.description && (
+                          <p class="text-sm text-ink-soft mt-1 leading-snug">{item.description}</p>
+                        )}
+                        {item.durationMin && (
+                          <span class="neon-label text-ink-soft mt-1.5 inline-block">{item.durationMin} min</span>
+                        )}
+                      </div>
+                      <span
+                        class="font-display text-2xl md:text-3xl font-bold tabular-nums whitespace-nowrap"
+                        style="color: var(--color-primary-vivid); letter-spacing: -0.02em;"
+                      >
+                        {formatPrice(item)}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-        ))
-      }
+              </div>
+            </>
+          ))
+        }
+      </div>
+
+      <style is:inline set:html={tabCss}></style>
     </div>
   </div>
 </section>

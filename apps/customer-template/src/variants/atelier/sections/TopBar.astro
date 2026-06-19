@@ -13,8 +13,15 @@ const rest = words.length > 1 ? words.slice(1).join(" ") : config.brand.name;
 // Booking CTA: the schema's hero.cta override wins, then a real booking URL,
 // then the in-page contact section — never a dead placeholder link.
 const bookHref = config.hero.cta?.href ?? config.booking.externalUrl ?? "#contact";
-const bookLabel = config.hero.cta?.label ?? config.booking.label ?? "Maak een afspraak";
 const bookExternal = /^https?:/.test(bookHref);
+// Verb must match the action: a "Bel…" label may not ride an online-booking link.
+const customLabel = config.hero.cta?.label ?? config.booking.label;
+const isCallVerb = customLabel ? /^\s*bel\b/i.test(customLabel) : false;
+const bookLabel = bookExternal
+  ? customLabel && !isCallVerb
+    ? customLabel
+    : "Boek online"
+  : (customLabel ?? "Maak een afspraak");
 
 const links = [
   { href: "#services", label: "Diensten" },

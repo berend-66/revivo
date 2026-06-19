@@ -4,6 +4,8 @@ interface Props {
   config: SiteConfig;
 }
 const { config } = Astro.props;
+const hasTeam = !!config.team?.length;
+const hasReviews = !!config.testimonials?.length;
 ---
 
 <header class="sticky top-0 z-30 bg-surface/90 backdrop-blur border-b border-ink/10">
@@ -12,18 +14,21 @@ const { config } = Astro.props;
       {config.brand.name}
     </a>
 
-    <nav class="hidden md:flex items-center gap-8 neon-label">
+    <nav class="hidden md:flex items-center gap-7 neon-label">
       <a href="#about" class="hover:text-primary transition-colors">Studio</a>
-      <a href="#services" class="hover:text-primary transition-colors">Services</a>
+      <a href="#services" class="hover:text-primary transition-colors">Diensten</a>
+      <a href="#gallery" class="hover:text-primary transition-colors">Galerij</a>
+      {hasTeam && <a href="#team" class="hover:text-primary transition-colors">Team</a>}
+      {hasReviews && <a href="#testimonials" class="hover:text-primary transition-colors">Reviews</a>}
       <a href="#visit" class="hover:text-primary transition-colors">Bezoek</a>
     </nav>
 
     <a
       href="#booking"
       class="neon-label inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-medium text-on-primary"
-      style="background-color: var(--color-primary);"
+      style="background-color: var(--color-primary-fill);"
     >
-      Boek →
+      Boek <span style="color: var(--color-accent-vivid);">→</span>
     </a>
   </div>
 </header>

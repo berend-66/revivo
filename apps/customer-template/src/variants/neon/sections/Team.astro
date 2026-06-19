@@ -11,16 +11,14 @@ const fmtCount = (n: number) => n.toLocaleString("nl-NL");
 ---
 
 <section id="team" class="neon-section bg-paper overflow-hidden">
-  <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
-    <div>
-      <span class="neon-label" style="color: var(--color-primary);">— De ploeg</span>
-      <h2
-        class="font-display text-5xl md:text-7xl font-bold mt-6 text-ink leading-[0.95]"
-        style="letter-spacing: -0.03em;"
-      >
-        Wie je knipt.
-      </h2>
-    </div>
+  <div class="text-center mb-16">
+    <span class="neon-label" style="color: var(--color-accent-on-light);">— De ploeg</span>
+    <h2
+      class="font-display text-5xl md:text-7xl font-bold mt-4 text-ink leading-[0.95]"
+      style="letter-spacing: -0.03em;"
+    >
+      Wie je knipt.
+    </h2>
   </div>
 
   <div class="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
@@ -39,7 +37,7 @@ const fmtCount = (n: number) => n.toLocaleString("nl-NL");
           ) : (
             <div
               class="rounded-2xl shadow-md mb-4 aspect-[4/5] flex items-center justify-center font-display font-bold text-6xl text-on-primary"
-              style="background-color: var(--color-primary);"
+              style="background-color: var(--color-primary-vivid);"
               aria-hidden="true"
             >
               {m.name.charAt(0)}
@@ -51,7 +49,7 @@ const fmtCount = (n: number) => n.toLocaleString("nl-NL");
           {m.role && <p class="neon-label text-ink-soft mt-1">{m.role}</p>}
           {m.specialty && <p class="text-sm text-ink-soft mt-2 leading-snug">{m.specialty}</p>}
           {m.rating != null && (
-            <p class="neon-label mt-3 inline-flex items-center gap-1.5 tabular-nums" style="color: var(--color-primary);">
+            <p class="neon-label mt-3 inline-flex items-center gap-1.5 tabular-nums" style="color: var(--color-primary-on-light);">
               <span class="font-display text-base font-bold">{fmtRating(m.rating)}★</span>
               {m.reviewCount != null && <span class="text-ink-soft">({fmtCount(m.reviewCount)})</span>}
             </p>

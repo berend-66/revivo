@@ -9,21 +9,75 @@
  * Inspired by modern fashion-tech sites (Glossier, Aesop product launches),
  * Wix-template-killer territory: vibrant brand color used dominantly,
  * massive display type, overlapping rotated photo collages, marquee tickers.
+ *
+ * PALETTE ROBUSTNESS: the brand color arrives arbitrary per salon — often a
+ * muted brown, not the saturated tone "neon" assumes. Raw brand tokens are
+ * never painted onto identity-bearing surfaces. Instead they route through a
+ * token-layer CHROMA FLOOR (the neon analogue of atelier's darkness clamp):
+ * a bright, saturation-floored `--color-primary-vivid` for punchy hits and a
+ * deep `--color-primary-deep` for text-bearing full-bleeds, so the variant
+ * stays energetic even from a dull brand color. color-mix can floor lightness
+ * but NOT raise chroma while preserving hue, so the real floors use relative
+ * color syntax `oklch(from …)` in the @supports block below; the @theme values
+ * are graceful fallbacks for rare engines without it.
  */
 
 @theme {
   --color-primary: var(--brand-primary, #0028ff);
-  --color-primary-deep: color-mix(in oklab, var(--brand-primary, #0028ff) 80%, #000000 20%);
   --color-accent: var(--brand-accent, #ffe600);
   --color-surface: var(--brand-surface, #f5f1ea);
   --color-paper: #ffffff;
   --color-ink: var(--brand-ink, #0a0a0a);
   --color-ink-soft: #4a4a4a;
-  --color-on-primary: color-mix(in oklab, var(--brand-surface, #f5f1ea) 95%, #ffffff 5%);
+
+  /* Derived display tokens — FALLBACK values (plain color-mix, always valid).
+   * Overridden with chroma-floored oklch() versions in @supports below.
+   * Two primary roles: `vivid` is bright/energetic for LARGE text & decoration
+   * (marquee, oversized prices, hero word) where AA-large 3:1 holds; `fill` is
+   * darker so white SMALL text (pills, CTAs, nav) clears AA 4.5:1 on any hue. */
+  --color-primary-vivid: color-mix(in oklab, var(--brand-primary, #0028ff) 80%, black 20%);
+  --color-primary-fill: color-mix(in oklab, var(--brand-primary, #0028ff) 58%, black 42%);
+  --color-primary-deep: color-mix(in oklab, var(--brand-primary, #0028ff) 42%, black 58%);
+  --color-primary-on-ink: color-mix(in oklab, var(--brand-primary, #0028ff) 65%, white 35%);
+  --color-primary-on-light: color-mix(in oklab, var(--brand-primary, #0028ff) 72%, black 28%);
+  --color-accent-vivid: var(--brand-accent, #ffe600);
+  --color-accent-on-light: color-mix(in oklab, var(--brand-accent, #ffe600) 72%, black 28%);
+  /* Foreground on any primary/accent fill. Fixed near-white (the fill lightness
+   * is ceilinged at L0.62 below, so white always passes ≥4.5:1) — and crucially
+   * NOT derived from --brand-surface, which could be dark and then fail on a
+   * dark fill. */
+  --color-on-primary: #ffffff;
 
   --font-display: "Unbounded", "Familjen Grotesk", system-ui, sans-serif;
   --font-body: "Hanken Grotesk", -apple-system, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", "DM Mono", ui-monospace, monospace;
+}
+
+/* The real chroma/lightness floors — keep the salon's exact HUE, force the
+ * SATURATION and LIGHTNESS into the bands the variant needs. Placed after the
+ * @theme so these :root overrides win the cascade on supporting engines. */
+@supports (color: oklch(from white l c h)) {
+  :root {
+    /* Bright focal color for LARGE text / decoration (marquee, prices, hero
+     * word) — AA-large 3:1 holds across hues at this ceiling. */
+    --color-primary-vivid: oklch(from var(--brand-primary, #0028ff) clamp(0.5, l, 0.62) max(c, 0.16) h);
+    /* Darker fill for SMALL white text (pills, CTAs, nav) → white clears AA 4.5
+     * even on a light hue (yellow/pink). */
+    --color-primary-fill: oklch(from var(--brand-primary, #0028ff) clamp(0.36, l, 0.48) max(c, 0.16) h);
+    /* Rich dark ground for full-bleed text-bearing panels (Visit, footer). */
+    --color-primary-deep: oklch(from var(--brand-primary, #0028ff) clamp(0.2, l, 0.32) max(c, 0.07) h);
+    /* Brand-hued text that must read ON the dark ink (footer wordmark): lift L. */
+    --color-primary-on-ink: oklch(from var(--brand-primary, #0028ff) max(l, 0.74) max(c, 0.15) h);
+    /* Brand-hued thin text ON light paper (hero rating): cap L so it can't wash. */
+    --color-primary-on-light: oklch(from var(--brand-primary, #0028ff) min(l, 0.5) max(c, 0.15) h);
+    /* Second energetic color: bright accent for hits ON colored/dark grounds
+     * (marquee dots, CTA arrows, the Visit eyebrow). */
+    --color-accent-vivid: oklch(from var(--brand-accent, #ffe600) clamp(0.58, l, 0.82) max(c, 0.2) h);
+    /* Darker accent for accent TEXT on light paper (section eyebrows) → AA 4.5. */
+    --color-accent-on-light: oklch(from var(--brand-accent, #ffe600) min(l, 0.5) max(c, 0.19) h);
+    /* Near-white tinted by the brand hue — tracks the (ceilinged) fill. */
+    --color-on-primary: oklch(from var(--brand-primary, #0028ff) 0.98 0.02 h);
+  }
 }
 
 @layer base {
@@ -37,6 +91,11 @@
     font-family: var(--font-body);
     color: var(--color-ink);
     background-color: var(--color-surface);
+  }
+
+  /* Anchor jumps clear the sticky header instead of hiding the heading. */
+  :target {
+    scroll-margin-top: 5rem;
   }
 }
 
@@ -76,5 +135,69 @@
 @media (prefers-reduced-motion: reduce) {
   .neon-marquee-track {
     animation: none;
+  }
+}
+
+/* ── Services: pure-CSS tabbed filter ───────────────────────────────────────
+ * Category pills are a radio group; only the checked category's panel shows,
+ * so a 30-item / 6-category menu never sprawls into one long list. The core
+ * panel-switching is STATIC CSS (adjacent-sibling on the checked radio — each
+ * radio sits immediately before its panel), so it needs no JS and no emitted
+ * rules and can't break in the SSR'd mockup. Only the active-PILL highlight is
+ * a small emitted `:has()` rule from the component (cosmetic; safe to fail).
+ * If CSS is entirely absent, every panel shows (acceptable). */
+.svc-radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+.svc-tablist {
+  display: flex;
+  flex-wrap: wrap; /* all categories visible — no hidden horizontal scroll */
+  gap: 0.625rem;
+  margin-bottom: 2.5rem;
+}
+
+.svc-tab {
+  flex: 0 0 auto;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  padding: 0.6rem 1.1rem;
+  border-radius: 9999px;
+  border: 2px solid color-mix(in oklab, var(--color-ink) 16%, transparent);
+  color: var(--color-ink);
+  background: transparent;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    border-color 0.2s;
+}
+.svc-tab:hover {
+  border-color: var(--color-primary-vivid);
+}
+/* Active-pill highlight + keyboard focus ring are emitted per-index via :has()
+ * from the Services component (the checked/focused radio lives in a separate
+ * container from the pills, so a static combinator can't reach across). */
+
+/* Core behaviour — static, no JS: each radio precedes its panel. */
+.svc-panel {
+  display: none;
+}
+.svc-radio:checked + .svc-panel {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .svc-tab {
+    font-size: 1.05rem;
+    padding: 0.7rem 1.4rem;
   }
 }

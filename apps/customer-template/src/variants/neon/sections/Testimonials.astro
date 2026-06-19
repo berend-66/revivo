@@ -11,7 +11,7 @@ const fmtRating = (r: number) => r.toLocaleString("nl-NL", { minimumFractionDigi
 
 <section id="testimonials" class="neon-section bg-paper overflow-hidden">
   <div class="mb-16">
-    <span class="neon-label" style="color: var(--color-primary);">— Wat klanten zeggen</span>
+    <span class="neon-label" style="color: var(--color-accent-on-light);">— Wat klanten zeggen</span>
     <h2
       class="font-display text-5xl md:text-7xl font-bold mt-6 text-ink leading-[0.95]"
       style="letter-spacing: -0.03em;"
@@ -26,7 +26,7 @@ const fmtRating = (r: number) => r.toLocaleString("nl-NL", { minimumFractionDigi
         <figure
           class={`${rotations[i % rotations.length]} hover:rotate-0 transition-transform duration-500 rounded-3xl p-8 bg-surface shadow-md flex flex-col gap-5`}
         >
-          <div class="font-display text-6xl leading-[0.5] h-6" style="color: var(--color-primary);" aria-hidden="true">
+          <div class="font-display text-6xl leading-[0.5] h-6" style="color: var(--color-primary-vivid);" aria-hidden="true">
             “
           </div>
           <blockquote class="text-lg md:text-xl text-ink leading-snug font-medium flex-1">
@@ -35,7 +35,7 @@ const fmtRating = (r: number) => r.toLocaleString("nl-NL", { minimumFractionDigi
           <figcaption class="flex items-center justify-between neon-label pt-2">
             <span class="text-ink">{t.author}</span>
             {t.rating != null && (
-              <span class="font-display font-bold tabular-nums" style="color: var(--color-primary);">
+              <span class="font-display font-bold tabular-nums" style="color: var(--color-primary-on-light);">
                 {fmtRating(t.rating)}★
               </span>
             )}

@@ -15,19 +15,19 @@ const mapSrc = `https://maps.google.com/maps?q=${mapQuery}&t=&z=15&ie=UTF8&iwloc
 
 <section id="location" class="studio-section border-t rule-strong border-t-1">
   <div class="grid grid-cols-12 gap-4">
-    <div class="col-span-12 md:col-span-2 label-mono-mute">
-      <div>{rail.details} / {rail.total}</div>
+    <div class="col-span-12 md:col-span-2 label-mono-mute mb-8 md:mb-0">
+      <div><span style="color: var(--color-accent-on-light);">{rail.details}</span> / {rail.total}</div>
       <div class="mt-1">— DETAILS</div>
     </div>
 
     <div class="col-span-12 md:col-span-10">
       <h2 class="font-display-tight text-5xl md:text-7xl text-ink uppercase mb-16" style="letter-spacing: -0.03em;">
-        Studio details.
+        Studio / details.
       </h2>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
         <div>
-          <h3 class="label-mono mb-6">— Hours</h3>
+          <h3 class="label-mono mb-6">— Openingstijden</h3>
           <table class="w-full font-mono text-sm">
             <tbody>
               {
@@ -43,10 +43,10 @@ const mapSrc = `https://maps.google.com/maps?q=${mapQuery}&t=&z=15&ie=UTF8&iwloc
             </tbody>
           </table>
 
-          <h3 class="label-mono mt-12 mb-6">— Address</h3>
+          <h3 class="label-mono mt-12 mb-6">— Adres</h3>
           <address class="not-italic font-mono text-sm text-ink leading-relaxed">
             {config.location.address}<br />
-            {config.location.postcode} {config.location.city}<br />
+            {[config.location.postcode, config.location.city].filter(Boolean).join(" ")}<br />
             {config.location.country}
           </address>
 
@@ -68,11 +68,11 @@ const mapSrc = `https://maps.google.com/maps?q=${mapQuery}&t=&z=15&ie=UTF8&iwloc
               style="border:0;"
               loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
-              title="Map"
+              title="Kaart"
             ></iframe>
           </div>
           <div class="label-mono-mute mt-2 flex justify-between">
-            <span>FIG. 02 — LOCATION</span>
+            <span>FIG. 02 — LOCATIE</span>
             <span class="tabular-nums">
               {config.location.lat?.toFixed(4)} / {config.location.lng?.toFixed(4)}
             </span>

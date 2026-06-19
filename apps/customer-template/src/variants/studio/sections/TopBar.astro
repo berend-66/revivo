@@ -1,28 +1,56 @@
 ---
 import type { SiteConfig } from "@revivo/shared";
+import { studioRail } from "./_rail";
 interface Props {
   config: SiteConfig;
 }
 const { config } = Astro.props;
+const rail = studioRail(config);
+
+const phone = config.contact.phone;
+const bookHref =
+  config.hero.cta?.href ??
+  config.booking.externalUrl ??
+  config.booking.iframeUrl ??
+  (phone ? `tel:${phone.replace(/\s/g, "")}` : "#booking");
+const bookExternal = /^https?:/.test(bookHref);
+
+// Nav numbers track the computed section rail so they match the section badges
+// exactly (the rail is the single source of truth — never hardcode NN here).
+const items = [
+  { n: rail.manifesto, label: "Studio", href: "#manifesto" },
+  { n: rail.services, label: "Diensten", href: "#services" },
+  { n: rail.index, label: "Galerij", href: "#index" },
+  rail.team ? { n: rail.team, label: "Team", href: "#team" } : null,
+  rail.reviews ? { n: rail.reviews, label: "Recensies", href: "#testimonials" } : null,
+  { n: rail.booking, label: "Boeken", href: "#booking" },
+].filter((x): x is { n: string; label: string; href: string } => Boolean(x));
 ---
 
-<header class="sticky top-0 z-30 bg-surface/95 backdrop-blur border-b rule-strong border-b-1">
+<header class="sticky top-0 z-30 bg-surface md:bg-surface/95 md:backdrop-blur border-b rule-strong border-b-1">
   <div class="grid grid-cols-12 items-center px-6 md:px-12 h-14">
-    <a href="#top" class="col-span-3 label-mono font-semibold text-base">
+    <a href="#top" class="col-span-6 md:col-span-3 label-mono font-semibold text-base">
       {config.brand.name}
     </a>
 
-    <nav class="hidden md:flex col-span-6 justify-center gap-12 label-mono-mute">
-      <a href="#manifesto" class="hover:text-ink">01 — Studio</a>
-      <a href="#services" class="hover:text-ink">02 — Services</a>
-      <a href="#index" class="hover:text-ink">03 — Index</a>
-      <a href="#booking" class="hover:text-ink">04 — Book</a>
+    <nav class="hidden md:flex col-span-6 justify-center gap-8 label-mono-mute">
+      {
+        items.map((it) => (
+          <a href={it.href} class="hover:text-ink transition-colors">
+            {it.n} — {it.label}
+          </a>
+        ))
+      }
     </nav>
 
-    <div class="col-span-9 md:col-span-3 flex justify-end items-center gap-4">
+    <div class="col-span-6 md:col-span-3 flex justify-end items-center gap-4">
       <span class="label-mono-mute hidden md:inline">{config.location.city.toUpperCase()}</span>
-      <a href="#booking" class="label-mono px-3 py-1.5 bg-ink text-surface hover:bg-accent transition-colors">
-        Book →
+      <a
+        href={bookHref}
+        class="label-mono px-3 py-1.5 bg-ink text-surface hover:bg-accent transition-colors"
+        {...bookExternal ? { target: "_blank", rel: "noopener" } : {}}
+      >
+        Boeken →
       </a>
     </div>
   </div>

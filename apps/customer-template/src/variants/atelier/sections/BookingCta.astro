@@ -10,9 +10,15 @@ const { config } = Astro.props;
 const bookUrl = config.hero.cta?.href ?? config.booking.externalUrl;
 const phone = config.contact.phone;
 const href = bookUrl ?? (phone ? `tel:${phone.replace(/[\s()-]/g, "")}` : "#contact");
-const label =
-  config.hero.cta?.label ?? config.booking.label ?? (bookUrl ? "Boek nu" : phone ? "Bel ons" : "Neem contact op");
 const external = /^https?:/.test(href);
+// Verb must match the action: a "Bel…" label may not ride an online-booking link.
+const customLabel = config.hero.cta?.label ?? config.booking.label;
+const isCallVerb = customLabel ? /^\s*bel\b/i.test(customLabel) : false;
+const label = external
+  ? customLabel && !isCallVerb
+    ? customLabel
+    : "Boek online"
+  : (customLabel ?? (phone ? "Bel ons" : "Neem contact op"));
 ---
 
 <section class="cta section" id="book">
