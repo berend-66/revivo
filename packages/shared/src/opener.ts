@@ -93,7 +93,7 @@ function pickHook(config: SiteConfig, facts: ListingFacts | null | undefined, pl
     // Name the rating's own source only when it differs from the intro's platform.
     const src = rep.source && rep.source !== platform ? ` op ${rep.source}` : "";
     if (rep.rating >= 4.5 && rep.reviewCount && rep.reviewCount >= 25) {
-      return `${stars} met ${nlNumber.format(rep.reviewCount)} reviews${src} — dat zie je niet vaak`;
+      return `${stars} met ${nlNumber.format(rep.reviewCount)} reviews${src}, dat zie je niet vaak`;
     }
     if (rep.rating >= 4.0) {
       return `${stars}${src}, mooi om te zien`;
@@ -137,34 +137,36 @@ export function buildOpener(input: OpenerInput): Opener {
   const foundOn = platform ? `op ${platform}` : "online";
 
   const contents = realContentsClause(config, facts);
-  const madeLine = contents
-    ? `Ik bouw websites voor salons en heb er voor jullie alvast één gemaakt, met ${contents} erin:`
-    : `Ik bouw websites voor salons en heb alvast een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`;
 
   const plainText = [
-    `Hoi! Ik kwam ${name} ${foundOn} tegen — ${hook}.`,
-    madeLine,
+    `Hoi! Ik kwam ${name} ${foundOn} tegen. ${hook}.`,
+    `Samen met een goede vriend help ik salons en ondernemers aan een betere online zichtbaarheid, eigenlijk een tweede voordeur voor jullie zaak. We doen dit voor een fractie van wat een gemiddeld webbureau vraagt terwijl de kwaliteit minimaal net zo goed is.`,
+    contents
+      ? `We zagen jullie salon en hebben alvast een voorbeeld gemaakt, met ${contents} erin:`
+      : `We zagen jullie salon en hebben alvast een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`,
     mockUrl,
-    `Kijk gerust even rond — benieuwd wat je ervan vindt. Niets voor jullie? Ook helemaal prima.`,
+    `Kijk gerust even rond. Lijkt het je wat? Laten we dan even bellen, in ca. 1 week kunnen we een werkende site voor jullie klaar hebben. Niets voor jullie? Ook helemaal prima.`,
     `Groet, Berend`,
   ].join("\n\n");
 
   const igDmText =
-    `Hoi! Ik kwam ${name} ${foundOn} tegen — ${hook}. ` +
+    `Hoi! Ik kwam ${name} ${foundOn} tegen. ${hook}. ` +
+    `Samen met een goede vriend maak ik websites voor salons. ` +
     (contents
-      ? `Ik bouw websites voor salons en maakte alvast een voorbeeld met ${contents} erin: `
-      : `Ik bouw websites voor salons en maakte alvast een voorbeeld van hoe jullie eigen site eruit kan zien: `) +
-    `${mockUrl} — benieuwd wat je ervan vindt!`;
+      ? `We hebben alvast een voorbeeld gemaakt met ${contents} erin: `
+      : `We hebben alvast een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien: `) +
+    `${mockUrl} Lijkt het wat? Dan bel ik graag!`;
 
   const emailSubject = `Een website-voorbeeld voor ${name}`;
   const emailBody = [
     `Hoi,`,
-    `Ik kwam ${name} ${foundOn} tegen — ${hook}.`,
+    `Ik kwam ${name} ${foundOn} tegen. ${hook}.`,
+    `Samen met een goede vriend help ik salons en ondernemers aan een betere online zichtbaarheid, eigenlijk een tweede voordeur voor jullie zaak. We doen dit voor een fractie van wat een gemiddeld webbureau vraagt terwijl de kwaliteit minimaal net zo goed is.`,
     contents
-      ? `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik alvast een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien — met ${contents} erin:`
-      : `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik alvast een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`,
+      ? `We zagen jullie salon en hebben alvast een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien, met ${contents} erin:`
+      : `We zagen jullie salon en hebben alvast een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`,
     mockUrl,
-    `Kijk gerust even rond. Vragen of feedback hoor ik graag; en is het niets voor jullie, dan ook helemaal prima.`,
+    `Kijk gerust even rond. Lijkt het je wat? Laten we dan even bellen, in ca. 1 week kunnen we een werkende site voor jullie klaar hebben. Vragen of feedback hoor ik ook graag. Niets voor jullie? Ook helemaal prima.`,
     `Groet,\nBerend`,
   ].join("\n\n");
 
