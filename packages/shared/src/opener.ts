@@ -41,6 +41,8 @@ export interface OpenerInput {
   mockUrl: string;
   /** Richer hook material when the lead came from a listing. */
   facts?: ListingFacts | null;
+  /** Name shown in the sign-off. Defaults to "Berend". */
+  senderName?: string;
 }
 
 export interface Opener {
@@ -130,7 +132,7 @@ function encodeWaText(text: string): string {
 }
 
 export function buildOpener(input: OpenerInput): Opener {
-  const { config, mockUrl, facts } = input;
+  const { config, mockUrl, facts, senderName = "Berend" } = input;
   const name = config.brand.name;
   const platform = platformOf(config, facts);
   const hook = pickHook(config, facts, platform);
@@ -146,7 +148,7 @@ export function buildOpener(input: OpenerInput): Opener {
       : `We zagen jullie salon en hebben alvast een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`,
     mockUrl,
     `Kijk gerust even rond. Lijkt het je wat? Laten we dan even bellen, in ca. 1 week kunnen we een werkende site voor jullie klaar hebben. Niets voor jullie? Ook helemaal prima.`,
-    `Groet, Berend`,
+    `Groet, ${senderName}`,
   ].join("\n\n");
 
   const igDmText =
@@ -167,7 +169,7 @@ export function buildOpener(input: OpenerInput): Opener {
       : `We zagen jullie salon en hebben alvast een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`,
     mockUrl,
     `Kijk gerust even rond. Lijkt het je wat? Laten we dan even bellen, in ca. 1 week kunnen we een werkende site voor jullie klaar hebben. Vragen of feedback hoor ik ook graag. Niets voor jullie? Ook helemaal prima.`,
-    `Groet,\nBerend`,
+    `Groet,\n${senderName}`,
   ].join("\n\n");
 
   // First candidate that is genuinely a Dutch mobile — a landline in

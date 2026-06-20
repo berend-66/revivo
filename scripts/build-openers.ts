@@ -8,6 +8,7 @@
  *   pnpm build-openers --out openers.txt   # also write them to a file
  *   pnpm build-openers --mark-sent         # ALSO flip emitted leads → outreach_sent
  *                                          # (run this variant when actually sending)
+ *   pnpm build-openers --sender Nelson     # sign off as Nelson instead of Berend
  *
  * Keep this THIN: the copy lives in @revivo/shared (buildOpener); this script
  * is lead lookup + formatting + the optional status flip.
@@ -28,6 +29,7 @@ const { values } = parseArgs({
     limit: { type: "string" },
     out: { type: "string" },
     "mark-sent": { type: "boolean", default: false },
+    sender: { type: "string" },
     help: { type: "boolean", default: false },
   },
 });
@@ -39,7 +41,8 @@ function usage(exitCode: number): never {
   --limit <n>    Max leads to emit (default 50).
   --out <path>   Also write the openers to a file.
   --mark-sent    Flip the emitted leads to 'outreach_sent' after printing.
-                 Only run with this flag at the moment you actually send.`,
+                 Only run with this flag at the moment you actually send.
+  --sender <n>   Name in the sign-off (default: Berend).`,
   );
   process.exit(exitCode);
 }
@@ -89,7 +92,7 @@ for (const lead of leads) {
   }
 
   const mockUrl = `${base}/${mockup.slug}`;
-  const opener = buildOpener({ config: parsed.data, mockUrl, facts: lead.listing_facts_json });
+  const opener = buildOpener({ config: parsed.data, mockUrl, facts: lead.listing_facts_json, senderName: values.sender });
 
   blocks.push(
     [
