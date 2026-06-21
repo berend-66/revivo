@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revivo Studios — Websites voor salons</title>
+<meta name="description" content="Revivo Studios bouwt stijlvolle websites op maat voor salons en kappers. Eenmalig €1.500, snel live, geen abonnement.">
+</head>
+<body>
+<style>
+/* ── Reset ── */
+html{margin:0;padding:0;overflow-x:clip;scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+body{margin:0;padding:0;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;-webkit-tap-highlight-color:transparent;}
+*,*::before,*::after{box-sizing:border-box;}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+::selection{background:var(--bordeaux);color:var(--creme);}
+
+/* ── Tokens ── */
+:root{
+  --bordeaux:#3d0a0e;--bordeaux-soft:#4e1418;
+  --creme:#f0e4cc;--warm-white:#f5f0e8;--beige:#ede8df;
+  --wood:#d4b896;--amber:#c8891e;
+  --ink:#2a1208;--ink-soft:#5a3d2c;--border:#d9cfc2;
+  --shadow-sm:0 4px 16px rgba(61,10,14,.05);
+  --shadow-md:0 8px 32px rgba(61,10,14,.08);
+  --ease:cubic-bezier(.4,0,.2,1);
+  --serif:Georgia,"Times New Roman",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+}
+
+/* ── Type ── */
+h1,h2,h3,h4{font-family:var(--serif);font-weight:300;margin:0;color:var(--ink);text-wrap:balance;}
+h1{font-size:clamp(2.6rem,6vw,5.2rem);line-height:1.05;}
+h2{font-size:clamp(1.8rem,3.5vw,3rem);line-height:1.1;font-weight:400;}
+h3{font-size:clamp(1.2rem,2vw,1.6rem);line-height:1.2;font-weight:500;}
+p{text-wrap:pretty;margin:0;}
+
+/* ── Layout ── */
+.container{width:100%;max-width:1280px;margin:0 auto;padding:0 24px;}
+@media(min-width:768px){.container{padding:0 40px;}}
+@media(min-width:1280px){.container{padding:0 64px;}}
+section{position:relative;}
+.section{padding:clamp(72px,9vw,120px) 0;}
+.eyebrow{display:inline-block;font-family:var(--sans);font-weight:400;font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:var(--bordeaux);margin-bottom:22px;}
+.eyebrow::before{content:"";display:inline-block;width:20px;height:1px;background:var(--bordeaux);vertical-align:middle;margin-right:12px;transform:translateY(-2px);}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:14px 28px;font-family:var(--sans);font-weight:400;font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;border-radius:2px;transition:transform .25s var(--ease),background .25s var(--ease),color .25s var(--ease),box-shadow .25s var(--ease);}
+.btn-primary{background:var(--bordeaux);color:var(--creme);box-shadow:var(--shadow-sm);}
+.btn-primary:hover{background:var(--bordeaux-soft);transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.btn-ghost{background:transparent;color:var(--bordeaux);border:1px solid var(--bordeaux);}
+.btn-ghost:hover{background:var(--bordeaux);color:var(--creme);}
+.btn-xxl{min-height:60px;padding:18px 44px;font-size:.8rem;letter-spacing:.22em;}
+
+/* ── Arch frame ── */
+.arch-frame{border-radius:50% 50% 6px 6px / 30% 30% 0 0;overflow:hidden;display:block;position:relative;}
+.arch-frame img{width:100%;height:100%;object-fit:cover;object-position:center 20%;}
+
+/* ── Splash ── */
+#splash{position:fixed;inset:0;background:#1a0305;z-index:1000;display:flex;align-items:center;justify-content:center;transition:opacity .7s var(--ease),visibility .7s var(--ease);}
+#splash.hide{opacity:0;visibility:hidden;pointer-events:none;}
+.splash-wordmark{font-family:var(--serif);font-size:clamp(2rem,5vw,3.6rem);font-weight:300;color:var(--creme);letter-spacing:.1em;opacity:0;transform:translateY(8px);animation:splash-in .9s .15s var(--ease) forwards;text-align:center;}
+.splash-wordmark em{font-style:italic;}
+.splash-sub{font-family:var(--sans);font-size:.62rem;letter-spacing:.42em;text-transform:uppercase;color:var(--creme);opacity:0;animation:splash-sub-in .9s .5s var(--ease) forwards;margin-top:14px;text-align:center;}
+@keyframes splash-in{to{opacity:1;transform:none;}}
+@keyframes splash-sub-in{to{opacity:.6;}}
+
+/* ── Nav ── */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 0;background:transparent;transition:background .35s var(--ease),box-shadow .35s var(--ease),padding .35s var(--ease);border-bottom:1px solid transparent;}
+.nav.scrolled{background:rgba(245,240,232,.95);backdrop-filter:blur(14px);box-shadow:var(--shadow-sm);padding:13px 0;border-bottom-color:var(--border);}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.nav-brand{font-family:var(--serif);font-weight:400;font-size:1.4rem;letter-spacing:.04em;color:var(--creme);transition:color .35s var(--ease);}
+.nav-brand em{font-style:italic;font-weight:300;}
+.nav.scrolled .nav-brand{color:var(--bordeaux);}
+.nav-links{display:none;gap:28px;align-items:center;}
+@media(min-width:1024px){.nav-links{display:flex;}}
+.nav-links a{font-family:var(--sans);font-weight:400;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--creme);padding:8px 2px;position:relative;transition:color .25s var(--ease);}
+.nav.scrolled .nav-links a{color:var(--ink);}
+.nav-links a::after{content:"";position:absolute;bottom:0;left:0;width:100%;height:1px;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .35s var(--ease);}
+.nav-links a:hover::after{transform:scaleX(1);transform-origin:left;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+/* Language toggle */
+.lang-btn{font-family:var(--sans);font-weight:400;font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--creme);background:transparent;border:1px solid rgba(240,228,204,.45);border-radius:2px;padding:5px 10px;cursor:pointer;transition:all .25s var(--ease);white-space:nowrap;}
+.nav.scrolled .lang-btn{color:var(--ink);border-color:var(--border);}
+.lang-btn:hover{background:rgba(255,255,255,.12);}
+.nav.scrolled .lang-btn:hover{background:var(--beige);}
+/* Hamburger */
+.hamburger{display:flex;flex-direction:column;gap:5px;padding:10px;width:40px;height:40px;align-items:center;justify-content:center;}
+@media(min-width:1024px){.hamburger{display:none;}}
+.hamburger span{display:block;width:20px;height:1px;background:var(--creme);transition:transform .3s var(--ease),background .35s var(--ease),opacity .25s var(--ease);}
+.nav.scrolled .hamburger span{background:var(--ink);}
+body.menu-open .hamburger span:nth-child(1){transform:translateY(6px) rotate(45deg);}
+body.menu-open .hamburger span:nth-child(2){opacity:0;}
+body.menu-open .hamburger span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
+/* Mobile menu */
+.mobile-menu{position:fixed;inset:0;background:var(--warm-white);z-index:90;padding:86px 28px 36px;display:flex;flex-direction:column;gap:20px;transform:translateY(-100%);transition:transform .45s var(--ease);}
+body.menu-open .mobile-menu{transform:none;}
+.mobile-menu a:not(.btn){font-family:var(--serif);font-weight:300;font-size:2rem;color:var(--ink);border-bottom:1px solid var(--border);padding-bottom:14px;}
+.mobile-menu a:not(.btn):last-of-type{border-bottom:none;}
+.mobile-menu .btn{align-self:flex-start;margin-top:8px;}
+.mobile-lang{align-self:flex-start;margin-top:auto;font-family:var(--sans);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--bordeaux);background:transparent;border:1px solid var(--bordeaux);border-radius:2px;padding:7px 14px;cursor:pointer;}
+
+/* ── Hero ── */
+.hero{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--creme);isolation:isolate;}
+.hero-bg{position:absolute;inset:0;z-index:-1;background:linear-gradient(145deg,#120203 0%,#220507 35%,#3d0a0e 70%,#2a0608 100%);}
+.hero-bg::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 25% 60%,rgba(200,137,30,.07) 0%,transparent 55%);}
+.hero-content{position:relative;z-index:2;text-align:center;padding:0 24px;max-width:900px;opacity:0;transform:translateY(20px);animation:rise 1.1s .4s var(--ease) forwards;}
+@keyframes rise{to{opacity:1;transform:none;}}
+.hero h1{color:var(--creme);font-weight:300;margin-bottom:20px;}
+.hero h1 em{font-style:italic;}
+.hero-sub{font-size:1.05rem;color:var(--creme);opacity:.82;max-width:52ch;margin:0 auto 34px;line-height:1.75;font-weight:300;}
+.hero-btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+.scroll-cue{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:2;color:var(--creme);opacity:.5;animation:scrollPulse 2.4s ease-in-out infinite;}
+@keyframes scrollPulse{0%,100%{transform:translate(-50%,0);opacity:.5;}50%{transform:translate(-50%,8px);opacity:.9;}}
+.scroll-cue svg{width:18px;height:28px;display:block;}
+
+/* ── Trust (removed) ── */
+
+/* ── Problem ── */
+.problem{background:var(--beige);}
+.problem-grid{display:grid;grid-template-columns:1fr;gap:44px;}
+@media(min-width:900px){.problem-grid{grid-template-columns:1fr 1fr;gap:72px;align-items:start;}}
+.problem-text p{font-size:1rem;color:var(--ink-soft);line-height:1.8;margin-top:20px;}
+.compare-box{background:var(--warm-white);border:1px solid var(--border);border-radius:2px;padding:28px 24px;box-shadow:var(--shadow-sm);}
+.compare-title{font-family:var(--sans);font-weight:500;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--bordeaux);margin-bottom:16px;display:block;}
+.compare-item{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--border);font-size:.92rem;color:var(--ink-soft);align-items:flex-start;}
+.compare-item:last-child{border-bottom:none;}
+.compare-item svg{flex-shrink:0;margin-top:3px;}
+
+/* ── Voor wie ── */
+.voorwie{background:var(--warm-white);}
+.voorwie-inner{max-width:720px;margin:0 auto;text-align:center;}
+.voorwie-inner p{font-size:1rem;color:var(--ink-soft);line-height:1.8;margin:14px auto 28px;max-width:50ch;}
+.sector-list{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+.sector-tag{font-family:var(--sans);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--bordeaux);border:1px solid var(--bordeaux);border-radius:2px;padding:7px 14px;opacity:.85;transition:background .18s var(--ease),color .18s var(--ease),opacity .18s var(--ease);cursor:default;}
+.sector-tag:hover{background:var(--bordeaux);color:var(--creme);opacity:1;}
+
+/* ── Features ── */
+.features{background:var(--bordeaux);}
+.features .section-head{text-align:center;margin-bottom:44px;}
+.features .section-head h2{color:var(--creme);}
+.features .eyebrow{color:rgba(240,228,204,.8);}
+.features .eyebrow::before{background:rgba(240,228,204,.8);}
+.features-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+@media(min-width:900px){.features-grid{grid-template-columns:repeat(3,1fr);}}
+.feature-item{background:var(--bordeaux-soft);padding:26px 22px;border:1px solid rgba(240,228,204,.07);display:flex;flex-direction:column;gap:10px;}
+.feature-icon{width:28px;height:28px;color:var(--amber);flex-shrink:0;}
+.feature-title{font-family:var(--serif);font-weight:400;font-size:1.05rem;color:var(--creme);}
+.feature-desc{font-family:var(--sans);font-weight:300;font-size:.84rem;color:rgba(240,228,204,.7);line-height:1.6;}
+
+/* ── Werkwijze ── */
+.werkwijze{background:var(--warm-white);}
+.werkwijze .section-head{text-align:center;margin-bottom:56px;}
+.werkwijze-sub{font-family:var(--serif);font-style:italic;font-weight:300;color:var(--ink-soft);font-size:1rem;margin-top:10px;max-width:44ch;margin-left:auto;margin-right:auto;}
+.steps{max-width:680px;margin:0 auto;}
+.step{display:grid;grid-template-columns:62px 1fr;gap:24px;padding:28px 0;border-bottom:1px solid var(--border);align-items:start;}
+.step:last-child{border-bottom:none;}
+.step-num{font-family:var(--serif);font-weight:300;font-size:2.6rem;color:var(--bordeaux);opacity:.22;line-height:1;text-align:center;}
+.step-content h3{font-family:var(--serif);font-weight:400;font-size:1.18rem;color:var(--ink);margin-bottom:6px;}
+.step-content p{font-size:.95rem;color:var(--ink-soft);line-height:1.75;}
+
+/* ── Investering ── */
+.investering{background:var(--beige);}
+.investering-grid{display:grid;grid-template-columns:1fr;gap:48px;}
+@media(min-width:900px){.investering-grid{grid-template-columns:1.1fr 1fr;gap:72px;align-items:start;}}
+.investering-text p{font-size:1rem;color:var(--ink-soft);line-height:1.8;margin-top:20px;}
+.price-card{background:var(--warm-white);border:1px solid var(--border);border-radius:2px;padding:38px 32px;box-shadow:var(--shadow-md);position:relative;overflow:hidden;}
+.price-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--bordeaux);}
+.price-label{font-family:var(--sans);font-weight:400;font-size:.67rem;letter-spacing:.28em;text-transform:uppercase;color:var(--bordeaux);display:block;margin-bottom:8px;}
+.price-amount{font-family:var(--serif);font-weight:300;font-size:3.5rem;color:var(--ink);line-height:1;margin-bottom:5px;}
+.price-note{font-family:var(--sans);font-size:.74rem;color:var(--ink-soft);letter-spacing:.06em;margin-bottom:24px;display:block;}
+.price-includes{list-style:none;padding:0;margin:0 0 22px;display:flex;flex-direction:column;gap:10px;}
+.price-includes li{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;color:var(--ink-soft);}
+.price-includes svg{width:14px;height:14px;color:var(--bordeaux);flex-shrink:0;margin-top:3px;}
+.price-optional{border-top:1px solid var(--border);padding-top:18px;}
+.price-optional-title{font-family:var(--sans);font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);opacity:.7;margin-bottom:10px;display:block;}
+.price-optional ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:7px;}
+.price-optional li{font-size:.87rem;color:var(--ink-soft);display:flex;gap:8px;}
+.price-optional li::before{content:"–";opacity:.5;}
+
+/* ── About ── */
+.about{background:var(--warm-white);}
+.about-grid{display:grid;grid-template-columns:1fr;gap:44px;align-items:center;}
+@media(min-width:900px){.about-grid{grid-template-columns:1fr 1.1fr;gap:72px;}}
+.about-figure{position:relative;aspect-ratio:4/5;max-width:440px;width:100%;margin:0 auto;}
+.about-figure .arch-frame{width:100%;height:100%;box-shadow:var(--shadow-md);}
+.about-figure::before{content:"";position:absolute;width:36%;height:17%;border:1px solid var(--bordeaux);border-bottom:none;border-radius:50% 50% 0 0/100% 100% 0 0;top:-6%;right:-4%;opacity:.25;}
+.about-text p{font-size:1rem;line-height:1.8;color:var(--ink-soft);margin-top:20px;}
+
+/* ── Team ── */
+.team{background:var(--beige);}
+.team .section-head{text-align:center;margin-bottom:48px;}
+.team-sub{font-family:var(--serif);font-style:italic;font-weight:300;color:var(--ink-soft);font-size:1.05rem;margin-top:8px;}
+.team-grid{display:grid;grid-template-columns:1fr;gap:32px;}
+@media(min-width:768px){.team-grid{grid-template-columns:1fr 1fr;}}
+.lead-card{display:grid;grid-template-columns:130px 1fr;gap:22px;align-items:start;}
+@media(max-width:480px){.lead-card{grid-template-columns:1fr;}}
+.lead-figure{aspect-ratio:4/5;}
+.lead-figure .arch-frame{width:100%;height:100%;box-shadow:var(--shadow-md);background:linear-gradient(160deg,var(--warm-white) 0%,var(--wood) 100%);}
+.lead-info h3{font-family:var(--serif);font-size:1.55rem;font-weight:400;margin-bottom:4px;}
+.lead-info .caps{font-family:var(--sans);font-weight:400;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--bordeaux);display:block;margin-bottom:10px;}
+.lead-info p{color:var(--ink-soft);font-size:.94rem;line-height:1.75;}
+
+/* ── FAQ ── */
+.faq{background:var(--warm-white);}
+.faq .section-head{text-align:center;margin-bottom:44px;}
+.faq-list{max-width:680px;margin:0 auto;}
+details.faq-item{border-bottom:1px solid var(--border);}
+details.faq-item:first-of-type{border-top:1px solid var(--border);}
+details.faq-item summary{list-style:none;display:flex;justify-content:space-between;align-items:center;padding:18px 0;cursor:pointer;font-family:var(--serif);font-weight:400;font-size:1.05rem;color:var(--ink);gap:16px;}
+details.faq-item summary::-webkit-details-marker{display:none;}
+details.faq-item summary::after{content:"+";font-family:var(--sans);font-size:1.2rem;font-weight:300;color:var(--bordeaux);flex-shrink:0;transition:transform .3s var(--ease);}
+details.faq-item[open] summary::after{transform:rotate(45deg);}
+.faq-answer{padding:0 0 18px;font-size:.95rem;color:var(--ink-soft);line-height:1.8;}
+
+/* ── Contact ── */
+.contact{background:var(--beige);}
+.contact-grid{display:grid;grid-template-columns:1fr;gap:44px;}
+@media(min-width:900px){.contact-grid{grid-template-columns:1fr 1fr;gap:72px;align-items:start;}}
+.contact-text p{font-size:1rem;color:var(--ink-soft);line-height:1.8;margin-top:20px;margin-bottom:28px;}
+.contact-info-row{display:flex;gap:12px;align-items:flex-start;margin-top:32px;}
+.contact-info-row svg{width:15px;height:15px;color:var(--bordeaux);flex-shrink:0;margin-top:3px;}
+.contact-info-row .caps{font-family:var(--sans);font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);opacity:.7;display:block;margin-bottom:2px;}
+.contact-form{background:var(--warm-white);border:1px solid var(--border);border-radius:2px;padding:32px 28px;box-shadow:var(--shadow-sm);}
+.form-row{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:14px;}
+@media(min-width:560px){.form-row.two-col{grid-template-columns:1fr 1fr;}}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-group label{font-family:var(--sans);font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);}
+.form-group input,.form-group select,.form-group textarea{font-family:var(--sans);font-size:.94rem;color:var(--ink);background:var(--warm-white);border:1px solid var(--border);border-radius:2px;padding:11px 13px;transition:border-color .25s var(--ease);outline:none;width:100%;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--bordeaux);}
+.form-group textarea{resize:vertical;min-height:86px;}
+.form-group select{appearance:none;}
+.form-submit{margin-top:18px;}
+/* Form success state */
+.form-success{display:none;text-align:center;padding:44px 20px;}
+.form-success.visible{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.form-success-icon{width:48px;height:48px;background:var(--bordeaux);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;}
+.form-success-icon svg{width:22px;height:22px;stroke:var(--creme);}
+.form-success h3{font-family:var(--serif);font-weight:400;font-size:1.6rem;color:var(--ink);}
+.form-success p{font-size:.95rem;color:var(--ink-soft);max-width:30ch;}
+
+/* ── Footer ── */
+footer{background:var(--bordeaux);color:var(--creme);padding:56px 0 24px;text-align:center;}
+.footer-wordmark{font-family:var(--serif);font-size:clamp(1.6rem,3vw,2.5rem);font-weight:300;color:var(--creme);letter-spacing:.06em;display:block;margin-bottom:8px;}
+.footer-wordmark em{font-style:italic;}
+.footer-tagline{font-family:var(--sans);font-size:.6rem;letter-spacing:.32em;text-transform:uppercase;color:var(--creme);opacity:.5;display:block;margin-bottom:36px;}
+.footer-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 24px;margin-bottom:32px;}
+.footer-nav a{font-family:var(--sans);font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--creme);opacity:.7;transition:opacity .25s;}
+.footer-nav a:hover{opacity:1;}
+.footer-bottom{border-top:1px solid rgba(240,228,204,.15);padding-top:18px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-family:var(--sans);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;opacity:.45;}
+
+/* ── Features split ── */
+.features-split{display:grid;grid-template-columns:1fr;gap:48px;}
+@media(min-width:1100px){.features-split{grid-template-columns:1fr 1fr;gap:56px;align-items:start;}}
+.features-phones{display:none;justify-content:center;}
+@media(min-width:768px){.features-phones{display:flex;}}
+.features-phones-scaler{zoom:0.75;}
+@media(min-width:1100px){.features-split .features-grid{grid-template-columns:repeat(3,1fr);}}
+
+/* ── Phone mockup ── */
+.rvm-phones{display:flex;flex-wrap:nowrap;gap:40px;align-items:flex-start;justify-content:center;}
+.rvm-phone-col{display:flex;flex-direction:column;align-items:center;gap:16px;}
+.rvm-phone-label{font-family:var(--sans);font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(240,228,204,.55);margin:0;}
+.rvm-phone{position:relative;width:292px;height:618px;flex:none;}
+.rvm-phone__body{position:absolute;inset:0;border-radius:50px;background:linear-gradient(155deg,#8f8f93 0%,#4a4a4d 18%,#1c1c1e 50%,#38383a 82%,#6e6e72 100%);box-shadow:0 0 0 1px rgba(255,255,255,0.35),0 50px 110px rgba(0,0,0,0.5),0 16px 40px rgba(0,0,0,0.32);}
+.rvm-phone__bezel{position:absolute;inset:4px;border-radius:46px;background:#000;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);}
+.rvm-phone__screen{position:absolute;top:11px;left:11px;right:11px;bottom:11px;border-radius:38px;overflow:hidden;}
+.rvm-btn{position:absolute;border-radius:2px 0 0 2px;}
+.rvm-btn--silent{left:-3px;top:108px;width:3px;height:28px;background:linear-gradient(to right,#2a2a2a,#3d3d3d);}
+.rvm-btn--volup{left:-3px;top:152px;width:3px;height:38px;background:linear-gradient(to right,#2a2a2a,#3d3d3d);}
+.rvm-btn--voldn{left:-3px;top:200px;width:3px;height:38px;background:linear-gradient(to right,#2a2a2a,#3d3d3d);}
+.rvm-btn--power{right:-3px;top:166px;width:3px;height:62px;background:linear-gradient(to left,#2a2a2a,#3d3d3d);border-radius:0 2px 2px 0;}
+.rvm-sb{display:flex;align-items:center;justify-content:space-between;height:40px;padding:0 24px;box-sizing:border-box;}
+.rvm-sb__time{font-family:-apple-system,'SF Pro Text',Helvetica,Arial,sans-serif;font-size:14px;font-weight:600;letter-spacing:0.01em;}
+.rvm-sb__right{display:flex;align-items:center;gap:5px;}
+.rvm-sb__5g{font-family:-apple-system,'SF Pro Text',Helvetica,Arial,sans-serif;font-size:13px;font-weight:600;}
+.rvm-batt{display:flex;align-items:center;gap:1px;}
+.rvm-batt__shell{width:23px;height:11.5px;border-radius:3px;padding:1.5px;box-sizing:border-box;}
+.rvm-batt__fill{width:100%;height:100%;border-radius:1px;}
+.rvm-batt__nub{width:1.5px;height:4px;border-radius:0 1px 1px 0;}
+.rvm-hero{width:100%;height:100%;background:var(--bordeaux);position:relative;}
+.rvm-hero .rvm-sb{position:absolute;top:0;left:0;right:0;z-index:2;}
+.rvm-hero .rvm-sb__time,.rvm-hero .rvm-sb__5g{color:#fff;}
+.rvm-hero__center{position:absolute;top:55%;left:0;right:0;transform:translateY(-50%);text-align:center;}
+.rvm-hero__mark{font-family:var(--serif);font-size:31px;font-weight:300;color:#EEE5D4;letter-spacing:0.04em;}
+.rvm-hero__sub{font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:8px;font-weight:500;letter-spacing:0.34em;color:#9b8983;text-transform:uppercase;margin-top:9px;}
+.rvm-page{width:100%;height:100%;background:#efe9df;position:relative;}
+.rvm-page .rvm-sb__time,.rvm-page .rvm-sb__5g{color:#1a1010;}
+.rvm-nav{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;background:#e8dfcf;border-bottom:1px solid rgba(58,32,18,0.07);}
+.rvm-burger{display:flex;flex-direction:column;gap:3.5px;width:19px;}
+.rvm-burger span{height:1.6px;background:#3a2012;border-radius:1px;}
+.rvm-nav__mark{font-family:var(--serif);font-size:17px;font-weight:400;color:#3a2012;white-space:nowrap;}
+.rvm-lang{border:1px solid rgba(58,32,18,0.35);border-radius:3px;padding:3px 8px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;font-weight:500;letter-spacing:0.08em;color:#3a2012;}
+.rvm-body{padding:24px 22px 0;}
+.rvm-kicker{display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:11px;}
+.rvm-kicker__line{width:20px;height:1px;background:#9c8775;display:block;}
+.rvm-kicker__txt{font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:9px;font-weight:500;letter-spacing:0.24em;color:#9c8775;text-transform:uppercase;}
+.rvm-h2{font-family:var(--serif);font-size:28px;font-weight:300;color:#2e1c12;margin:0 0 12px;line-height:1.06;}
+.rvm-h2 em{font-style:italic;}
+.rvm-intro{font-family:var(--serif);font-style:italic;font-size:13.5px;color:#6e5c4e;line-height:1.45;margin:0 0 28px;}
+.rvm-step{display:flex;gap:16px;padding:20px 0;border-top:1px solid rgba(58,32,18,0.12);}
+.rvm-step:first-of-type{padding-top:0;border-top:none;}
+.rvm-step__num{font-family:var(--serif);font-size:27px;font-weight:300;color:#c6b7a3;line-height:1;flex:none;width:32px;}
+.rvm-step__h{font-family:var(--serif);font-weight:400;font-size:20px;color:#2e1c12;margin:0 0 6px;}
+.rvm-step__p{font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:13px;color:#5a4a3d;line-height:1.5;margin:0;}
+
+/* ── Reveal ── */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .75s var(--ease),transform .75s var(--ease);}
+.reveal.visible{opacity:1;transform:none;}
+@media(prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;}
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}
+}
+
+/* ── Mobile menu scroll lock ── */
+body.menu-open{overflow:hidden;}
+
+/* ── Mobile ── */
+@media(max-width:767px){
+  .section{padding:60px 0;}
+  .container{padding:0 20px;}
+
+  /* Typography */
+  h1{font-size:2.1rem;line-height:1.1;}
+  h2{font-size:1.65rem;line-height:1.14;}
+  h3{font-size:1.1rem;}
+  p,.step-content p,.lead-info p,.faq-answer{font-size:.96rem;line-height:1.75;}
+
+  /* Nav */
+  .nav{padding:14px 0;}
+  .nav.scrolled{padding:10px 0;}
+
+  /* Hero */
+  .hero-sub{font-size:.95rem;margin-bottom:28px;max-width:100%;}
+  .hero-btns{flex-direction:column;align-items:stretch;gap:10px;}
+  .btn-xxl{min-height:54px;padding:15px 22px;font-size:.76rem;justify-content:center;}
+  .scroll-cue{bottom:18px;}
+
+  /* Problem */
+  .problem-grid{gap:32px;}
+  .compare-item{font-size:.9rem;}
+
+  /* Voor wie */
+  .voorwie-inner p{margin:16px auto 24px;}
+  .sector-tag{font-size:.68rem;padding:7px 13px;}
+
+  /* Features */
+  .features-grid{grid-template-columns:1fr 1fr;}
+  .feature-item{padding:18px 14px;}
+  .feature-title{font-size:.92rem;}
+  .feature-desc{font-size:.8rem;line-height:1.55;}
+
+  /* Werkwijze */
+  .steps{max-width:100%;}
+  .step{grid-template-columns:44px 1fr;gap:12px;padding:20px 0;}
+  .step-num{font-size:1.9rem;}
+  .step-content h3{font-size:1.05rem;}
+  .werkwijze-sub{font-size:.95rem;}
+
+  /* Investering */
+  .investering-grid{gap:32px;}
+  .price-card{padding:28px 18px;}
+  .price-amount{font-size:2.8rem;}
+  .price-label{margin-bottom:6px;}
+  .price-includes li{font-size:.88rem;}
+  .price-optional li{font-size:.84rem;}
+
+  /* About */
+  .about-grid{gap:32px;}
+  .about-figure{aspect-ratio:16/9;max-width:100%;}
+  .about-figure::before{display:none;}
+
+  /* Team */
+  .team-grid{gap:28px;}
+  .lead-card{grid-template-columns:1fr;gap:16px;}
+  .lead-figure{aspect-ratio:16/9;max-width:100%;}
+  .lead-info h3{font-size:1.4rem;}
+  .lead-info p{font-size:.93rem;}
+
+  /* FAQ */
+  .faq-list{max-width:100%;}
+  details.faq-item summary{font-size:.96rem;padding:16px 0;gap:12px;}
+  .faq-answer{font-size:.93rem;padding-bottom:16px;}
+
+  /* Contact */
+  .contact-grid{gap:40px;}
+  .contact-text p{margin-top:16px;margin-bottom:0;}
+  .contact-info-row{margin-top:24px;}
+  .contact-form{padding:24px 16px;}
+  .form-row.two-col{grid-template-columns:1fr;}
+  .form-group label{font-size:.64rem;}
+
+  /* Footer */
+  footer{padding:48px 0 24px;}
+  .footer-wordmark{font-size:1.6rem;}
+  .footer-nav{gap:8px 18px;margin-bottom:28px;}
+  .footer-nav a{font-size:.62rem;}
+  .footer-bottom{flex-direction:column;align-items:center;gap:6px;text-align:center;}
+}
+</style>
+
+<!-- SPLASH -->
+<div id="splash" aria-hidden="true">
+  <div>
+    <div class="splash-wordmark">Revivo <em>Studios</em></div>
+    <div class="splash-sub" data-i18n="splash.sub">Websites voor salons</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="container nav-inner">
+    <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <a href="#top" class="nav-brand">Revivo <em>Studios</em></a>
+    <div class="nav-links">
+      <a href="#werkwijze" data-i18n="nav.process">Werkwijze</a>
+      <a href="#investering" data-i18n="nav.pricing">Investering</a>
+      <a href="#over-ons" data-i18n="nav.about">Over ons</a>
+      <a href="#contact" data-i18n="nav.contact">Contact</a>
+    </div>
+    <div class="nav-right">
+      <button class="lang-btn" id="lang-btn" aria-label="Switch language">EN</button>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#werkwijze" data-i18n="nav.process">Werkwijze</a>
+  <a href="#investering" data-i18n="nav.pricing">Investering</a>
+  <a href="#over-ons" data-i18n="nav.about">Over ons</a>
+  <a href="#contact" data-i18n="nav.contact">Contact</a>
+  <a href="#contact" class="btn btn-primary" data-i18n="hero.cta1">Vraag jouw websitevoorstel aan</a>
+  <button class="mobile-lang" id="mobile-lang-btn">EN</button>
+</div>
+
+<main id="top">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-content">
+    <h1 data-i18n="hero.h1">Jouw zaak verdient meer dan alleen een boekingslink.</h1>
+    <p class="hero-sub" data-i18n="hero.sub">Wij bouwen stijlvolle websites op maat voor salons en lokale ondernemers — zodat je online dezelfde kwaliteit uitstraalt als in je zaak.</p>
+    <div class="hero-btns">
+      <a href="#contact" class="btn btn-primary btn-xxl" data-i18n="hero.cta1">Vraag jouw websitevoorstel aan</a>
+      <a href="#werkwijze" class="btn btn-xxl" style="color:var(--creme);border:1px solid rgba(240,228,204,.5);" data-i18n="hero.cta2">Bekijk onze werkwijze</a>
+    </div>
+  </div>
+  <div class="scroll-cue" aria-hidden="true">
+    <svg viewBox="0 0 24 36" fill="none" stroke="currentColor" stroke-width="1">
+      <rect x="6" y="2" width="12" height="20" rx="6"></rect><line x1="12" y1="8" x2="12" y2="12"></line>
+      <path d="M8 28l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+  </div>
+</section>
+
+
+<!-- PROBLEEM -->
+<section class="problem section" id="voor-salons">
+  <div class="container">
+    <div class="problem-grid">
+      <div class="reveal">
+        <span class="eyebrow" data-i18n="problem.eyebrow">Waarom een eigen website</span>
+        <h2 data-i18n-html="problem.h2">Een boekingspagina helpt klanten boeken. Een website helpt klanten <em style="font-style:italic">kiezen.</em></h2>
+        <p data-i18n="problem.p1">Op platforms zoals Treatwell of Fresha sta je naast tientallen andere salons. Er is weinig ruimte voor jouw eigen sfeer, verhaal of uitstraling.</p>
+        <p data-i18n="problem.p2">Met een eigen website laat je zien wie je bent — voordat iemand op boeken klikt.</p>
+      </div>
+      <div class="reveal">
+        <div class="compare-box">
+          <span class="compare-title" data-i18n="compare.platform.title">Boekingsplatform</span>
+          <div class="compare-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a07060" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg><span data-i18n="compare.platform.1">Je staat naast concurrenten</span></div>
+          <div class="compare-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a07060" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg><span data-i18n="compare.platform.2">Weinig ruimte voor jouw merk</span></div>
+          <div class="compare-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a07060" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg><span data-i18n="compare.platform.3">Jouw verhaal blijft onderbelicht</span></div>
+        </div>
+        <div class="compare-box" style="margin-top:12px;border-color:var(--bordeaux);">
+          <span class="compare-title" data-i18n="compare.revivo.title">Eigen website via Revivo</span>
+          <div class="compare-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bordeaux)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span data-i18n="compare.revivo.1">Jouw merk centraal — jouw sfeer, jouw verhaal</span></div>
+          <div class="compare-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bordeaux)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span data-i18n="compare.revivo.2">Foto's, diensten en reviews op één plek</span></div>
+          <div class="compare-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bordeaux)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span data-i18n="compare.revivo.3">Klanten boeken via jouw vertrouwde systeem</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VOOR WIE -->
+<section class="voorwie section">
+  <div class="container">
+    <div class="voorwie-inner reveal">
+      <span class="eyebrow" data-i18n="voorwie.eyebrow">Voor wie</span>
+      <h2 data-i18n="voorwie.h2">Voor ondernemers die trots zijn op hun zaak.</h2>
+      <p data-i18n="voorwie.p">Jij hebt de zaak opgebouwd. Wij zorgen dat mensen dat online ook voelen.</p>
+      <div class="sector-list">
+        <span class="sector-tag">Kappers</span><span class="sector-tag">Barbers</span>
+        <span class="sector-tag">Beautysalons</span><span class="sector-tag">Nagelstudio's</span>
+        <span class="sector-tag">Brow bars</span><span class="sector-tag">Lash artists</span>
+        <span class="sector-tag">Massagesalons</span><span class="sector-tag">Wellnesspraktijken</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WAT JE KRIJGT -->
+<section class="features section">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow" data-i18n="features.eyebrow">Wat je krijgt</span>
+      <h2 data-i18n="features.h2">Alles wat je nodig hebt.</h2>
+    </div>
+    <div class="features-split">
+      <div class="features-grid reveal">
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 9h6M9 13h4"></path></svg>
+          <div class="feature-title" data-i18n="feat.1.title">Ontwerp op maat</div>
+          <div class="feature-desc" data-i18n="feat.1.desc">Een website die past bij jouw zaak en uitstraling.</div>
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="5" y="2" width="14" height="20" rx="2"></rect><path d="M12 18h.01"></path></svg>
+          <div class="feature-title" data-i18n="feat.2.title">Mobile-first</div>
+          <div class="feature-desc" data-i18n="feat.2.desc">Sterk op telefoon, tablet én desktop.</div>
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>
+          <div class="feature-title" data-i18n="feat.3.title">Online boekingen</div>
+          <div class="feature-desc" data-i18n="feat.3.desc">Koppeling met jouw bestaande boekingssysteem.</div>
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+          <div class="feature-title" data-i18n="feat.4.title">SEO</div>
+          <div class="feature-desc" data-i18n="feat.4.desc">Technisch goed ingericht zodat Google jou vindt.</div>
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 22s-7-7.5-7-13a7 7 0 1 1 14 0c0 5.5-7 13-7 13z"></path><circle cx="12" cy="9" r="2.5"></circle></svg>
+          <div class="feature-title" data-i18n="feat.5.title">Google Maps</div>
+          <div class="feature-desc" data-i18n="feat.5.desc">Bezoekers vinden snel hoe ze bij jou komen.</div>
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+          <div class="feature-title" data-i18n="feat.6.title">Snel live</div>
+          <div class="feature-desc" data-i18n="feat.6.desc">Geen maandenlange trajecten.</div>
+        </div>
+      </div>
+
+      <!-- Phone mockups -->
+      <div class="features-phones reveal">
+        <div class="features-phones-scaler">
+          <div class="rvm-phones">
+
+            <!-- Phone 1 — Hero -->
+            <div class="rvm-phone-col">
+              <div class="rvm-phone">
+                <div class="rvm-phone__body"></div>
+                <div class="rvm-phone__bezel"></div>
+                <div class="rvm-phone__screen">
+                  <div class="rvm-hero">
+                    <div class="rvm-sb">
+                      <span class="rvm-sb__time">10:46</span>
+                      <div class="rvm-sb__right">
+                        <svg width="18" height="11" viewBox="0 0 18 11" fill="#fff"><rect x="0" y="7.5" width="3" height="3.5" rx="0.8"/><rect x="5" y="5" width="3" height="6" rx="0.8"/><rect x="10" y="2.5" width="3" height="8.5" rx="0.8"/><rect x="15" y="0" width="3" height="11" rx="0.8"/></svg>
+                        <span class="rvm-sb__5g">5G</span>
+                        <div class="rvm-batt">
+                          <div class="rvm-batt__shell" style="border:1px solid rgba(255,255,255,0.45);"><div class="rvm-batt__fill" style="background:#fff;"></div></div>
+                          <div class="rvm-batt__nub" style="background:rgba(255,255,255,0.45);"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="rvm-hero__center">
+                      <div class="rvm-hero__mark">Revivo <em>Studios</em></div>
+                      <div class="rvm-hero__sub">Websites voor salons</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="rvm-btn rvm-btn--silent"></div>
+                <div class="rvm-btn rvm-btn--volup"></div>
+                <div class="rvm-btn rvm-btn--voldn"></div>
+                <div class="rvm-btn rvm-btn--power"></div>
+              </div>
+              <p class="rvm-phone-label">Hero</p>
+            </div>
+
+            <!-- Phone 2 — Werkwijze -->
+            <div class="rvm-phone-col">
+              <div class="rvm-phone">
+                <div class="rvm-phone__body"></div>
+                <div class="rvm-phone__bezel"></div>
+                <div class="rvm-phone__screen">
+                  <div class="rvm-page">
+                    <div class="rvm-sb">
+                      <span class="rvm-sb__time">10:46</span>
+                      <div class="rvm-sb__right">
+                        <svg width="18" height="11" viewBox="0 0 18 11" fill="#1a1010"><rect x="0" y="7.5" width="3" height="3.5" rx="0.8"/><rect x="5" y="5" width="3" height="6" rx="0.8"/><rect x="10" y="2.5" width="3" height="8.5" rx="0.8"/><rect x="15" y="0" width="3" height="11" rx="0.8"/></svg>
+                        <span class="rvm-sb__5g">5G</span>
+                        <div class="rvm-batt">
+                          <div class="rvm-batt__shell" style="border:1px solid rgba(26,16,16,0.4);"><div class="rvm-batt__fill" style="background:#1a1010;"></div></div>
+                          <div class="rvm-batt__nub" style="background:rgba(26,16,16,0.4);"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="rvm-nav">
+                      <div class="rvm-burger"><span></span><span></span><span></span></div>
+                      <div class="rvm-nav__mark">Revivo <em>Studios</em></div>
+                      <div class="rvm-lang">EN</div>
+                    </div>
+                    <div class="rvm-body">
+                      <div class="rvm-kicker">
+                        <span class="rvm-kicker__line"></span>
+                        <span class="rvm-kicker__txt">Werkwijze</span>
+                        <span class="rvm-kicker__line"></span>
+                      </div>
+                      <h3 class="rvm-h2">Van kennismaking <em>naar live.</em></h3>
+                      <p class="rvm-intro">We leveren al vóór de samenwerking een concreet ontwerp — zodat je precies weet wat je krijgt.</p>
+                      <div class="rvm-step">
+                        <span class="rvm-step__num">01</span>
+                        <div><h4 class="rvm-step__h">Kennismaking</h4><p class="rvm-step__p">We leren je zaak kennen — sfeer, doelgroep en boekingssysteem.</p></div>
+                      </div>
+                      <div class="rvm-step">
+                        <span class="rvm-step__num">02</span>
+                        <div><h4 class="rvm-step__h">Ontwerp op maat</h4><p class="rvm-step__p">Je ziet meteen hoe de website er voor jouw zaak uitziet.</p></div>
+                      </div>
+                      <div class="rvm-step">
+                        <span class="rvm-step__num">03</span>
+                        <div><h4 class="rvm-step__h">Feedback &amp; afwerking</h4><p class="rvm-step__p">Jij hebt het voor het zeggen totdat je écht blij bent.</p></div>
+                      </div>
+                      <div class="rvm-step">
+                        <span class="rvm-step__num">04</span>
+                        <div><h4 class="rvm-step__h">Live</h4><p class="rvm-step__p">Klanten vinden je en boeken via jouw systeem.</p></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="rvm-btn rvm-btn--silent"></div>
+                <div class="rvm-btn rvm-btn--volup"></div>
+                <div class="rvm-btn rvm-btn--voldn"></div>
+                <div class="rvm-btn rvm-btn--power"></div>
+              </div>
+              <p class="rvm-phone-label">Werkwijze</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WERKWIJZE -->
+<section class="werkwijze section" id="werkwijze">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow" data-i18n="ww.eyebrow">Werkwijze</span>
+      <h2 data-i18n-html="ww.h2">Van kennismaking <em style="font-style:italic">naar live.</em></h2>
+      <p class="werkwijze-sub" data-i18n="ww.sub">We leveren al vóór de samenwerking een concreet ontwerp — zodat je precies weet wat je krijgt.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h3 data-i18n="ww.1.title">Kennismaking</h3>
+          <p data-i18n="ww.1.desc">We leren je zaak kennen — sfeer, doelgroep en boekingssysteem. Op basis daarvan maken wij al een eerste ontwerp.</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h3 data-i18n="ww.2.title">Ontwerp op maat</h3>
+          <p data-i18n="ww.2.desc">Je ziet meteen hoe de website er voor jouw zaak uitziet. Helemaal afgestemd op jouw sfeer en uitstraling.</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h3 data-i18n="ww.3.title">Feedback & afwerking</h3>
+          <p data-i18n="ww.3.desc">Wil je iets anders? We passen het aan. Jij hebt het voor het zeggen totdat je écht blij bent.</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h3 data-i18n="ww.4.title">Live</h3>
+          <p data-i18n="ww.4.desc">De website gaat online. Klanten vinden je, lezen jouw verhaal en boeken via jouw vertrouwde systeem.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INVESTERING -->
+<section class="investering section" id="investering">
+  <div class="container">
+    <div class="investering-grid">
+      <div class="reveal">
+        <span class="eyebrow" data-i18n="inv.eyebrow">Investering</span>
+        <h2 data-i18n="inv.h2">Helder en eerlijk geprijsd.</h2>
+        <p data-i18n="inv.p1">Een professionele website bij een bureau kost al snel €5.000 tot €10.000. Dat is voor de meeste lokale ondernemers niet realistisch.</p>
+        <p data-i18n="inv.p2">Wij houden het eenvoudig: één vaste prijs, geen abonnement, geen verborgen kosten.</p>
+        <a href="#contact" class="btn btn-primary" style="margin-top:16px;" data-i18n="hero.cta1">Vraag jouw websitevoorstel aan</a>
+      </div>
+      <div class="reveal">
+        <div class="price-card">
+          <span class="price-label" data-i18n="price.label">Website op maat</span>
+          <div class="price-amount">€1.500</div>
+          <span class="price-note" data-i18n="price.note">Eenmalig · Geen abonnement · Geen verborgen kosten</span>
+          <ul class="price-includes">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span data-i18n="price.inc.1">Ontwerp op maat</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span data-i18n="price.inc.2">Mobile-first versie</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span data-i18n="price.inc.3">Koppeling met jouw boekingssysteem</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span data-i18n="price.inc.4">Contactformulier & Google Maps</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span data-i18n="price.inc.5">SEO & veilige inrichting</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span data-i18n="price.inc.6">Revisieronde na eerste oplevering</span></li>
+          </ul>
+          <div class="price-optional">
+            <span class="price-optional-title" data-i18n="price.opt.title">Optioneel erbij</span>
+            <ul>
+              <li><span data-i18n="price.opt.1">Hosting & technisch beheer</span></li>
+              <li><span data-i18n="price.opt.2">Extra pagina's of koppelingen</span></li>
+              <li><span data-i18n="price.opt.3">Doorlopend onderhoud of support</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OVER ONS -->
+<section class="about section" id="over-ons">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-figure reveal">
+        <div class="arch-frame">
+          <img src="/rijks.png" alt="Amsterdam" loading="lazy">
+        </div>
+      </div>
+      <div class="about-text reveal">
+        <span class="eyebrow" data-i18n="about.eyebrow">Wie wij zijn</span>
+        <h2 data-i18n-html="about.h2">Twee vrienden. <em style="font-style:italic">Eén passie.</em></h2>
+        <p data-i18n="about.p1">Revivo Studios is ontstaan vanuit een simpel idee: veel lokale ondernemers hebben een prachtige zaak, maar online is dat nog niet altijd zichtbaar.</p>
+        <p data-i18n="about.p2">Wij houden van goed ontwerp en snel schakelen. Persoonlijk, hands-on en met aandacht voor jouw zaak.</p>
+        <a href="#contact" class="btn btn-ghost" style="margin-top:16px;" data-i18n="about.cta">Neem contact op</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="team section">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow" data-i18n="team.eyebrow">Het team</span>
+      <h2>Nelson <em style="font-style:italic">&amp;</em> Berend</h2>
+      <p class="team-sub" data-i18n="team.sub">Twee vrienden die jouw zaak online op de kaart zetten.</p>
+    </div>
+    <div class="team-grid">
+      <div class="lead-card reveal">
+        <div class="lead-figure"><div class="arch-frame"></div></div>
+        <div class="lead-info">
+          <h3>Nelson</h3>
+          <span class="caps" data-i18n="team.role">Co-founder</span>
+          <p data-i18n="team.nelson.desc">Richt zich op het contact met salons en zorgt dat ieder ontwerp al voelt als een echt, persoonlijk voorstel.</p>
+        </div>
+      </div>
+      <div class="lead-card reveal">
+        <div class="lead-figure"><div class="arch-frame"></div></div>
+        <div class="lead-info">
+          <h3>Berend</h3>
+          <span class="caps" data-i18n="team.role">Co-founder</span>
+          <p data-i18n="team.berend.desc">Bouwt de technologie — razendsnel, mobielvriendelijk en volledig op maat.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq section">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow" data-i18n="faq.eyebrow">Veelgestelde vragen</span>
+      <h2 data-i18n="faq.h2">Alles wat je wilt weten.</h2>
+    </div>
+    <div class="faq-list reveal">
+      <details class="faq-item"><summary data-i18n="faq.1.q">Kan ik mijn huidige boekingssysteem blijven gebruiken?</summary><div class="faq-answer" data-i18n="faq.1.a">Ja. Wij koppelen je website aan je bestaande systeem — Treatwell, Fresha, Salonized of iets anders. Jouw klanten blijven boeken zoals ze gewend zijn, maar via een veel aantrekkelijkere ervaring.</div></details>
+      <details class="faq-item"><summary data-i18n="faq.2.q">Is de website echt op maat gemaakt?</summary><div class="faq-answer" data-i18n="faq.2.a">Ja. Geen standaard uitstraling. Alles wordt afgestemd op jouw zaak, sfeer en doelgroep.</div></details>
+      <details class="faq-item"><summary data-i18n="faq.3.q">Wat als ik het ontwerp wil aanpassen?</summary><div class="faq-answer" data-i18n="faq.3.a">Dat is precies de bedoeling. Wij leveren een eerste ontwerp en passen het aan op jouw wensen — totdat jij écht blij bent.</div></details>
+      <details class="faq-item"><summary data-i18n="faq.4.q">Werkt de website goed op mobiel?</summary><div class="faq-answer" data-i18n="faq.4.a">Ja, we bouwen mobile-first. De meeste klanten zoeken en boeken via hun telefoon.</div></details>
+      <details class="faq-item"><summary data-i18n="faq.5.q">Kunnen jullie ook hosting regelen?</summary><div class="faq-answer" data-i18n="faq.5.a">Ja. We regelen het domein en de hosting voor je — zodat je daar zelf geen omkijken naar hebt.</div></details>
+      <details class="faq-item"><summary data-i18n="faq.6.q">Wat kost het en hoe snel staat het er?</summary><div class="faq-answer" data-i18n="faq.6.a">€1.500 eenmalig. Geen abonnement, geen verborgen kosten. Zodra alle input compleet is, staat jouw website er snel.</div></details>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact section" id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="reveal">
+        <span class="eyebrow" data-i18n="contact.eyebrow">Contact</span>
+        <h2 data-i18n="contact.h2">Klaar om online beter zichtbaar te zijn?</h2>
+        <p data-i18n="contact.p">Vertel ons kort over je zaak. We nemen contact op en bekijken vrijblijvend de mogelijkheden.</p>
+        <div class="contact-info-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 6.5l9 6 9-6"></path><rect x="3" y="5" width="18" height="14" rx="2"></rect></svg>
+          <div><span class="caps">E-mail</span><a href="mailto:info@revivostudios.io">info@revivostudios.io</a></div>
+        </div>
+      </div>
+      <div class="contact-form reveal">
+        <form id="contact-form">
+          <div class="form-row two-col">
+            <div class="form-group"><label data-i18n="form.naam">Naam</label><input type="text" name="Naam" required></div>
+            <div class="form-group"><label data-i18n="form.bedrijf">Bedrijfsnaam</label><input type="text" name="Bedrijfsnaam" required></div>
+          </div>
+          <div class="form-row two-col">
+            <div class="form-group"><label data-i18n="form.email">E-mailadres</label><input type="email" name="Email" required></div>
+            <div class="form-group"><label data-i18n="form.telefoon">Telefoonnummer</label><input type="tel" name="Telefoon"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label data-i18n="form.tool">Welke boekingstool gebruik je?</label>
+              <select name="Boekingstool">
+                <option value="" data-i18n="form.select">Selecteer...</option>
+                <option>Treatwell</option><option>Fresha</option><option>Salonized</option>
+                <option data-i18n="form.other">Anders / geen</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label data-i18n="form.bericht">Waar kunnen we je mee helpen?</label>
+              <textarea name="Bericht" rows="3" data-i18n-placeholder="form.placeholder" placeholder="Vertel kort over je zaak..."></textarea>
+            </div>
+          </div>
+          <div class="form-submit">
+            <button type="submit" class="btn btn-primary btn-xxl" id="form-submit-btn" data-i18n="form.submit">Verstuur aanvraag</button>
+          </div>
+        </form>
+        <div class="form-success" id="form-success">
+          <div class="form-success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+          <h3 data-i18n="form.success.h">Aanvraag ontvangen.</h3>
+          <p data-i18n="form.success.p">Bedankt! We nemen zo snel mogelijk contact met je op.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <span class="footer-wordmark">Revivo <em>Studios</em></span>
+    <span class="footer-tagline" data-i18n="footer.tagline">Jouw zaak verdient een plek om trots op te zijn.</span>
+    <nav class="footer-nav">
+      <a href="#voor-salons" data-i18n="footer.voor">Voor salons</a>
+      <a href="#werkwijze" data-i18n="nav.process">Werkwijze</a>
+      <a href="#investering" data-i18n="nav.pricing">Investering</a>
+      <a href="#over-ons" data-i18n="nav.about">Over ons</a>
+      <a href="#contact" data-i18n="nav.contact">Contact</a>
+    </nav>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Revivo Studios</span>
+      <span>revivostudios.io</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+'use strict';
+
+/* ── Translations ── */
+var T = {
+  nl:{
+    'splash.sub':'Websites voor salons',
+    'nav.process':'Werkwijze','nav.pricing':'Investering','nav.about':'Over ons','nav.contact':'Contact',
+    'hero.h1':'Jouw zaak verdient meer dan alleen een boekingslink.',
+    'hero.sub':'Wij bouwen stijlvolle websites op maat voor salons en lokale ondernemers — zodat je online dezelfde kwaliteit uitstraalt als in je zaak.',
+    'hero.cta1':'Vraag jouw websitevoorstel aan','hero.cta2':'Bekijk onze werkwijze',
+    'trust.1':'€1.500 eenmalig','trust.2':'Snel live','trust.3':'Volledig op maat','trust.4':'Geen abonnement',
+    'problem.eyebrow':'Waarom een eigen website',
+    'problem.h2':'Een boekingspagina helpt klanten boeken. Een website helpt klanten <em style="font-style:italic">kiezen.</em>',
+    'problem.p1':'Op platforms zoals Treatwell of Fresha sta je naast tientallen andere salons. Er is weinig ruimte voor jouw eigen sfeer, verhaal of uitstraling.',
+    'problem.p2':'Met een eigen website laat je zien wie je bent — voordat iemand op boeken klikt.',
+    'compare.platform.title':'Boekingsplatform','compare.platform.1':'Je staat naast concurrenten','compare.platform.2':'Weinig ruimte voor jouw merk','compare.platform.3':'Jouw verhaal blijft onderbelicht',
+    'compare.revivo.title':'Eigen website via Revivo','compare.revivo.1':'Jouw merk centraal — jouw sfeer, jouw verhaal','compare.revivo.2':"Foto's, diensten en reviews op één plek",'compare.revivo.3':'Klanten boeken via jouw vertrouwde systeem',
+    'voorwie.eyebrow':'Voor wie','voorwie.h2':'Voor ondernemers die trots zijn op hun zaak.','voorwie.p':'Jij hebt de zaak opgebouwd. Wij zorgen dat mensen dat online ook voelen.',
+    'features.eyebrow':'Wat je krijgt','features.h2':'Alles wat je nodig hebt.',
+    'feat.1.title':'Ontwerp op maat','feat.1.desc':'Een website die past bij jouw zaak en uitstraling.',
+    'feat.2.title':'Mobile-first','feat.2.desc':'Sterk op telefoon, tablet én desktop.',
+    'feat.3.title':'Online boekingen','feat.3.desc':'Koppeling met jouw bestaande boekingssysteem.',
+    'feat.4.title':'SEO','feat.4.desc':'Technisch goed ingericht zodat Google jou vindt.',
+    'feat.5.title':'Google Maps','feat.5.desc':'Bezoekers vinden snel hoe ze bij jou komen.',
+    'feat.6.title':'Snel live','feat.6.desc':'Geen maandenlange trajecten.',
+    'ww.eyebrow':'Werkwijze','ww.h2':'Van kennismaking <em style="font-style:italic">naar live.</em>','ww.sub':'We leveren al vóór de samenwerking een concreet ontwerp — zodat je precies weet wat je krijgt.',
+    'ww.1.title':'Kennismaking','ww.1.desc':'We leren je zaak kennen — sfeer, doelgroep en boekingssysteem. Op basis daarvan maken wij al een eerste ontwerp.',
+    'ww.2.title':'Ontwerp op maat','ww.2.desc':'Je ziet meteen hoe de website er voor jouw zaak uitziet. Helemaal afgestemd op jouw sfeer en uitstraling.',
+    'ww.3.title':'Feedback & afwerking','ww.3.desc':'Wil je iets anders? We passen het aan. Jij hebt het voor het zeggen totdat je écht blij bent.',
+    'ww.4.title':'Live','ww.4.desc':'De website gaat online. Klanten vinden je, lezen jouw verhaal en boeken via jouw vertrouwde systeem.',
+    'inv.eyebrow':'Investering','inv.h2':'Helder en eerlijk geprijsd.',
+    'inv.p1':'Een professionele website bij een bureau kost al snel €5.000 tot €10.000. Dat is voor de meeste lokale ondernemers niet realistisch.',
+    'inv.p2':'Wij houden het eenvoudig: één vaste prijs, geen abonnement, geen verborgen kosten.',
+    'price.label':'Website op maat','price.note':'Eenmalig · Geen abonnement · Geen verborgen kosten',
+    'price.inc.1':'Ontwerp op maat','price.inc.2':'Mobile-first versie','price.inc.3':'Koppeling met jouw boekingssysteem','price.inc.4':'Contactformulier & Google Maps','price.inc.5':'SEO & veilige inrichting','price.inc.6':'Revisieronde na eerste oplevering',
+    'price.opt.title':'Optioneel erbij','price.opt.1':'Hosting & technisch beheer','price.opt.2':"Extra pagina's of koppelingen",'price.opt.3':'Doorlopend onderhoud of support',
+    'about.eyebrow':'Wie wij zijn','about.h2':'Twee vrienden. <em style="font-style:italic">Eén passie.</em>',
+    'about.p1':'Revivo Studios is ontstaan vanuit een simpel idee: veel lokale ondernemers hebben een prachtige zaak, maar online is dat nog niet altijd zichtbaar.',
+    'about.p2':'Wij houden van goed ontwerp en snel schakelen. Persoonlijk, hands-on en met aandacht voor jouw zaak.',
+    'about.cta':'Neem contact op',
+    'team.eyebrow':'Het team','team.sub':'Twee vrienden die jouw zaak online op de kaart zetten.','team.role':'Co-founder',
+    'team.nelson.desc':'Richt zich op het contact met salons en zorgt dat ieder ontwerp al voelt als een echt, persoonlijk voorstel.',
+    'team.berend.desc':'Bouwt de technologie — razendsnel, mobielvriendelijk en volledig op maat.',
+    'faq.eyebrow':'Veelgestelde vragen','faq.h2':'Alles wat je wilt weten.',
+    'faq.1.q':'Kan ik mijn huidige boekingssysteem blijven gebruiken?','faq.1.a':'Ja. Wij koppelen je website aan je bestaande systeem — Treatwell, Fresha, Salonized of iets anders. Jouw klanten blijven boeken zoals ze gewend zijn, maar via een veel aantrekkelijkere ervaring.',
+    'faq.2.q':'Is de website echt op maat gemaakt?','faq.2.a':'Ja. Geen standaard uitstraling. Alles wordt afgestemd op jouw zaak, sfeer en doelgroep.',
+    'faq.3.q':'Wat als ik het ontwerp wil aanpassen?','faq.3.a':'Dat is precies de bedoeling. Wij leveren een eerste ontwerp en passen het aan op jouw wensen — totdat jij écht blij bent.',
+    'faq.4.q':'Werkt de website goed op mobiel?','faq.4.a':'Ja, we bouwen mobile-first. De meeste klanten zoeken en boeken via hun telefoon.',
+    'faq.5.q':'Kunnen jullie ook hosting regelen?','faq.5.a':'Ja. We regelen het domein en de hosting voor je — zodat je daar zelf geen omkijken naar hebt.',
+    'faq.6.q':'Wat kost het en hoe snel staat het er?','faq.6.a':'€1.500 eenmalig. Geen abonnement, geen verborgen kosten. Zodra alle input compleet is, staat jouw website er snel.',
+    'contact.eyebrow':'Contact','contact.h2':'Klaar om online beter zichtbaar te zijn?','contact.p':'Vertel ons kort over je zaak. We nemen contact op en bekijken vrijblijvend de mogelijkheden.',
+    'form.naam':'Naam','form.bedrijf':'Bedrijfsnaam','form.email':'E-mailadres','form.telefoon':'Telefoonnummer',
+    'form.tool':'Welke boekingstool gebruik je?','form.bericht':'Waar kunnen we je mee helpen?',
+    'form.placeholder':'Vertel kort over je zaak...','form.submit':'Verstuur aanvraag',
+    'form.select':'Selecteer...','form.other':'Anders / geen',
+    'form.success.h':'Aanvraag ontvangen.','form.success.p':'Bedankt! We nemen zo snel mogelijk contact met je op.',
+    'footer.tagline':'Jouw zaak verdient een plek om trots op te zijn.','footer.voor':'Voor salons'
+  },
+  en:{
+    'splash.sub':'Websites for salons',
+    'nav.process':'Process','nav.pricing':'Pricing','nav.about':'About','nav.contact':'Contact',
+    'hero.h1':'Your business deserves more than just a booking link.',
+    'hero.sub':'We build stylish custom websites for salons and local businesses — so you radiate the same quality online as in your salon.',
+    'hero.cta1':'Request your website proposal','hero.cta2':'View our process',
+    'trust.1':'€1.500 one-time','trust.2':'Live quickly','trust.3':'Fully custom','trust.4':'No subscription',
+    'problem.eyebrow':'Why your own website',
+    'problem.h2':'A booking page helps customers book. A website helps customers <em style="font-style:italic">choose.</em>',
+    'problem.p1':"On platforms like Treatwell or Fresha, you're listed next to dozens of other salons. There's little room for your own atmosphere, story or style.",
+    'problem.p2':'With your own website, you show who you are — before anyone clicks book.',
+    'compare.platform.title':'Booking platform','compare.platform.1':'Listed next to competitors','compare.platform.2':'Little room for your brand','compare.platform.3':'Your story stays in the background',
+    'compare.revivo.title':'Own website via Revivo','compare.revivo.1':'Your brand front and centre — your vibe, your story','compare.revivo.2':'Photos, services and reviews in one place','compare.revivo.3':'Customers book via your existing system',
+    'voorwie.eyebrow':'Who we work with','voorwie.h2':"For business owners proud of what they've built.",'voorwie.p':'You built your business. We make sure people feel that online too.',
+    'features.eyebrow':'What you get','features.h2':'Everything you need.',
+    'feat.1.title':'Custom design','feat.1.desc':'A website that matches your business and style.',
+    'feat.2.title':'Mobile-first','feat.2.desc':'Strong on phone, tablet and desktop.',
+    'feat.3.title':'Online bookings','feat.3.desc':'Connected to your existing booking system.',
+    'feat.4.title':'SEO','feat.4.desc':'Technically solid so Google can find you.',
+    'feat.5.title':'Google Maps','feat.5.desc':'Visitors easily find how to reach you.',
+    'feat.6.title':'Live quickly','feat.6.desc':'No lengthy processes.',
+    'ww.eyebrow':'Our process','ww.h2':'From introduction <em style="font-style:italic">to live.</em>','ww.sub':"We deliver a concrete design before the collaboration even starts — so you know exactly what you're getting.",
+    'ww.1.title':'Introduction','ww.1.desc':"We get to know your business — style, audience and booking system. We use that to create an initial design right away.",
+    'ww.2.title':'Custom design','ww.2.desc':"You immediately see what the website looks like for your business. Fully tailored to your atmosphere and style.",
+    'ww.3.title':'Feedback & refinement','ww.3.desc':"Want something different? We adjust it. You have the final say until you're truly happy.",
+    'ww.4.title':'Live','ww.4.desc':"The website goes online. Customers find you, read your story and book via your existing system.",
+    'inv.eyebrow':'Pricing','inv.h2':'Clear and fairly priced.',
+    'inv.p1':"A professional website at an agency quickly costs €5,000 to €10,000. That's not realistic for most local businesses.",
+    'inv.p2':'We keep it simple: one fixed price, no subscription, no hidden costs.',
+    'price.label':'Custom website','price.note':'One-time · No subscription · No hidden costs',
+    'price.inc.1':'Custom design','price.inc.2':'Mobile-first version','price.inc.3':'Connected to your booking system','price.inc.4':'Contact form & Google Maps','price.inc.5':'SEO & secure setup','price.inc.6':'Revision round after first delivery',
+    'price.opt.title':'Optionally add','price.opt.1':'Hosting & technical management','price.opt.2':'Extra pages or integrations','price.opt.3':'Ongoing maintenance or support',
+    'about.eyebrow':'Who we are','about.h2':'Two friends. <em style="font-style:italic">One passion.</em>',
+    'about.p1':"Revivo Studios started from a simple idea: many local businesses have a beautiful salon, but that's not always visible online.",
+    'about.p2':'We love great design and moving fast. Personal, hands-on and with attention to your business.',
+    'about.cta':'Get in touch',
+    'team.eyebrow':'The team','team.sub':'Two friends putting your business on the map online.','team.role':'Co-founder',
+    'team.nelson.desc':'Focuses on connecting with salons and makes sure every design already feels like a real, personal proposal.',
+    'team.berend.desc':'Builds the technology — blazing fast, mobile-friendly and fully custom.',
+    'faq.eyebrow':'Frequently asked questions','faq.h2':'Everything you want to know.',
+    'faq.1.q':'Can I keep using my current booking system?','faq.1.a':"Yes. We connect your website to your existing system — Treatwell, Fresha, Salonized or any other. Your customers keep booking as they're used to, but through a much more attractive experience.",
+    'faq.2.q':'Is the website really custom-made?','faq.2.a':'Yes. No standard look. Everything is tailored to your business, atmosphere and target audience.',
+    'faq.3.q':'What if I want to change the design?','faq.3.a':"That's exactly the point. We deliver a first design and adjust it to your wishes — until you're truly happy.",
+    'faq.4.q':'Does the website work well on mobile?','faq.4.a':'Yes, we build mobile-first. Most customers search and book via their phone.',
+    'faq.5.q':'Can you also handle hosting?','faq.5.a':"Yes. We take care of the domain and hosting for you — so you don't have to worry about it.",
+    'faq.6.q':'What does it cost and how quickly will it be ready?','faq.6.a':"€1,500 one-time. No subscription, no hidden costs. Once all input is complete, your website is ready quickly.",
+    'contact.eyebrow':'Contact','contact.h2':'Ready to be more visible online?','contact.p':"Tell us briefly about your business. We'll get in touch and explore the possibilities, no strings attached.",
+    'form.naam':'Name','form.bedrijf':'Business name','form.email':'Email address','form.telefoon':'Phone number',
+    'form.tool':'Which booking tool do you use?','form.bericht':'How can we help you?',
+    'form.placeholder':'Tell us briefly about your business...','form.submit':'Send request',
+    'form.select':'Select...','form.other':'Other / none',
+    'form.success.h':'Request received.','form.success.p':"Thank you! We'll get in touch as soon as possible.",
+    'footer.tagline':'Your business deserves a place to be proud of.','footer.voor':'For salons'
+  }
+};
+
+/* ── Language ── */
+var lang = localStorage.getItem('revivo-lang')||'nl';
+
+function applyLang(l){
+  lang = l;
+  var t = T[l];
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var k = el.getAttribute('data-i18n');
+    if(t[k] !== undefined) el.textContent = t[k];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(function(el){
+    var k = el.getAttribute('data-i18n-html');
+    if(t[k] !== undefined) el.innerHTML = t[k];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el){
+    var k = el.getAttribute('data-i18n-placeholder');
+    if(t[k] !== undefined) el.placeholder = t[k];
+  });
+  var label = l==='nl'?'EN':'NL';
+  document.getElementById('lang-btn').textContent = label;
+  var ml = document.getElementById('mobile-lang-btn');
+  if(ml) ml.textContent = label;
+  document.documentElement.lang = l;
+  localStorage.setItem('revivo-lang', l);
+}
+
+function toggleLang(){ applyLang(lang==='nl'?'en':'nl'); }
+document.getElementById('lang-btn').addEventListener('click', toggleLang);
+var mlBtn = document.getElementById('mobile-lang-btn');
+if(mlBtn) mlBtn.addEventListener('click', function(){ toggleLang(); document.body.classList.remove('menu-open'); });
+applyLang(lang);
+
+/* ── Splash ── */
+var splash = document.getElementById('splash');
+var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+function hideSplash(){ if(!splash)return; splash.classList.add('hide'); setTimeout(function(){ splash.remove(); },800); try{ sessionStorage.setItem('revivo-v4','1'); }catch(e){} }
+if(sessionStorage.getItem('revivo-v4')==='1'||reduce){ if(splash) splash.style.display='none'; }
+else{ setTimeout(hideSplash,1800); }
+
+/* ── Nav scroll ── */
+var nav = document.getElementById('nav');
+function onScroll(){ nav.classList.toggle('scrolled', window.scrollY > 40); }
+onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+
+/* ── Mobile menu ── */
+var burger = document.getElementById('hamburger');
+var mobileMenu = document.getElementById('mobile-menu');
+burger.addEventListener('click', function(){
+  var open = document.body.classList.toggle('menu-open');
+  burger.setAttribute('aria-expanded', open?'true':'false');
+});
+mobileMenu.querySelectorAll('a').forEach(function(a){
+  a.addEventListener('click', function(){ document.body.classList.remove('menu-open'); burger.setAttribute('aria-expanded','false'); });
+});
+
+/* ── Smooth scroll ── */
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click', function(e){
+    var href = a.getAttribute('href');
+    if(href==='#') return;
+    var target = document.querySelector(href);
+    if(!target) return;
+    e.preventDefault();
+    document.body.classList.remove('menu-open');
+    var top = target.getBoundingClientRect().top + window.scrollY - 60;
+    window.scrollTo({top:top, behavior:reduce?'auto':'smooth'});
+  });
+});
+
+/* ── Reveal ── */
+if('IntersectionObserver' in window && !reduce){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
+  },{threshold:0.07,rootMargin:'0px 0px -20px 0px'});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+} else {
+  document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('visible'); });
+}
+
+/* ── Form AJAX ── */
+var form = document.getElementById('contact-form');
+var successBox = document.getElementById('form-success');
+var submitBtn = document.getElementById('form-submit-btn');
+if(form){
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    submitBtn.disabled = true;
+    submitBtn.textContent = '...';
+    var data = {};
+    new FormData(form).forEach(function(v,k){ data[k]=v; });
+    data._subject = 'Websitevoorstel aanvraag — Revivo Studios';
+    fetch('https://formsubmit.co/ajax/info@revivostudios.io',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify(data)
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(){
+      form.style.display = 'none';
+      successBox.classList.add('visible');
+    })
+    .catch(function(){
+      submitBtn.disabled = false;
+      submitBtn.textContent = T[lang]['form.submit'];
+    });
+  });
+}
+
+})();
+</script>
+</body>
+</html>
