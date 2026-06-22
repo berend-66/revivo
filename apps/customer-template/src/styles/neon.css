@@ -201,3 +201,42 @@
     padding: 0.7rem 1.4rem;
   }
 }
+
+/* ─── Splash / Intro ─────────────────────────────────── */
+#splash {
+  position: fixed;
+  inset: 0;
+  background: var(--color-primary-deep);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+#splash.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+#splash img {
+  width: min(72vw, 480px);
+  height: auto;
+  display: block;
+  opacity: 0;
+  animation: splash-in 0.7s 0.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+#splash .splash-word {
+  font-family: "Unbounded", sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.6rem, 6vw, 4.5rem);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-align: center;
+  padding: 0 24px;
+  opacity: 0;
+  transform: scale(0.95);
+  animation: splash-in 0.7s 0.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes splash-in {
+  to { opacity: 1; transform: none; }
+}

@@ -30,6 +30,7 @@ const { values } = parseArgs({
     out: { type: "string" },
     "mark-sent": { type: "boolean", default: false },
     sender: { type: "string" },
+    city: { type: "string" },
     help: { type: "boolean", default: false },
   },
 });
@@ -42,7 +43,8 @@ function usage(exitCode: number): never {
   --out <path>   Also write the openers to a file.
   --mark-sent    Flip the emitted leads to 'outreach_sent' after printing.
                  Only run with this flag at the moment you actually send.
-  --sender <n>   Name in the sign-off (default: Berend).`,
+  --sender <n>   Name in the sign-off (default: Berend).
+  --city <c>     Filter leads by city (case-insensitive, partial match).`,
   );
   process.exit(exitCode);
 }
@@ -65,7 +67,11 @@ const limit = requirePositiveInt(values.limit, "--limit", 50);
 const base = (process.env.REVIVO_MOCK_BASE_URL ?? DEFAULT_MOCK_BASE_URL).replace(/\/$/, "");
 
 const client = createServiceClient();
-const leads = await listLeadsByStatus(client, "mockup_generated", limit);
+const allLeads = await listLeadsByStatus(client, "mockup_generated", limit);
+const cityFilter = values.city?.toLowerCase();
+const leads = cityFilter
+  ? allLeads.filter((l) => l.city?.toLowerCase().includes(cityFilter))
+  : allLeads;
 
 const blocks: string[] = [];
 const emittedLeadIds: string[] = [];
@@ -101,11 +107,17 @@ for (const lead of leads) {
       opener.whatsappUrl
         ? `   WhatsApp: ${opener.whatsappUrl}`
         : `   WhatsApp: geen NL-mobiel bekend → gebruik IG-DM of e-mail`,
+      opener.recipientEmail
+        ? `   E-mail aan: ${opener.recipientEmail}`
+        : `   E-mail aan: onbekend — zoek handmatig op`,
       ``,
       opener.plainText,
       ``,
       `   [IG-DM]  ${opener.igDmText}`,
-      `   [E-mail] ${opener.emailSubject}`,
+      ``,
+      `   [E-mail onderwerp] ${opener.emailSubject}`,
+      `   [E-mail tekst]`,
+      opener.emailBody,
       ``,
     ].join("\n"),
   );

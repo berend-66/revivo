@@ -129,6 +129,9 @@ export function treatwellListingToFacts(raw: RawListing): ListingFacts {
   const phone = strOrNull(v?.contact?.phone);
   if (phone) facts.phone = phone;
 
+  const email = strOrNull(v?.contact?.email) ?? strOrNull(v?.contact?.emailAddress);
+  if (email) facts.email = email;
+
   // Address: state addressLines = [street, …, city]; JSON-LD as fallback.
   const lines: string[] = Array.isArray(v?.location?.address?.addressLines)
     ? v.location.address.addressLines.filter((l: unknown) => typeof l === "string")

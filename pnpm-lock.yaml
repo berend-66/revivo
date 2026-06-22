@@ -23,9 +23,15 @@ importers:
       '@types/node':
         specifier: ^22.19.19
         version: 22.19.19
+      '@types/nodemailer':
+        specifier: ^8.0.1
+        version: 8.0.1
       dotenv:
         specifier: ^16.4.5
         version: 16.6.1
+      nodemailer:
+        specifier: ^9.0.1
+        version: 9.0.1
       tsx:
         specifier: ^4.19.0
         version: 4.22.3
@@ -1230,6 +1236,9 @@ packages:
   '@types/node@24.12.4':
     resolution: {integrity: sha512-GUUEShf+PBCGW2KaXwcIt3Yk+e3pkKwWKb9GSyM9WQVE+ep2jzmHdGsHzu4wgcZy5fN9FBdVzjpBQsYlpfpgLA==}
 
+  '@types/nodemailer@8.0.1':
+    resolution: {integrity: sha512-PxpaInm8V1JQDd4j0ds5HfvWQk8JupS1C0Picb96QJsrrRDjBH+DlK7L4ZdNSqNULhiZRQHc40nLVShaGxXAMw==}
+
   '@types/sax@1.2.7':
     resolution: {integrity: sha512-rO73L89PJxeYM3s3pPPjiPgVVcymqU490g0YO5n5By0k2Erzj6tay/4lr1CHAAU4JyOWd1rpQ8bCf6cZfHU96A==}
 
@@ -2174,6 +2183,10 @@ packages:
   node-mock-http@1.0.4:
     resolution: {integrity: sha512-8DY+kFsDkNXy1sJglUfuODx1/opAGJGyrTuFqEoN90oRc2Vk0ZbD4K2qmKXBBEhZQzdKHIVfEJpDU8Ak2NJEvQ==}
 
+  nodemailer@9.0.1:
+    resolution: {integrity: sha512-Gwv8SQewT616ZM/URn0H54b8PWo/Wum7md3EW2aWy1lO27+WZCX+Xyak3J+NlmHUjDh5ME+uesJUDRbR3Ye8Bw==}
+    engines: {node: '>=6.0.0'}
+
   nopt@8.1.0:
     resolution: {integrity: sha512-ieGu42u/Qsa4TFktmaKEwM6MQH0pOWnaB3htzh0JRtx84+Mebc0cbZYN5bC+6WTZ4+77xrL9Pn5m7CV6VIkV7A==}
     engines: {node: ^18.17.0 || >=20.5.0}
@@ -2486,6 +2499,7 @@ packages:
   tsconfck@3.1.6:
     resolution: {integrity: sha512-ks6Vjr/jEw0P1gmOVwutM3B7fWxoWBL2KRDb1JfqGVawBmO5UsvmWOQFGHBPl5yxYz4eERr19E6L7NMv+Fej4w==}
     engines: {node: ^18 || >=20}
+    deprecated: unmaintained
     hasBin: true
     peerDependencies:
       typescript: ^5.0.0
@@ -3555,6 +3569,10 @@ snapshots:
   '@types/node@24.12.4':
     dependencies:
       undici-types: 7.16.0
+
+  '@types/nodemailer@8.0.1':
+    dependencies:
+      '@types/node': 22.19.19
 
   '@types/sax@1.2.7':
     dependencies:
@@ -4800,6 +4818,8 @@ snapshots:
   node-gyp-build@4.8.4: {}
 
   node-mock-http@1.0.4: {}
+
+  nodemailer@9.0.1: {}
 
   nopt@8.1.0:
     dependencies:

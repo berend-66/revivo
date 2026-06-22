@@ -25,7 +25,7 @@ const rail = studioRail(config);
 
       <div class="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-10">
         {
-          config.gallery.map((g, i) => (
+          config.gallery.slice(0, 8).map((g, i) => (
             <figure>
               <div class="border rule-strong border-1 overflow-hidden">
                 <img

@@ -40,7 +40,7 @@ const rotations = ["rotate-[-2deg]", "rotate-[1.5deg]", "rotate-[-1deg]", "rotat
 
   <div class="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
     {
-      config.gallery.map((g, i) => (
+      config.gallery.slice(0, 8).map((g, i) => (
         <figure
           class={`${rotations[i % rotations.length]} hover:rotate-0 transition-transform duration-500`}
           style={i % 2 === 0 ? "margin-top: 1.5rem;" : ""}

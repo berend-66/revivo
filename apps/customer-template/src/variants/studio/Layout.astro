@@ -43,8 +43,18 @@ const brandStyles = [
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..125,300..800&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
     />
+    <noscript>
+      <style>#splash { display: none; }</style>
+    </noscript>
   </head>
   <body>
+    <div id="splash" aria-hidden="true" data-splash-key={`splash-${config.slug}`}>
+      {config.brand.logoUrl
+        ? <img src={config.brand.logoUrl} alt={config.brand.name} />
+        : <div class="splash-word">{config.brand.name}</div>
+      }
+    </div>
+
     <TopBar config={config} />
     <main>
       <Hero config={config} />
@@ -57,5 +67,27 @@ const brandStyles = [
       <Booking config={config} />
     </main>
     <Footer config={config} />
+
+    <script is:inline>
+      (function () {
+        "use strict";
+        var splash = document.getElementById("splash");
+        var SHOWN_KEY = splash ? splash.dataset.splashKey : "splash";
+        var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        function hideSplash() {
+          if (!splash) return;
+          splash.classList.add("hide");
+          setTimeout(function () { splash.remove(); }, 700);
+          try { sessionStorage.setItem(SHOWN_KEY, "1"); } catch (e) {}
+        }
+        var shown = false;
+        try { shown = sessionStorage.getItem(SHOWN_KEY) === "1"; } catch (e) {}
+        if (shown || reduce) {
+          if (splash) splash.remove();
+        } else {
+          setTimeout(hideSplash, 1800);
+        }
+      })();
+    </script>
   </body>
 </html>

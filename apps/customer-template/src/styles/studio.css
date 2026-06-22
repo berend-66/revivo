@@ -211,3 +211,43 @@
     display: none;
   }
 }
+
+/* ─── Splash / Intro ─────────────────────────────────── */
+#splash {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in oklab, var(--brand-primary, #1a1a1a) 65%, black 35%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+#splash.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+#splash img {
+  width: min(72vw, 480px);
+  height: auto;
+  display: block;
+  opacity: 0;
+  animation: splash-in 0.8s 0.1s ease forwards;
+}
+#splash .splash-word {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "wdth" 115;
+  font-size: clamp(2rem, 7vw, 5rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-align: center;
+  padding: 0 24px;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: splash-in 0.8s 0.1s ease forwards;
+}
+@keyframes splash-in {
+  to { opacity: 1; transform: none; }
+}

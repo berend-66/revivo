@@ -53,6 +53,10 @@ export interface Opener {
   igDmText: string;
   emailSubject: string;
   emailBody: string;
+  /** HTML version of emailBody — same content, link embedded as anchor text. */
+  emailHtmlBody: string;
+  /** The salon's email address to send the outreach to, if known. */
+  recipientEmail?: string;
   /** The canonical message (what the WhatsApp link carries). */
   plainText: string;
   /** Which specificity hook was used — operator visibility (and a samey-ness check). */
@@ -160,17 +164,26 @@ export function buildOpener(input: OpenerInput): Opener {
     `${mockUrl} Lijkt het wat? Dan bel ik graag!`;
 
   const emailSubject = `Een website-voorbeeld voor ${name}`;
+  const emailIntro = contents
+    ? `We zagen jullie salon en hebben alvast een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien, met ${contents} erin:`
+    : `We zagen jullie salon en hebben alvast een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`;
   const emailBody = [
     `Hoi,`,
     `Ik kwam ${name} ${foundOn} tegen. ${hook}.`,
     `Samen met een goede vriend help ik salons en ondernemers aan een betere online zichtbaarheid, eigenlijk een tweede voordeur voor jullie zaak. We doen dit voor een fractie van wat een gemiddeld webbureau vraagt terwijl de kwaliteit minimaal net zo goed is.`,
-    contents
-      ? `We zagen jullie salon en hebben alvast een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien, met ${contents} erin:`
-      : `We zagen jullie salon en hebben alvast een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`,
+    emailIntro,
     mockUrl,
     `Kijk gerust even rond. Lijkt het je wat? Laten we dan even bellen, in ca. 1 week kunnen we een werkende site voor jullie klaar hebben. Vragen of feedback hoor ik ook graag. Niets voor jullie? Ook helemaal prima.`,
     `Groet,\n${senderName}`,
   ].join("\n\n");
+
+  const emailHtmlBody = `<p>Hoi,</p>
+<p>Ik kwam ${name} ${foundOn} tegen. ${hook}.</p>
+<p>Samen met een goede vriend help ik salons en ondernemers aan een betere online zichtbaarheid, eigenlijk een tweede voordeur voor jullie zaak. We doen dit voor een fractie van wat een gemiddeld webbureau vraagt terwijl de kwaliteit minimaal net zo goed is.</p>
+<p>${emailIntro}</p>
+<p><a href="${mockUrl}">Bekijk het voorbeeld →</a></p>
+<p>Kijk gerust even rond. Lijkt het je wat? Laten we dan even bellen, in ca. 1 week kunnen we een werkende site voor jullie klaar hebben. Vragen of feedback hoor ik ook graag. Niets voor jullie? Ook helemaal prima.</p>
+<p>Groet,<br>${senderName}</p>`;
 
   // First candidate that is genuinely a Dutch mobile — a landline in
   // contact.phone must not shadow a mobile we know from the listing.
@@ -180,5 +193,9 @@ export function buildOpener(input: OpenerInput): Opener {
   const waNumber = dutchMobileToWaNumber(mobile ?? undefined);
   const whatsappUrl = waNumber ? `https://wa.me/${waNumber}?text=${encodeWaText(plainText)}` : undefined;
 
-  return { whatsappUrl, igDmText, emailSubject, emailBody, plainText, hook };
+  // Email address to send the outreach to — listing facts first (real scraped
+  // email), then config (LLM only populates this when a real website was found).
+  const recipientEmail = facts?.email ?? config.contact.email ?? undefined;
+
+  return { whatsappUrl, igDmText, emailSubject, emailBody, emailHtmlBody, recipientEmail, plainText, hook };
 }

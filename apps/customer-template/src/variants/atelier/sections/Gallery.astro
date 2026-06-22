@@ -8,7 +8,7 @@ const { config } = Astro.props;
 // The Luxe mosaic defines 8 tile shapes (t1..t8); cycle them over however
 // many photos the salon has. Captions (grounded in the photo's actual
 // content by the curation step) become the accessible alt text.
-const tiles = config.gallery.map((g, i) => ({ ...g, t: `t${(i % 8) + 1}` }));
+const tiles = config.gallery.slice(0, 8).map((g, i) => ({ ...g, t: `t${(i % 8) + 1}` }));
 ---
 
 <section class="gallery section" id="gallery">
