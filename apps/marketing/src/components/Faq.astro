@@ -1,0 +1,36 @@
+---
+import { useTranslations, type Locale } from "~/i18n/ui";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const items = [
+  { q: t("faq.1.q"), a: t("faq.1.a") },
+  { q: t("faq.2.q"), a: t("faq.2.a") },
+  { q: t("faq.3.q"), a: t("faq.3.a") },
+  { q: t("faq.4.q"), a: t("faq.4.a") },
+  { q: t("faq.5.q"), a: t("faq.5.a") },
+  { q: t("faq.6.q"), a: t("faq.6.a") },
+];
+---
+
+<section class="faq section">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">{t("faq.eyebrow")}</span>
+      <h2>{t("faq.h2")}</h2>
+    </div>
+    <div class="faq-list reveal">
+      {
+        items.map((item) => (
+          <details class="faq-item">
+            <summary>{item.q}</summary>
+            <div class="faq-answer">{item.a}</div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>

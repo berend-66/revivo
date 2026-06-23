@@ -1,0 +1,55 @@
+---
+import { useTranslations, type Locale } from "~/i18n/ui";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const includes = [
+  t("price.inc.1"),
+  t("price.inc.2"),
+  t("price.inc.3"),
+  t("price.inc.4"),
+  t("price.inc.5"),
+  t("price.inc.6"),
+];
+const optional = [t("price.opt.1"), t("price.opt.2"), t("price.opt.3")];
+---
+
+<section class="investering section" id="investering">
+  <div class="container">
+    <div class="investering-grid">
+      <div class="investering-text reveal">
+        <span class="eyebrow">{t("inv.eyebrow")}</span>
+        <h2>{t("inv.h2")}</h2>
+        <p>{t("inv.p1")}</p>
+        <p>{t("inv.p2")}</p>
+        <a href="#contact" class="btn btn-primary" style="margin-top:16px;">{t("hero.cta1")}</a>
+      </div>
+      <div class="reveal">
+        <div class="price-card">
+          <span class="price-label">{t("price.label")}</span>
+          <div class="price-amount">€999</div>
+          <span class="price-note">{t("price.note")}</span>
+          <ul class="price-includes">
+            {
+              includes.map((item) => (
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12" /></svg>
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <div class="price-optional">
+            <span class="price-optional-title">{t("price.opt.title")}</span>
+            <ul>
+              {optional.map((item) => <li><span>{item}</span></li>)}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

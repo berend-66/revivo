@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://revivo.nl/sitemap-index.xml
+Sitemap: https://revivostudios.io/sitemap-index.xml

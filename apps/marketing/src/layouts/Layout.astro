@@ -1,45 +1,206 @@
 ---
 import "~/styles/global.css";
+import Splash from "~/components/Splash.astro";
+import Nav from "~/components/Nav.astro";
+import Footer from "~/components/Footer.astro";
+import type { Locale } from "~/i18n/ui";
 
 interface Props {
+  locale: Locale;
   title?: string;
   description?: string;
 }
 
-const {
-  title = "Revivo — Een website die jouw zaak waardig is",
-  description = "Een unieke website voor jouw kapsalon of beautysalon. Volledig op maat, mobiel-first, met online boekingen. Klaar in 5 werkdagen. Eenmalig €1.000.",
-} = Astro.props;
+const META: Record<Locale, { title: string; description: string }> = {
+  nl: {
+    title: "Revivo Studios — Websites voor salons",
+    description:
+      "Revivo Studios bouwt stijlvolle websites op maat voor salons en kappers. Eenmalig €999, snel live, geen abonnement.",
+  },
+  en: {
+    title: "Revivo Studios — Websites for salons",
+    description:
+      "Revivo Studios builds stylish custom websites for salons and barbers. €999 one-time, live quickly, no subscription.",
+  },
+};
+
+const { locale, title, description } = Astro.props;
+const meta = META[locale];
+const pageTitle = title ?? meta.title;
+const pageDescription = description ?? meta.description;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const nlUrl = new URL("/", Astro.site).toString();
+const enUrl = new URL("/en/", Astro.site).toString();
+const ogLocale = locale === "nl" ? "nl_NL" : "en_US";
+const ogImage = new URL("/og.png", Astro.site).toString();
 ---
 
 <!doctype html>
-<html lang="nl">
+<html lang={locale}>
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <title>{title}</title>
-    <meta name="description" content={description} />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
     <link rel="canonical" href={canonical} />
 
+    <!-- Real per-locale URLs → proper hreflang for SEO -->
+    <link rel="alternate" hreflang="nl" href={nlUrl} />
+    <link rel="alternate" hreflang="en" href={enUrl} />
+    <link rel="alternate" hreflang="x-default" href={nlUrl} />
+
     <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:locale" content="nl_NL" />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={ogImage} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap"
     />
   </head>
   <body>
-    <slot />
+    <Splash locale={locale} />
+    <Nav locale={locale} />
+
+    <main id="top">
+      <slot />
+    </main>
+
+    <Footer locale={locale} />
+
+    <script is:inline>
+      (function () {
+        "use strict";
+        var reduce = window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+
+        /* ── Splash ── */
+        var splash = document.getElementById("splash");
+        function hideSplash() {
+          if (!splash) return;
+          splash.classList.add("hide");
+          setTimeout(function () {
+            splash.remove();
+          }, 800);
+          try {
+            sessionStorage.setItem("revivo-v4", "1");
+          } catch (e) {}
+        }
+        if (sessionStorage.getItem("revivo-v4") === "1" || reduce) {
+          if (splash) splash.style.display = "none";
+        } else {
+          setTimeout(hideSplash, 1800);
+        }
+
+        /* ── Nav scroll ── */
+        var nav = document.getElementById("nav");
+        function onScroll() {
+          if (nav) nav.classList.toggle("scrolled", window.scrollY > 40);
+        }
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+
+        /* ── Mobile menu ── */
+        var burger = document.getElementById("hamburger");
+        var mobileMenu = document.getElementById("mobile-menu");
+        if (burger && mobileMenu) {
+          burger.addEventListener("click", function () {
+            var open = document.body.classList.toggle("menu-open");
+            burger.setAttribute("aria-expanded", open ? "true" : "false");
+          });
+          mobileMenu.querySelectorAll("a").forEach(function (a) {
+            a.addEventListener("click", function () {
+              document.body.classList.remove("menu-open");
+              burger.setAttribute("aria-expanded", "false");
+            });
+          });
+        }
+
+        /* ── Smooth scroll ── */
+        document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+          a.addEventListener("click", function (e) {
+            var href = a.getAttribute("href");
+            if (href === "#") return;
+            var target = document.querySelector(href);
+            if (!target) return;
+            e.preventDefault();
+            document.body.classList.remove("menu-open");
+            var top = target.getBoundingClientRect().top + window.scrollY - 60;
+            window.scrollTo({ top: top, behavior: reduce ? "auto" : "smooth" });
+          });
+        });
+
+        /* ── Reveal ── */
+        if ("IntersectionObserver" in window && !reduce) {
+          var io = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (e) {
+                if (e.isIntersecting) {
+                  e.target.classList.add("visible");
+                  io.unobserve(e.target);
+                }
+              });
+            },
+            { threshold: 0.07, rootMargin: "0px 0px -20px 0px" }
+          );
+          document.querySelectorAll(".reveal").forEach(function (el) {
+            io.observe(el);
+          });
+        } else {
+          document.querySelectorAll(".reveal").forEach(function (el) {
+            el.classList.add("visible");
+          });
+        }
+
+        /* ── Form AJAX ── */
+        var form = document.getElementById("contact-form");
+        var successBox = document.getElementById("form-success");
+        var submitBtn = document.getElementById("form-submit-btn");
+        if (form && submitBtn) {
+          var originalLabel = submitBtn.textContent;
+          form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = "...";
+            var data = {};
+            new FormData(form).forEach(function (v, k) {
+              data[k] = v;
+            });
+            data._subject = "Websitevoorstel aanvraag — Revivo Studios";
+            fetch("https://formsubmit.co/ajax/info@revivostudios.io", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+              body: JSON.stringify(data),
+            })
+              .then(function (r) {
+                return r.json();
+              })
+              .then(function () {
+                form.style.display = "none";
+                if (successBox) successBox.classList.add("visible");
+              })
+              .catch(function () {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalLabel;
+              });
+          });
+        }
+      })();
+    </script>
   </body>
 </html>

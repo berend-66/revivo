@@ -2,14 +2,14 @@
 
 Automated website service for NL hair & beauty salons.
 
-**Brand:** Revivo — _"Jouw zaak. Een frisse start."_
-**Offer:** Custom mobile-first salon website + booking integration, €1.000 eenmalig, klaar in 5 werkdagen.
+**Brand:** Revivo Studios — _"Websites voor salons."_ (revivostudios.io)
+**Offer:** Custom mobile-first salon website + booking integration, €999 eenmalig, klaar in 5 werkdagen.
 
 ## Repository layout
 
 ```
 apps/
-  marketing/          # revivo.nl (Astro)
+  marketing/          # revivostudios.io — Revivo Studios marketing site (Astro, nl + /en)
   customer-template/  # JSON-driven Astro template every customer site uses
   mockups/            # mock.revivo.nl — SSR mockups from Supabase
   admin/              # Next.js operator workspace

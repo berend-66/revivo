@@ -1,0 +1,39 @@
+---
+import { useTranslations, type Locale } from "~/i18n/ui";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+// Team photos pending — the arch-frames render as a graceful gradient until
+// Nelson + Berend supply portraits (drop them in and add <img> here).
+const team = [
+  { name: "Nelson", desc: t("team.nelson.desc") },
+  { name: "Berend", desc: t("team.berend.desc") },
+];
+---
+
+<section class="team section">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">{t("team.eyebrow")}</span>
+      <h2>Nelson <em>&amp;</em> Berend</h2>
+      <p class="team-sub">{t("team.sub")}</p>
+    </div>
+    <div class="team-grid">
+      {
+        team.map((member) => (
+          <div class="lead-card reveal">
+            <div class="lead-figure"><div class="arch-frame"></div></div>
+            <div class="lead-info">
+              <h3>{member.name}</h3>
+              <span class="caps">{t("team.role")}</span>
+              <p>{member.desc}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

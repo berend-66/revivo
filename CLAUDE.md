@@ -1,6 +1,6 @@
 # revivo — agent context
 
-Productized website service for NL hair & beauty salons. **€1.000 one-time** per site, **5 working days** delivery, lifestyle scale (~50–200 customers total). Berend builds solo on evenings + weekends.
+Productized website service for NL hair & beauty salons. **€999 one-time** per site, **5 working days** delivery, lifestyle scale (~50–200 customers total). Berend builds solo on evenings + weekends.
 
 ## Read first
 
@@ -34,8 +34,8 @@ Keep these in front of you whenever scope/architecture choices come up:
 # Install all workspaces
 pnpm install
 
-# Marketing site (revivo.nl)
-pnpm -F @revivo/marketing dev          # localhost:4321
+# Marketing site — Revivo Studios (revivostudios.io); nl at /, en at /en/
+pnpm -F @revivo/marketing dev          # localhost:4321  (and /en/)
 pnpm -F @revivo/marketing build
 
 # Customer template — pick a variant via env var

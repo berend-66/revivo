@@ -1,0 +1,27 @@
+---
+import { useTranslations, type Locale } from "~/i18n/ui";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<section class="about section" id="over-ons">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-figure reveal">
+        {/* TODO(Berend): drop a real image at apps/marketing/public/rijks.png and
+            replace this placeholder with: <img src="/rijks.png" alt="Amsterdam" loading="lazy" /> */}
+        <div class="arch-frame placeholder" role="img" aria-label="Amsterdam"></div>
+      </div>
+      <div class="about-text reveal">
+        <span class="eyebrow">{t("about.eyebrow")}</span>
+        <h2 set:html={t("about.h2")} />
+        <p>{t("about.p1")}</p>
+        <p>{t("about.p2")}</p>
+        <a href="#contact" class="btn btn-ghost" style="margin-top:16px;">{t("about.cta")}</a>
+      </div>
+    </div>
+  </div>
+</section>

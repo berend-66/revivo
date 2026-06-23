@@ -7,7 +7,7 @@ Single pnpm monorepo. Four Astro/Next.js apps share one Supabase Postgres and on
 ```
 revivo/
 ├── apps/
-│   ├── marketing/          # revivo.nl — Astro static
+│   ├── marketing/          # revivostudios.io — Astro static, Revivo Studios (nl + /en, real i18n routes)
 │   ├── customer-template/  # JSON-driven Astro template (renders any salon)
 │   ├── mockups/            # mock.revivo.nl — Astro SSR, reads Supabase (BUILT — wraps customer-template variants)
 │   └── admin/              # Next.js operator workspace (NOT YET BUILT)
@@ -59,7 +59,7 @@ Boring, well-trodden tools that minimize the attention tax on a single solo oper
 
 | Concern | Choice | Why |
 |---|---|---|
-| Static sites (revivo.nl, customer sites, mockups) | **Astro** | Zero-JS by default, perfect for brochure sites; JSON-config-driven templates feel natural |
+| Static sites (revivostudios.io, customer sites, mockups) | **Astro** | Zero-JS by default, perfect for brochure sites; JSON-config-driven templates feel natural. The marketing site (Revivo Studios) is pure-CSS Astro with real per-locale routes (`/` nl, `/en/`) for SEO — itself a proof of the "fast + findable" pitch |
 | Admin app | **Next.js App Router** | React for interactive surfaces; Server Actions for mutations |
 | DB + auth | **Supabase** (EU region) | Postgres + auth + RLS in one click; cheap at this scale |
 | Styling | **Tailwind v4** (`@tailwindcss/vite`) | CSS-first theming via `@theme`; no JS config file; pairs cleanly with Astro |

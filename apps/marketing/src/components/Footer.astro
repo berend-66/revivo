@@ -1,19 +1,26 @@
 ---
-const year = new Date().getFullYear();
+import { useTranslations, type Locale } from "~/i18n/ui";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
 ---
 
-<footer class="bg-burgundy-900 text-cream-100/70 px-8 md:px-16 py-10">
-  <div class="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-    <div>
-      <div class="font-display italic text-2xl text-cream-50 lowercase">revivo</div>
-      <p class="text-xs uppercase tracking-[0.22em] text-cream-100/40 mt-2">
-        Websites voor kapsalons & beautysalons
-      </p>
-    </div>
-
-    <div class="text-xs uppercase tracking-[0.22em] text-cream-100/40 sm:text-right">
-      <div>© {year} · revivo</div>
-      <div class="mt-1">Amsterdam · NL</div>
+<footer>
+  <div class="container">
+    <span class="footer-wordmark">Revivo <em>Studios</em></span>
+    <span class="footer-tagline">{t("footer.tagline")}</span>
+    <nav class="footer-nav">
+      <a href="#voor-salons">{t("footer.voor")}</a>
+      <a href="#werkwijze">{t("nav.process")}</a>
+      <a href="#investering">{t("nav.pricing")}</a>
+      <a href="#over-ons">{t("nav.about")}</a>
+      <a href="#contact">{t("nav.contact")}</a>
+    </nav>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Revivo Studios</span>
+      <span>revivostudios.io</span>
     </div>
   </div>
 </footer>

@@ -1,0 +1,29 @@
+---
+import Hero from "~/components/Hero.astro";
+import Problem from "~/components/Problem.astro";
+import VoorWie from "~/components/VoorWie.astro";
+import Features from "~/components/Features.astro";
+import Werkwijze from "~/components/Werkwijze.astro";
+import Investering from "~/components/Investering.astro";
+import About from "~/components/About.astro";
+import Team from "~/components/Team.astro";
+import Faq from "~/components/Faq.astro";
+import Contact from "~/components/Contact.astro";
+import type { Locale } from "~/i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+---
+
+<Hero locale={locale} />
+<Problem locale={locale} />
+<VoorWie locale={locale} />
+<Features locale={locale} />
+<Werkwijze locale={locale} />
+<Investering locale={locale} />
+<About locale={locale} />
+<Team locale={locale} />
+<Faq locale={locale} />
+<Contact locale={locale} />

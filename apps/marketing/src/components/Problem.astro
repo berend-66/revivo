@@ -1,0 +1,53 @@
+---
+import { useTranslations, type Locale } from "~/i18n/ui";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<section class="problem section" id="voor-salons">
+  <div class="container">
+    <div class="problem-grid">
+      <div class="problem-text reveal">
+        <span class="eyebrow">{t("problem.eyebrow")}</span>
+        <h2 set:html={t("problem.h2")} />
+        <p>{t("problem.p1")}</p>
+        <p>{t("problem.p2")}</p>
+      </div>
+      <div class="reveal">
+        <div class="compare-box">
+          <span class="compare-title">{t("compare.platform.title")}</span>
+          <div class="compare-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a07060" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <span>{t("compare.platform.1")}</span>
+          </div>
+          <div class="compare-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a07060" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <span>{t("compare.platform.2")}</span>
+          </div>
+          <div class="compare-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a07060" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <span>{t("compare.platform.3")}</span>
+          </div>
+        </div>
+        <div class="compare-box" style="margin-top:12px;border-color:var(--bordeaux);">
+          <span class="compare-title">{t("compare.revivo.title")}</span>
+          <div class="compare-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bordeaux)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>{t("compare.revivo.1")}</span>
+          </div>
+          <div class="compare-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bordeaux)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>{t("compare.revivo.2")}</span>
+          </div>
+          <div class="compare-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bordeaux)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>{t("compare.revivo.3")}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

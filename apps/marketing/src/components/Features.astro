@@ -1,48 +1,150 @@
 ---
-import Eyebrow from "./Eyebrow.astro";
-
-const features = [
-  {
-    n: "01",
-    title: "Ontwerp op maat",
-    body: "Een unieke website die past bij de uitstraling van jouw zaak — geen templates die je overal ziet.",
-  },
-  {
-    n: "02",
-    title: "Mobile-first",
-    body: "Jouw klanten zoeken via hun telefoon. Je site ziet er op elk scherm perfect uit.",
-  },
-  {
-    n: "03",
-    title: "Online boekingen",
-    body: "Directe koppeling met jouw boekingstool, zodat klanten meteen kunnen reserveren.",
-  },
-  {
-    n: "04",
-    title: "Klaar in 5 werkdagen",
-    body: "Geen maandenlange trajecten. Binnen vijf werkdagen live.",
-  },
-];
+import { useTranslations, type Locale } from "~/i18n/ui";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
 ---
 
-<section id="wat-je-krijgt" class="bg-cream-50 section">
-  <div class="max-w-6xl mx-auto px-8 md:px-16">
-    <Eyebrow label="Wat je krijgt" />
+<section class="features section">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">{t("features.eyebrow")}</span>
+      <h2>{t("features.h2")}</h2>
+    </div>
+    <div class="features-split">
+      <div class="features-grid reveal">
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 9h6M9 13h4"></path></svg>
+          <div class="feature-title">{t("feat.1.title")}</div>
+          <div class="feature-desc">{t("feat.1.desc")}</div>
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="5" y="2" width="14" height="20" rx="2"></rect><path d="M12 18h.01"></path></svg>
+          <div class="feature-title">{t("feat.2.title")}</div>
+          <div class="feature-desc">{t("feat.2.desc")}</div>
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>
+          <div class="feature-title">{t("feat.3.title")}</div>
+          <div class="feature-desc">{t("feat.3.desc")}</div>
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+          <div class="feature-title">{t("feat.4.title")}</div>
+          <div class="feature-desc">{t("feat.4.desc")}</div>
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 22s-7-7.5-7-13a7 7 0 1 1 14 0c0 5.5-7 13-7 13z"></path><circle cx="12" cy="9" r="2.5"></circle></svg>
+          <div class="feature-title">{t("feat.5.title")}</div>
+          <div class="feature-desc">{t("feat.5.desc")}</div>
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+          <div class="feature-title">{t("feat.6.title")}</div>
+          <div class="feature-desc">{t("feat.6.desc")}</div>
+        </div>
+      </div>
 
-    <h2 class="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.1] text-ink-900 mt-8 max-w-3xl">
-      Alles wat je nodig hebt. <em class="italic font-normal text-burgundy-800">Niets meer.</em>
-    </h2>
+      <!-- Phone mockups (illustrative — kept identical across locales) -->
+      <div class="features-phones reveal">
+        <div class="features-phones-scaler">
+          <div class="rvm-phones">
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-px mt-16 bg-cream-200">
-      {
-        features.map((f) => (
-          <article class="bg-cream-50 p-10 md:p-12">
-            <span class="font-display italic text-sm text-burgundy-800/70">— {f.n}</span>
-            <h3 class="font-display text-2xl md:text-3xl text-ink-900 mt-4">{f.title}</h3>
-            <p class="text-base text-ink-700 mt-5 leading-relaxed max-w-md">{f.body}</p>
-          </article>
-        ))
-      }
+            <!-- Phone 1 — Hero -->
+            <div class="rvm-phone-col">
+              <div class="rvm-phone">
+                <div class="rvm-phone__body"></div>
+                <div class="rvm-phone__bezel"></div>
+                <div class="rvm-phone__screen">
+                  <div class="rvm-hero">
+                    <div class="rvm-sb">
+                      <span class="rvm-sb__time">10:46</span>
+                      <div class="rvm-sb__right">
+                        <svg width="18" height="11" viewBox="0 0 18 11" fill="#fff"><rect x="0" y="7.5" width="3" height="3.5" rx="0.8"></rect><rect x="5" y="5" width="3" height="6" rx="0.8"></rect><rect x="10" y="2.5" width="3" height="8.5" rx="0.8"></rect><rect x="15" y="0" width="3" height="11" rx="0.8"></rect></svg>
+                        <span class="rvm-sb__5g">5G</span>
+                        <div class="rvm-batt">
+                          <div class="rvm-batt__shell" style="border:1px solid rgba(255,255,255,0.45);"><div class="rvm-batt__fill" style="background:#fff;"></div></div>
+                          <div class="rvm-batt__nub" style="background:rgba(255,255,255,0.45);"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="rvm-hero__center">
+                      <div class="rvm-hero__mark">Revivo <em>Studios</em></div>
+                      <div class="rvm-hero__sub">Websites voor salons</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="rvm-btn rvm-btn--silent"></div>
+                <div class="rvm-btn rvm-btn--volup"></div>
+                <div class="rvm-btn rvm-btn--voldn"></div>
+                <div class="rvm-btn rvm-btn--power"></div>
+              </div>
+              <p class="rvm-phone-label">Hero</p>
+            </div>
+
+            <!-- Phone 2 — Werkwijze -->
+            <div class="rvm-phone-col">
+              <div class="rvm-phone">
+                <div class="rvm-phone__body"></div>
+                <div class="rvm-phone__bezel"></div>
+                <div class="rvm-phone__screen">
+                  <div class="rvm-page">
+                    <div class="rvm-sb">
+                      <span class="rvm-sb__time">10:46</span>
+                      <div class="rvm-sb__right">
+                        <svg width="18" height="11" viewBox="0 0 18 11" fill="#1a1010"><rect x="0" y="7.5" width="3" height="3.5" rx="0.8"></rect><rect x="5" y="5" width="3" height="6" rx="0.8"></rect><rect x="10" y="2.5" width="3" height="8.5" rx="0.8"></rect><rect x="15" y="0" width="3" height="11" rx="0.8"></rect></svg>
+                        <span class="rvm-sb__5g">5G</span>
+                        <div class="rvm-batt">
+                          <div class="rvm-batt__shell" style="border:1px solid rgba(26,16,16,0.4);"><div class="rvm-batt__fill" style="background:#1a1010;"></div></div>
+                          <div class="rvm-batt__nub" style="background:rgba(26,16,16,0.4);"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="rvm-nav">
+                      <div class="rvm-burger"><span></span><span></span><span></span></div>
+                      <div class="rvm-nav__mark">Revivo <em>Studios</em></div>
+                      <div class="rvm-lang">EN</div>
+                    </div>
+                    <div class="rvm-body">
+                      <div class="rvm-kicker">
+                        <span class="rvm-kicker__line"></span>
+                        <span class="rvm-kicker__txt">Werkwijze</span>
+                        <span class="rvm-kicker__line"></span>
+                      </div>
+                      <h3 class="rvm-h2">Van kennismaking <em>naar live.</em></h3>
+                      <p class="rvm-intro">We leveren al vóór de samenwerking een concreet ontwerp — zodat je precies weet wat je krijgt.</p>
+                      <div class="rvm-step">
+                        <span class="rvm-step__num">01</span>
+                        <div><h4 class="rvm-step__h">Kennismaking</h4><p class="rvm-step__p">We leren je zaak kennen — sfeer, doelgroep en boekingssysteem.</p></div>
+                      </div>
+                      <div class="rvm-step">
+                        <span class="rvm-step__num">02</span>
+                        <div><h4 class="rvm-step__h">Ontwerp op maat</h4><p class="rvm-step__p">Je ziet meteen hoe de website er voor jouw zaak uitziet.</p></div>
+                      </div>
+                      <div class="rvm-step">
+                        <span class="rvm-step__num">03</span>
+                        <div><h4 class="rvm-step__h">Feedback &amp; afwerking</h4><p class="rvm-step__p">Jij hebt het voor het zeggen totdat je écht blij bent.</p></div>
+                      </div>
+                      <div class="rvm-step">
+                        <span class="rvm-step__num">04</span>
+                        <div><h4 class="rvm-step__h">Live</h4><p class="rvm-step__p">Klanten vinden je en boeken via jouw systeem.</p></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="rvm-btn rvm-btn--silent"></div>
+                <div class="rvm-btn rvm-btn--volup"></div>
+                <div class="rvm-btn rvm-btn--voldn"></div>
+                <div class="rvm-btn rvm-btn--power"></div>
+              </div>
+              <p class="rvm-phone-label">Werkwijze</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>

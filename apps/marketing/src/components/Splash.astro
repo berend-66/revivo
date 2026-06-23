@@ -1,0 +1,15 @@
+---
+import { useTranslations, type Locale } from "~/i18n/ui";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<div id="splash" aria-hidden="true">
+  <div>
+    <div class="splash-wordmark">Revivo <em>Studios</em></div>
+    <div class="splash-sub">{t("splash.sub")}</div>
+  </div>
+</div>

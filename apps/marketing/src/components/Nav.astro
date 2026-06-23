@@ -1,0 +1,36 @@
+---
+import { useTranslations, otherLocale, type Locale } from "~/i18n/ui";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const alt = otherLocale(locale);
+---
+
+<nav class="nav" id="nav">
+  <div class="container nav-inner">
+    <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <a href="#top" class="nav-brand">Revivo <em>Studios</em></a>
+    <div class="nav-links">
+      <a href="#werkwijze">{t("nav.process")}</a>
+      <a href="#investering">{t("nav.pricing")}</a>
+      <a href="#over-ons">{t("nav.about")}</a>
+      <a href="#contact">{t("nav.contact")}</a>
+    </div>
+    <div class="nav-right">
+      <a class="lang-btn" href={alt.href} hreflang={alt.hreflang} aria-label="Switch language">{alt.label}</a>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#werkwijze">{t("nav.process")}</a>
+  <a href="#investering">{t("nav.pricing")}</a>
+  <a href="#over-ons">{t("nav.about")}</a>
+  <a href="#contact">{t("nav.contact")}</a>
+  <a href="#contact" class="btn btn-primary">{t("hero.cta1")}</a>
+  <a class="mobile-lang" href={alt.href} hreflang={alt.hreflang}>{alt.label}</a>
+</div>
