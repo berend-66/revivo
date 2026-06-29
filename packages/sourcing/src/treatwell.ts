@@ -129,6 +129,22 @@ export function treatwellListingToFacts(raw: RawListing): ListingFacts {
   const phone = strOrNull(v?.contact?.phone);
   if (phone) facts.phone = phone;
 
+  // Treatwell stores the salon's own external website in the contact block.
+  // If absent, the salon has no website listed → has_website will be set to false
+  // downstream when listing_facts_json is stored on the lead.
+  const rawWebsite =
+    strOrNull(v?.contact?.website) ??
+    strOrNull(v?.contact?.websiteUrl) ??
+    strOrNull(v?.website);
+  if (rawWebsite) {
+    try {
+      new URL(rawWebsite);
+      facts.websiteUrl = rawWebsite;
+    } catch {
+      // malformed URL — treat as absent
+    }
+  }
+
   // Address: state addressLines = [street, …, city]; JSON-LD as fallback.
   const lines: string[] = Array.isArray(v?.location?.address?.addressLines)
     ? v.location.address.addressLines.filter((l: unknown) => typeof l === "string")
