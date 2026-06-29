@@ -23,9 +23,12 @@ lib/mock-url.ts     → mock host (matches the CLI/openers)
 
 ## Rules
 
-- **revivo's OWN brand only** — burgundy `#3d0a0e` / cream `#f0e4cc` / Cormorant Garamond
-  (tokens in `app/globals.css`, mirror `apps/marketing/src/styles/global.css`). NEVER import a
-  customer-template variant's CSS/fonts. Plain CSS, no Tailwind (avoids the v4 config dance).
+- **Functional dashboard skin, NOT the marketing brand.** Berend's explicit call (2026-06-29):
+  the admin is a tool, so it uses a neutral "light, KPI-forward" SaaS look — white surfaces on a
+  soft-gray bg, **Inter**, a left **sidebar**, **blue/teal** accent, colour-coded KPI tiles +
+  pipeline-stage chips. Do NOT reintroduce the revivo marketing brand here (burgundy/cream/
+  Cormorant) — that's `apps/marketing` only. Never import a customer-template variant's CSS/fonts.
+  Tokens live in `app/globals.css`; plain CSS, no Tailwind (avoids the v4 config dance).
 - **Service-role key is server-side only.** All `@revivo/db` calls go through `lib/db.ts`
   (`import "server-only"`); no `NEXT_PUBLIC_` prefix; never a Client Component. Auth is **Vercel
   Authentication / Deployment Protection** on the project (no in-app auth code).

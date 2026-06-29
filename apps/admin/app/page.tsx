@@ -9,7 +9,7 @@ import {
 import { db } from "@/lib/db";
 import { tolerant, isPending } from "@/lib/safe";
 import { MigrationNotice } from "@/components/MigrationNotice";
-import { FUNNEL_ORDER, STATUS_META, formatEuros, pct } from "@/lib/format";
+import { FUNNEL_ORDER, STATUS_META, STATUS_COLOR, formatEuros, pct } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -52,28 +52,29 @@ export default async function FunnelPage() {
           <h1>
             Outreach <em>funnel</em>
           </h1>
-          <div className="sub">{total} leads in de pipeline · live uit Supabase</div>
+          <div className="sub">{total} leads in de pipeline</div>
         </div>
+        <span className="live">live uit Supabase</span>
       </div>
 
-      <section className="stat-grid" style={{ marginBottom: 24 }}>
-        <Link href="/outreach" className="stat accent">
+      <section className="stat-grid" style={{ marginBottom: 18 }}>
+        <Link href="/outreach" className="stat t-blue">
           <span className="num">{counts.mockup_generated}</span>
           <span className="label">Klaar om te sturen</span>
         </Link>
-        <div className="stat">
+        <div className="stat t-violet">
           <span className="num">{counts.outreach_sent}</span>
           <span className="label">Verzonden</span>
         </div>
-        <Link href="/deals" className="stat">
+        <Link href="/deals" className="stat t-green">
           <span className="num">{counts.replied}</span>
           <span className="label">Beantwoord</span>
         </Link>
-        <Link href="/review" className="stat">
+        <Link href="/review" className="stat t-amber">
           <span className="num">{counts.needs_review}</span>
           <span className="label">Needs review</span>
         </Link>
-        <Link href="/deals" className="stat accent">
+        <Link href="/deals" className="stat t-teal">
           <span className="num">{dealsPending ? "—" : formatEuros(revenue)}</span>
           <span className="label">Omzet (gewonnen)</span>
         </Link>
@@ -98,7 +99,7 @@ export default async function FunnelPage() {
                   {STATUS_META[k].label}
                 </span>
                 <div className="bar" style={{ flex: 1 }}>
-                  <span style={{ width: `${(counts[k] / maxCount) * 100}%` }} />
+                  <span style={{ width: `${(counts[k] / maxCount) * 100}%`, background: STATUS_COLOR[k] }} />
                 </div>
                 <span style={{ width: 34, textAlign: "right" }} className="mono">
                   {counts[k]}
@@ -137,7 +138,7 @@ export default async function FunnelPage() {
           <div className="card">
             <div className="card-head">
               <h3>Queue</h3>
-              <Link href="/jobs" className="small" style={{ color: "var(--bordeaux)" }}>
+              <Link href="/jobs" className="small link">
                 monitor →
               </Link>
             </div>
@@ -154,7 +155,7 @@ export default async function FunnelPage() {
           <div className="card">
             <div className="card-head">
               <h3>Deals</h3>
-              <Link href="/deals" className="small" style={{ color: "var(--bordeaux)" }}>
+              <Link href="/deals" className="small link">
                 board →
               </Link>
             </div>

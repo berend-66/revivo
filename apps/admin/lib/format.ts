@@ -52,7 +52,7 @@ export function pct(numerator: number, denominator: number): string {
   return `${Math.round((numerator / denominator) * 100)}%`;
 }
 
-export type Tone = "neutral" | "info" | "warn" | "accent" | "good" | "muted";
+export type Tone = "neutral" | "info" | "warn" | "accent" | "good" | "muted" | "violet";
 
 /** Display label + colour tone per lead status. tone maps to a CSS class in StatusBadge. */
 export const STATUS_META: Record<LeadStatus, { label: string; tone: Tone }> = {
@@ -60,9 +60,20 @@ export const STATUS_META: Record<LeadStatus, { label: string; tone: Tone }> = {
   qualified: { label: "Qualified", tone: "neutral" },
   mockup_generated: { label: "Mockup ready", tone: "info" },
   needs_review: { label: "Needs review", tone: "warn" },
-  outreach_sent: { label: "Sent", tone: "accent" },
+  outreach_sent: { label: "Sent", tone: "violet" },
   replied: { label: "Replied", tone: "good" },
   dropped: { label: "Dropped", tone: "muted" },
+};
+
+/** Bar/accent colour per status — colour-codes the funnel rows. */
+export const STATUS_COLOR: Record<LeadStatus, string> = {
+  pending: "#94a3b8",
+  qualified: "#94a3b8",
+  mockup_generated: "#2563eb",
+  needs_review: "#d97706",
+  outreach_sent: "#6d28d9",
+  replied: "#047857",
+  dropped: "#be123c",
 };
 
 /** Funnel order for rendering status rows consistently. */

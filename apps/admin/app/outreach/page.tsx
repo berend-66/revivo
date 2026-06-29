@@ -57,7 +57,7 @@ export default async function OutreachPage() {
             <div key={i.lead.id} className="card">
               <div className="card-head">
                 <div>
-                  <Link href={`/leads/${i.lead.id}`} className="link" style={{ color: "var(--bordeaux)", fontWeight: 600 }}>
+                  <Link href={`/leads/${i.lead.id}`} className="link" style={{ color: "var(--accent)", fontWeight: 600 }}>
                     {i.lead.name ?? i.mockup.slug}
                   </Link>
                   <span className="small muted"> · {i.lead.city ?? "—"}</span>

@@ -35,23 +35,23 @@ export default async function JobsPage() {
       </div>
 
       <section className="stat-grid" style={{ marginBottom: 22 }}>
-        <div className="stat accent">
+        <div className="stat t-blue">
           <span className="num">{due}</span>
           <span className="label">Pending (due)</span>
         </div>
-        <div className="stat">
+        <div className="stat t-slate">
           <span className="num">{pending.length - due}</span>
           <span className="label">Pending (backoff)</span>
         </div>
-        <div className="stat">
+        <div className="stat t-violet">
           <span className="num">{running.length}</span>
           <span className="label">Running</span>
         </div>
-        <div className="stat">
+        <div className="stat t-rose">
           <span className="num">{failed.length}</span>
           <span className="label">Failed</span>
         </div>
-        <div className="stat">
+        <div className="stat t-green">
           <span className="num">{succeeded.length}</span>
           <span className="label">Succeeded</span>
         </div>

@@ -42,7 +42,7 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
       <div className="page-head">
         <div>
           <div className="eyebrow">
-            <Link href="/leads" style={{ color: "var(--bordeaux)" }}>
+            <Link href="/leads" style={{ color: "var(--accent)" }}>
               ← Leads
             </Link>
           </div>
@@ -68,7 +68,7 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                   <>
                     <dt>Listing</dt>
                     <dd>
-                      <a className="link" href={lead.listing_url} target="_blank" rel="noreferrer" style={{ color: "var(--bordeaux)" }}>
+                      <a className="link" href={lead.listing_url} target="_blank" rel="noreferrer" style={{ color: "var(--accent)" }}>
                         Treatwell ↗
                       </a>
                     </dd>

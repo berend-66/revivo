@@ -94,7 +94,8 @@ If you find yourself adding Redis, Kafka, k8s, microservices, or anything more c
 
 Two separate brand systems. **Do not mix them up.**
 
-- **revivo's own brand** (only used in `apps/marketing/` and `apps/admin/`) — deep burgundy `#3d0c0c` + cream `#f5efe0` + Cormorant Garamond serif with italic gold accents. Sourced from `revivo-proposal.pdf`. Brand tokens are in `apps/marketing/src/styles/global.css`.
+- **revivo's own brand** (used in `apps/marketing/`) — deep burgundy `#3d0c0c` + cream `#f5efe0` + Cormorant Garamond serif with italic gold accents. Sourced from `revivo-proposal.pdf`. Brand tokens are in `apps/marketing/src/styles/global.css`.
+- **`apps/admin` is a deliberate exception** (Berend's call, 2026-06-29): an internal tool, so it uses a neutral "light, KPI-forward" dashboard skin (Inter, sidebar, blue/teal accent) — NOT the marketing brand. See `apps/admin/CLAUDE.md`.
 - **Customer site brands** — every customer has their own colors, fonts, and identity. The customer-template variants apply a design DNA on top of `config.brand.colors.*`. See [apps/customer-template/CLAUDE.md](../apps/customer-template/CLAUDE.md) for variant details.
 
 ## Out of scope (defer until first 20 paying customers)

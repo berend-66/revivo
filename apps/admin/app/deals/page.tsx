@@ -65,19 +65,19 @@ export default async function DealsPage() {
       </div>
 
       <section className="stat-grid" style={{ marginBottom: 22 }}>
-        <div className="stat accent">
+        <div className="stat t-green">
           <span className="num">{formatEuros(revenue)}</span>
           <span className="label">Omzet gewonnen</span>
         </div>
-        <div className="stat">
+        <div className="stat t-teal">
           <span className="num">{byStage.get("won")?.length ?? 0}</span>
           <span className="label">Gewonnen deals</span>
         </div>
-        <div className="stat">
+        <div className="stat t-blue">
           <span className="num">{(byStage.get("reply")?.length ?? 0) + (byStage.get("call_booked")?.length ?? 0) + (byStage.get("call_held")?.length ?? 0) + (byStage.get("proposal_sent")?.length ?? 0)}</span>
           <span className="label">Open deals</span>
         </div>
-        <div className="stat">
+        <div className="stat t-amber">
           <span className="num">{avgSla ?? "—"}</span>
           <span className="label">Gem. SLA (dagen)</span>
         </div>
@@ -99,7 +99,7 @@ export default async function DealsPage() {
                   col.map((d) => (
                     <div key={d.id} style={{ border: "1px solid var(--border)", borderRadius: 4, padding: "8px 10px" }}>
                       {d.lead_id ? (
-                        <Link href={`/leads/${d.lead_id}`} className="link" style={{ color: "var(--bordeaux)", fontWeight: 600, fontSize: "0.85rem" }}>
+                        <Link href={`/leads/${d.lead_id}`} className="link" style={{ color: "var(--accent)", fontWeight: 600, fontSize: "0.85rem" }}>
                           {nameById.get(d.lead_id) ?? d.lead_id.slice(0, 8)}
                         </Link>
                       ) : (
