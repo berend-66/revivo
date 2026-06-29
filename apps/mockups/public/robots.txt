@@ -1,0 +1,8 @@
+# mock.revivo.nl serves only capability-gated, personalized salon mockups —
+# previews of someone else's brand, photos, team and reviews. Nothing here
+# should be crawled or indexed. The per-page `X-Robots-Tag: noindex` response
+# header (see src/lib/render.ts) is the load-bearing de-index guarantee on any
+# fetch; this file is the politeness layer that discourages crawling at all.
+# See docs/OUTREACH.md §2 (GDPR/IP posture).
+User-agent: *
+Disallow: /

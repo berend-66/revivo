@@ -90,9 +90,15 @@ describe("buildOpener — wa.me gate + encoding", () => {
     expect(decoded).toBe(opener.plainText);
     expect(opener.plainText).toContain("Test Salon");
     expect(opener.plainText).toContain(MOCK_URL);
-    // warm sign-off + the marketing follow-up link both ride along
-    expect(opener.plainText).toContain(MARKETING_URL);
-    expect(opener.plainText).toContain("Groetjes, Berend");
+    expect(opener.plainText).toContain("Groetjes, Berend (Revivo Studios)");
+    // ONE link only: the mockup, never the marketing site, in the WhatsApp body
+    expect(opener.plainText.split(MOCK_URL).length - 1).toBe(1);
+    expect(opener.plainText).not.toContain(MARKETING_URL);
+    // single opinion-question CTA + an opt-out line on every message
+    expect(opener.plainText).toContain("wat zou je als eerste anders willen zien?");
+    expect(opener.plainText).toContain("hoort niets meer van me");
+    // the marketing link belongs in the e-mail signature, not the chat body
+    expect(opener.emailBody).toContain(MARKETING_URL);
   });
 
   it("landline salon: NO wa.me link, IG/e-mail copy still carries the URL", () => {
@@ -188,8 +194,12 @@ describe("buildOpener — every claim must be true", () => {
   });
 
   it("never names where we found them — no 'op Treatwell'/'op Google'/'online' (don't imply their web presence is set)", () => {
-    const withFacts = buildOpener({ config: makeConfig(), mockUrl: MOCK_URL, facts: makeFacts() });
-    expect(withFacts.plainText).toContain("Ik kwam Test Salon tegen,");
+    const withFacts = buildOpener({
+      config: makeConfig({ reputation: { rating: 4.6, reviewCount: 200, source: "Treatwell" } }),
+      mockUrl: MOCK_URL,
+      facts: makeFacts(),
+    });
+    expect(withFacts.plainText).toContain("Ik kwam Test Salon tegen");
     expect(withFacts.plainText).not.toContain("Treatwell");
     expect(withFacts.plainText).not.toContain("online");
 
@@ -202,10 +212,11 @@ describe("buildOpener — every claim must be true", () => {
   });
 
   it('"what\'s in the mockup" lists only what is genuinely scraped + present', () => {
-    // Manual/places: nothing scraped → the generic, honest line.
+    // Manual/places: nothing scraped → no contents claim, plainer copy.
     const manual = buildOpener({ config: makeConfig(), mockUrl: MOCK_URL });
     expect(manual.plainText).not.toContain("echte prijzen");
-    expect(manual.plainText).toContain("hoe jullie eigen site eruit kan zien");
+    expect(manual.plainText).not.toContain("erin"); // no "Met … erin." clause when nothing is scraped
+    expect(manual.plainText).toContain("alvast eentje gemaakt");
 
     // Full listing: prices + team + reviews all real and on the config.
     const full = buildOpener({
@@ -228,7 +239,17 @@ describe("buildOpener — every claim must be true", () => {
       mockUrl: MOCK_URL,
       facts: makeFacts({ services: [{ category: "Knippen", items: [{ name: "Knippen dames", price: 42 }] }] }),
     });
-    expect(partial.plainText).toContain("met jullie echte prijzen erin");
+    expect(partial.plainText).toContain("jullie echte prijzen erin");
     expect(partial.plainText).not.toContain("team");
+  });
+
+  it("weak hook (city only) drops the flattery — Variant B: opt-out + one CTA, no second link", () => {
+    const opener = buildOpener({ config: makeConfig(), mockUrl: MOCK_URL });
+    // city tier: no rating to lead with → no "Ik kwam … tegen" flattery line
+    expect(opener.plainText).not.toContain("Ik kwam");
+    expect(opener.plainText).toContain("alvast eentje gemaakt");
+    expect(opener.plainText).toContain("wat zou je graag anders zien?");
+    expect(opener.plainText).toContain("hoort niets meer van me");
+    expect(opener.plainText).not.toContain(MARKETING_URL);
   });
 });

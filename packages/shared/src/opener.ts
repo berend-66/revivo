@@ -7,6 +7,19 @@ import { dutchMobileToWaNumber, isDutchMobile } from "./phone";
  * first message. Deterministic, templated, NO LLM — at 20 sends we measure
  * whether the copy is too samey before paying for model variation.
  *
+ * Shape follows docs/OUTREACH.md §4 ("lead with the artifact"):
+ *   - ONE link (the live mockup). The marketing site is NOT in the WhatsApp/IG
+ *     body — a second link dilutes the click and raises spam score; it lives in
+ *     the e-mail signature only. The brand name rides in the sign-off instead.
+ *   - ONE call to action: a low-friction OPINION question ("wat zou je als
+ *     eerste anders willen zien?") — not "ben je geïnteresseerd?", which asks
+ *     for a buying-signal the reader hasn't formed yet and is easy to ignore.
+ *   - An OPT-OUT line on every message (legal: art. 11.7 Tw / GDPR art. 21, and
+ *     it lowers the WhatsApp block-rate that actually kills the channel).
+ *   - Two variants by hook strength: a praiseworthy RATING leads the message
+ *     (Variant A); a weak hook (menu item / city only) drops the flattery and
+ *     lets the artifact be the compliment (Variant B).
+ *
  * The whole play is SPECIFICITY, and specificity only works when every claim
  * is TRUE. The cardinal sin applies to the opener even more than the mockup:
  * one checkable false statement ("op Treatwell" for a salon that isn't there,
@@ -35,8 +48,9 @@ import { dutchMobileToWaNumber, isDutchMobile } from "./phone";
  * full URL; it never assembles one. */
 export const DEFAULT_MOCK_BASE_URL = "https://revivo-mockups.vercel.app";
 
-/** Our own marketing site — linked at the end of every opener as the "more
- * info / who we are" follow-up. Brand constant, not env-configurable. */
+/** Our own marketing site — linked ONLY in the e-mail signature (the "who we
+ * are" follow-up). Kept out of the WhatsApp/IG body on purpose: one link only.
+ * Brand constant, not env-configurable. */
 export const MARKETING_URL = "https://revivostudios.io/";
 
 export interface OpenerInput {
@@ -64,6 +78,11 @@ export interface Opener {
 
 const nlNumber = new Intl.NumberFormat("nl-NL");
 
+/** Sign-off carries the brand name (the "who we are" cue, since the WhatsApp/IG
+ * body has no marketing link) + the opt-out (legal + protects the number). */
+const SIGN_OFF = "Groetjes, Berend (Revivo Studios)";
+const OPT_OUT = "Geen interesse? Eén berichtje terug en je hoort niets meer van me.";
+
 function fmtRating(rating: number): string {
   return String(rating).replace(".", ",");
 }
@@ -74,18 +93,30 @@ function nlList(parts: string[]): string {
   return `${parts.slice(0, -1).join(", ")} en ${parts[parts.length - 1]}`;
 }
 
+type HookTier = "strong" | "mild" | "menu" | "city";
+
+interface HookResult {
+  /** Operator-facing descriptor of why this lead got picked (printed in build-openers). */
+  text: string;
+  tier: HookTier;
+  /** The real scraped menu item, lowercased — only set on the "menu" tier. */
+  menuItem?: string;
+}
+
 /** The most specific TRUE thing we can say, in descending strength:
  * praiseworthy rating (+count) → real menu item still on the config → city.
- * No platform is ever named (we don't tell them their online presence is set). */
-function pickHook(config: SiteConfig, facts: ListingFacts | null | undefined): string {
+ * No platform is ever named (we don't tell them their online presence is set).
+ * The TIER also drives message shape: a rating LEADS the message (Variant A);
+ * a menu item / city does not (Variant B — the artifact is the compliment). */
+function pickHook(config: SiteConfig, facts: ListingFacts | null | undefined): HookResult {
   const rep = config.reputation ?? facts?.reputation;
   if (rep) {
     const stars = `${fmtRating(rep.rating)}★`;
     if (rep.rating >= 4.5 && rep.reviewCount && rep.reviewCount >= 25) {
-      return `${stars} met ${nlNumber.format(rep.reviewCount)} reviews, mooi om te zien`;
+      return { text: `${stars} met ${nlNumber.format(rep.reviewCount)} reviews, mooi om te zien`, tier: "strong" };
     }
     if (rep.rating >= 4.0) {
-      return `${stars}, mooi om te zien`;
+      return { text: `${stars}, mooi om te zien`, tier: "mild" };
     }
     // A rating that isn't a compliment is not a hook. Fall through.
   }
@@ -95,9 +126,10 @@ function pickHook(config: SiteConfig, facts: ListingFacts | null | undefined): s
   const stillOnConfig =
     item && config.services.some((c) => c.items.some((i) => i.name === item.name));
   if (item && stillOnConfig) {
-    return `mooi aanbod, met o.a. ${item.name.toLowerCase()}`;
+    const menuItem = item.name.toLowerCase();
+    return { text: `mooi aanbod, met o.a. ${menuItem}`, tier: "menu", menuItem };
   }
-  return `mooie salon in ${config.location.city}`;
+  return { text: `mooie salon in ${config.location.city}`, tier: "city" };
 }
 
 /** What the mockup REALLY carries from scraped data — never claim more. */
@@ -107,6 +139,17 @@ function realContentsClause(config: SiteConfig, facts?: ListingFacts | null): st
   if (facts?.team?.length && config.team?.length) parts.push("jullie team");
   if (facts?.reviews?.length && config.testimonials?.length) parts.push("echte reviews");
   return parts.length ? nlList(parts) : undefined;
+}
+
+/** The "Met … erin." clause naming what the mockup verifiably carries: an
+ * optional real menu item (weak-hook tiers only) + the scraped contents list.
+ * Empty string when nothing is certified — the message degrades to plainer
+ * copy, never to a fabricated claim. */
+function madeClause(menuItem: string | undefined, contents: string | undefined): string {
+  if (menuItem && contents) return ` Met o.a. ${menuItem} en ${contents} erin.`;
+  if (menuItem) return ` Met o.a. ${menuItem} erin.`;
+  if (contents) return ` Met ${contents} erin.`;
+  return "";
 }
 
 /** encodeURIComponent leaves ! ' ( ) * raw; an unencoded ' or ) in a salon
@@ -122,38 +165,59 @@ export function buildOpener(input: OpenerInput): Opener {
   const { config, mockUrl, facts } = input;
   const name = config.brand.name;
   const hook = pickHook(config, facts);
-
   const contents = realContentsClause(config, facts);
-  const madeLine = contents
-    ? `Ik bouw websites voor salons en heb er voor jullie één gemaakt, met ${contents} erin:`
-    : `Ik bouw websites voor salons en heb een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`;
 
-  const plainText = [
-    `Hoi! Ik kwam ${name} tegen, ${hook}!`,
-    madeLine,
-    mockUrl,
-    `Kijk gerust even rond, benieuwd wat je ervan vindt! Ik hoor graag als je geïnteresseerd bent 😁\nVerdere info kan je op onze eigen website vinden: ${MARKETING_URL}`,
-    `Groetjes, Berend`,
-  ].join("\n\n");
+  // A praiseworthy rating leads the message; a weak hook does not.
+  const leadWithHook = hook.tier === "strong" || hook.tier === "mild";
+  // The menu item is only surfaced (in the "Met … erin" clause) on the weak path.
+  const made = leadWithHook ? madeClause(undefined, contents) : madeClause(hook.menuItem, contents);
 
-  const igDmText =
-    `Hoi! Ik kwam ${name} tegen, ${hook}! ` +
-    (contents
-      ? `Ik bouw websites voor salons en maakte een voorbeeld met ${contents} erin: `
-      : `Ik bouw websites voor salons en maakte een voorbeeld van hoe jullie eigen site eruit kan zien: `) +
-    `${mockUrl} — benieuwd wat je ervan vindt! Ik hoor graag als je geïnteresseerd bent 😁 Meer info: ${MARKETING_URL}`;
+  // --- canonical message (what the WhatsApp link carries) : ONE link, ONE CTA ---
+  const plainText = leadWithHook
+    ? [
+        `Hoi! Ik kwam ${name} tegen — ${hook.text} 🙂`,
+        `Ik bouw websites voor salons en heb er alvast eentje voor ${name} gemaakt.${made} Kijk maar:`,
+        mockUrl,
+        `Benieuwd wat je ervan vindt — wat zou je als eerste anders willen zien?`,
+        `${SIGN_OFF}\n${OPT_OUT}`,
+      ].join("\n\n")
+    : [
+        `Hoi! Ik bouw websites voor salons en heb er voor ${name} alvast eentje gemaakt.${made} Kijk maar:`,
+        mockUrl,
+        `Benieuwd wat je ervan vindt — wat zou je graag anders zien?`,
+        `${SIGN_OFF}\n${OPT_OUT}`,
+      ].join("\n\n");
 
-  const emailSubject = `Een website-voorbeeld voor ${name}`;
-  const emailBody = [
-    `Hoi,`,
-    `Ik kwam ${name} tegen, ${hook}!`,
-    contents
-      ? `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik er voor jullie één gemaakt, met ${contents} erin:`
-      : `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`,
-    mockUrl,
-    `Kijk gerust even rond, benieuwd wat je ervan vindt! Ik hoor graag als je geïnteresseerd bent. Meer over ons: ${MARKETING_URL}`,
-    `Groetjes,\nBerend`,
-  ].join("\n\n");
+  // --- Instagram DM : compact one-paragraph form, same one-link/one-CTA rules ---
+  const igIntro = leadWithHook
+    ? `Hoi! Ik kwam ${name} tegen — ${hook.text} 🙂 Ik bouw websites voor salons en heb er alvast eentje voor ${name} gemaakt.${made} Kijk maar: ${mockUrl}`
+    : `Hoi! Ik bouw websites voor salons en heb er voor ${name} alvast eentje gemaakt.${made} Kijk maar: ${mockUrl}`;
+  const igDmText = `${igIntro} — benieuwd wat je ervan vindt, wat zou je als eerste anders willen zien? ${SIGN_OFF}. ${OPT_OUT}`;
+
+  // --- e-mail : the one channel where a brand link belongs (in the signature) ---
+  const emailSubject = `${name}, wat vind je hiervan?`;
+  const emailSignature = `Groetjes,\nBerend — Revivo Studios\n${MARKETING_URL}`;
+  const emailOptOut = "Geen interesse of liever geen e-mail meer? Eén reply en je hoort niets meer van me.";
+  const emailBody = (
+    leadWithHook
+      ? [
+          `Hoi,`,
+          `Ik kwam ${name} tegen — ${hook.text}!`,
+          `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik er alvast eentje voor ${name} gemaakt.${made}`,
+          mockUrl,
+          `Benieuwd wat je ervan vindt — wat zou je als eerste anders willen zien?`,
+          emailSignature,
+          emailOptOut,
+        ]
+      : [
+          `Hoi,`,
+          `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik er voor ${name} alvast eentje gemaakt.${made}`,
+          mockUrl,
+          `Benieuwd wat je ervan vindt — wat zou je graag anders zien?`,
+          emailSignature,
+          emailOptOut,
+        ]
+  ).join("\n\n");
 
   // First candidate that is genuinely a Dutch mobile — a landline in
   // contact.phone must not shadow a mobile we know from the listing.
@@ -163,5 +227,5 @@ export function buildOpener(input: OpenerInput): Opener {
   const waNumber = dutchMobileToWaNumber(mobile ?? undefined);
   const whatsappUrl = waNumber ? `https://wa.me/${waNumber}?text=${encodeWaText(plainText)}` : undefined;
 
-  return { whatsappUrl, igDmText, emailSubject, emailBody, plainText, hook };
+  return { whatsappUrl, igDmText, emailSubject, emailBody, plainText, hook: hook.text };
 }
