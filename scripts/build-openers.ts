@@ -19,6 +19,7 @@ import { resolve } from "node:path";
 import dotenv from "dotenv";
 import { SiteConfigSchema, buildOpener, DEFAULT_MOCK_BASE_URL } from "@revivo/shared";
 import { createServiceClient, getMockupsByLeadId, listLeadsByStatus, setLeadStatus } from "@revivo/db";
+import { renderOpenersHtml, type OpenerCard } from "./openers-html.ts";
 
 // repo-root .env, same convention as the sibling scripts
 dotenv.config({ path: resolve(fileURLToPath(import.meta.url), "../../.env") });
@@ -27,6 +28,7 @@ const { values } = parseArgs({
   options: {
     limit: { type: "string" },
     out: { type: "string" },
+    html: { type: "string" },
     "mark-sent": { type: "boolean", default: false },
     help: { type: "boolean", default: false },
   },
@@ -37,7 +39,9 @@ function usage(exitCode: number): never {
     `Usage: pnpm build-openers [options]
 
   --limit <n>    Max leads to emit (default 50).
-  --out <path>   Also write the openers to a file.
+  --out <path>   Also write the openers to a plain-text file.
+  --html <path>  Also write an HTML worksheet (clickable WhatsApp buttons,
+                 copy-to-clipboard, per-salon 'verzonden' checkbox).
   --mark-sent    Flip the emitted leads to 'outreach_sent' after printing.
                  Only run with this flag at the moment you actually send.`,
   );
@@ -65,6 +69,7 @@ const client = createServiceClient();
 const leads = await listLeadsByStatus(client, "mockup_generated", limit);
 
 const blocks: string[] = [];
+const cards: OpenerCard[] = [];
 const emittedLeadIds: string[] = [];
 let skipped = 0;
 
@@ -106,6 +111,19 @@ for (const lead of leads) {
       ``,
     ].join("\n"),
   );
+  cards.push({
+    slug: mockup.slug,
+    name,
+    city: lead.city ?? undefined,
+    mockUrl,
+    hook: opener.hook,
+    plainText: opener.plainText,
+    igDmText: opener.igDmText,
+    whatsappUrl: opener.whatsappUrl,
+    phone: parsed.data.contact.phone ?? lead.listing_facts_json?.phone ?? undefined,
+    listingUrl: lead.listing_url ?? undefined,
+    instagram: lead.listing_facts_json?.instagram ?? undefined,
+  });
   emittedLeadIds.push(lead.id);
 }
 
@@ -115,6 +133,11 @@ if (values.out) {
   const outPath = resolve(process.cwd(), values.out);
   writeFileSync(outPath, output + "\n", "utf-8");
   console.log(`✓ ${blocks.length} opener(s) → ${outPath}`);
+}
+if (values.html && cards.length) {
+  const htmlPath = resolve(process.cwd(), values.html);
+  writeFileSync(htmlPath, renderOpenersHtml(cards, { baseHost: new URL(base).host }), "utf-8");
+  console.log(`✓ ${cards.length} opener(s) → ${htmlPath}  (open in a browser)`);
 }
 
 if (values["mark-sent"] && emittedLeadIds.length) {

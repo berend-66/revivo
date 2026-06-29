@@ -37,6 +37,9 @@ export const ListingFactsSchema = z.object({
   /** Plain-text salon description (HTML stripped) — voice grounding, not copied verbatim. */
   description: z.string().optional(),
   phone: z.string().optional(),
+  /** Instagram handle WITHOUT the @ (e.g. "cremode_hair_beautysalon"), or a full
+   * profile URL. Verified to belong to this exact salon before storing. */
+  instagram: z.string().optional(),
   /** Street line, e.g. "Lange Jansstraat 6". */
   address: z.string().optional(),
   city: z.string().optional(),
