@@ -30,7 +30,10 @@ export default async function JobsPage() {
           <h1>
             Job <em>queue</em>
           </h1>
-          <div className="sub">de gepollde Postgres-queue die generate-pending leegt</div>
+          <div className="sub">
+            de gepollde Postgres-queue die generate-pending leegt · &ldquo;voltooid&rdquo; telt job-runs (incl.
+            retries/regeneraties), niet unieke salons
+          </div>
         </div>
       </div>
 
@@ -53,7 +56,7 @@ export default async function JobsPage() {
         </div>
         <div className="stat t-green">
           <span className="num">{succeeded.length}</span>
-          <span className="label">Succeeded</span>
+          <span className="label">Voltooid (runs)</span>
         </div>
       </section>
 
@@ -71,7 +74,7 @@ export default async function JobsPage() {
 
       {failed.length > 0 && <JobTable title="Failed" jobs={failed} name={name} columns="failed" />}
 
-      <JobTable title="Recent succeeded" jobs={succeeded.slice(0, 20)} name={name} columns="succeeded" />
+      <JobTable title="Recente runs (voltooid)" jobs={succeeded.slice(0, 20)} name={name} columns="succeeded" />
     </main>
   );
 }

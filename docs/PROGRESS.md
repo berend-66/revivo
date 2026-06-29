@@ -13,7 +13,7 @@ The full design + staged plan lives at `~/.claude/plans/i-want-to-build-peaceful
 - [x] **Stage 0** — revivo.nl marketing site + monorepo scaffold (commit `e7d5f91`)
 - [x] **Stage 1** — customer-template with three variants (commits `f4ab7b8`, `87588ec`)
 - [x] **Stage 2** — mockup generator (manual + places mode) + Supabase `mockups` table + `mock.revivo.nl/{slug}` SSR app. Code complete; live Places/Supabase paths need keys.
-- [x] **Stage 3** — operator admin (`apps/admin`, Next.js + Supabase): outreach funnel, worklist, leads, needs_review, deals/revenue, jobs, mockups. Code complete + live read path proven; needs the 3 new migrations applied + Vercel Auth on deploy. (2026-06-29)
+- [x] **Stage 3** — operator admin (`apps/admin`, Next.js + Supabase): outreach funnel, worklist, leads, needs_review, deals/revenue, jobs, mockups. **LIVE at https://revivo-admin.vercel.app** — migrations applied (`supabase db push`), HTTP-Basic auth via `middleware.ts` (the plan can't gate the prod URL with Vercel Auth), deployed via `vercel deploy --prod` from repo root (not git-connected yet — Vercel GitHub App not installed). (2026-06-29)
 - [ ] **Stage 4** — sourcing pipeline (Google Places + KvK + qualification)
 - [ ] **Stage 5** — build & deploy automation (TransIP + Vercel API)
 

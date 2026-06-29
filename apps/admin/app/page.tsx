@@ -17,14 +17,13 @@ const EMPTY_DEAL_COUNTS = { reply: 0, call_booked: 0, call_held: 0, proposal_sen
 
 export default async function FunnelPage() {
   const client = db();
-  const [counts, leads, pendingJobs, runningJobs, failedJobs, succeededJobs, dealCountsRaw, revenueRaw] =
+  const [counts, leads, pendingJobs, runningJobs, failedJobs, dealCountsRaw, revenueRaw] =
     await Promise.all([
       leadStatusCounts(client),
       listLeads(client, { limit: 1000 }),
       listJobsByStatus(client, "pending", 1000),
       listJobsByStatus(client, "running", 1000),
       listJobsByStatus(client, "failed", 1000),
-      listJobsByStatus(client, "succeeded", 1000),
       tolerant(dealStageCounts(client)),
       tolerant(wonRevenueCents(client)),
     ]);
@@ -144,9 +143,8 @@ export default async function FunnelPage() {
             </div>
             <div className="card-body">
               <div className="row" style={{ gap: 18 }}>
-                <JobStat n={pendingJobs.length} label="pending" />
+                <JobStat n={pendingJobs.length} label="te genereren" />
                 <JobStat n={runningJobs.length} label="running" />
-                <JobStat n={succeededJobs.length} label="succeeded" />
                 <JobStat n={failedJobs.length} label="failed" />
               </div>
             </div>
