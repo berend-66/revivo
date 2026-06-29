@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { SiteConfigSchema, type SiteConfig } from "../src/site-config";
 import { ListingFactsSchema, type ListingFacts } from "../src/listing-facts";
 import { isDutchMobile, dutchMobileToWaNumber } from "../src/phone";
-import { buildOpener } from "../src/opener";
+import { buildOpener, MARKETING_URL } from "../src/opener";
 
 /**
  * B4 regression anchor: the opener is the first thing a prospect reads. Three
@@ -90,6 +90,9 @@ describe("buildOpener — wa.me gate + encoding", () => {
     expect(decoded).toBe(opener.plainText);
     expect(opener.plainText).toContain("Test Salon");
     expect(opener.plainText).toContain(MOCK_URL);
+    // warm sign-off + the marketing follow-up link both ride along
+    expect(opener.plainText).toContain(MARKETING_URL);
+    expect(opener.plainText).toContain("Groetjes, Berend");
   });
 
   it("landline salon: NO wa.me link, IG/e-mail copy still carries the URL", () => {
@@ -140,7 +143,7 @@ describe("buildOpener — every claim must be true", () => {
     });
     expect(opener.hook).toContain("4,7★");
     expect(opener.hook).toContain("2.913 reviews");
-    expect(opener.hook).toContain("dat zie je niet vaak");
+    expect(opener.hook).toContain("mooi om te zien");
   });
 
   it("a good-but-thin rating gets the mild compliment, count unmentioned", () => {
@@ -184,32 +187,18 @@ describe("buildOpener — every claim must be true", () => {
     expect(invented.hook).toContain("Utrecht");
   });
 
-  it("platform attribution is never defaulted: no source → 'online', never 'op Treatwell'", () => {
+  it("never names where we found them — no 'op Treatwell'/'op Google'/'online' (don't imply their web presence is set)", () => {
     const withFacts = buildOpener({ config: makeConfig(), mockUrl: MOCK_URL, facts: makeFacts() });
-    expect(withFacts.plainText).toContain("op Treatwell"); // derived from sourceUrl — true
+    expect(withFacts.plainText).toContain("Ik kwam Test Salon tegen,");
+    expect(withFacts.plainText).not.toContain("Treatwell");
+    expect(withFacts.plainText).not.toContain("online");
 
     const googleRep = buildOpener({
       config: makeConfig({ reputation: { rating: 4.3, reviewCount: 230, source: "Google" } }),
       mockUrl: MOCK_URL,
     });
-    expect(googleRep.plainText).toContain("op Google");
+    expect(googleRep.plainText).not.toContain("Google");
     expect(googleRep.plainText).not.toContain("Treatwell");
-
-    const sourceless = buildOpener({
-      config: makeConfig({ reputation: { rating: 4.6, reviewCount: 80 } }),
-      mockUrl: MOCK_URL,
-    });
-    expect(sourceless.plainText).toContain("online tegen");
-    expect(sourceless.plainText).not.toContain("Treatwell");
-  });
-
-  it("the platform is named once, not doubled in intro AND hook", () => {
-    const opener = buildOpener({
-      config: makeConfig({ reputation: { rating: 4.7, reviewCount: 2913, source: "Treatwell" } }),
-      mockUrl: MOCK_URL,
-      facts: makeFacts(),
-    });
-    expect(opener.plainText.match(/op Treatwell/g)).toHaveLength(1);
   });
 
   it('"what\'s in the mockup" lists only what is genuinely scraped + present', () => {

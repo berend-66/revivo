@@ -14,8 +14,9 @@ import { dutchMobileToWaNumber, isDutchMobile } from "./phone";
  * owner knows the message isn't really about them. So every fragment here is
  * assembled from data that is genuinely present, and degrades to PLAINER copy
  * — never to fabricated enthusiasm:
- *   - the platform ("op Treatwell") is derived from the facts' source URL /
- *     the reputation's own source field, never defaulted;
+ *   - we deliberately do NOT name where we found them ("op Treatwell"/"online"):
+ *     telling a salon their online presence is already strong undercuts the
+ *     pitch. The intro is just "Ik kwam {name} tegen, {hook}";
  *   - the rating hook requires a rating worth complimenting (≥ 4.5 with ≥ 25
  *     reviews for the strong variant, ≥ 4.0 for the mild one);
  *   - the menu-item hook cites only a REAL (scraped) item that is still on
@@ -33,6 +34,10 @@ import { dutchMobileToWaNumber, isDutchMobile } from "./phone";
  * pasted localhost link is a wasted opener. buildOpener itself still takes the
  * full URL; it never assembles one. */
 export const DEFAULT_MOCK_BASE_URL = "https://revivo-mockups.vercel.app";
+
+/** Our own marketing site — linked at the end of every opener as the "more
+ * info / who we are" follow-up. Brand constant, not env-configurable. */
+export const MARKETING_URL = "https://revivostudios.io/";
 
 export interface OpenerInput {
   config: SiteConfig;
@@ -63,20 +68,6 @@ function fmtRating(rating: number): string {
   return String(rating).replace(".", ",");
 }
 
-/** "Where I found you" — only ever a platform the data actually names. */
-function platformOf(config: SiteConfig, facts?: ListingFacts | null): string | undefined {
-  if (facts) {
-    if (facts.reputation?.source) return facts.reputation.source;
-    try {
-      if (new URL(facts.sourceUrl).hostname.includes("treatwell")) return "Treatwell";
-    } catch {
-      // sourceUrl is schema-validated; defensive only
-    }
-    return undefined;
-  }
-  return config.reputation?.source;
-}
-
 /** "a, b en c" — Dutch list join. */
 function nlList(parts: string[]): string {
   if (parts.length <= 1) return parts[0] ?? "";
@@ -85,18 +76,16 @@ function nlList(parts: string[]): string {
 
 /** The most specific TRUE thing we can say, in descending strength:
  * praiseworthy rating (+count) → real menu item still on the config → city.
- * The platform is omitted from the hook when the intro already names it. */
-function pickHook(config: SiteConfig, facts: ListingFacts | null | undefined, platform?: string): string {
+ * No platform is ever named (we don't tell them their online presence is set). */
+function pickHook(config: SiteConfig, facts: ListingFacts | null | undefined): string {
   const rep = config.reputation ?? facts?.reputation;
   if (rep) {
     const stars = `${fmtRating(rep.rating)}★`;
-    // Name the rating's own source only when it differs from the intro's platform.
-    const src = rep.source && rep.source !== platform ? ` op ${rep.source}` : "";
     if (rep.rating >= 4.5 && rep.reviewCount && rep.reviewCount >= 25) {
-      return `${stars} met ${nlNumber.format(rep.reviewCount)} reviews${src} — dat zie je niet vaak`;
+      return `${stars} met ${nlNumber.format(rep.reviewCount)} reviews, mooi om te zien`;
     }
     if (rep.rating >= 4.0) {
-      return `${stars}${src}, mooi om te zien`;
+      return `${stars}, mooi om te zien`;
     }
     // A rating that isn't a compliment is not a hook. Fall through.
   }
@@ -132,40 +121,38 @@ function encodeWaText(text: string): string {
 export function buildOpener(input: OpenerInput): Opener {
   const { config, mockUrl, facts } = input;
   const name = config.brand.name;
-  const platform = platformOf(config, facts);
-  const hook = pickHook(config, facts, platform);
-  const foundOn = platform ? `op ${platform}` : "online";
+  const hook = pickHook(config, facts);
 
   const contents = realContentsClause(config, facts);
   const madeLine = contents
-    ? `Ik bouw websites voor salons en heb er voor jullie alvast één gemaakt, met ${contents} erin:`
-    : `Ik bouw websites voor salons en heb alvast een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`;
+    ? `Ik bouw websites voor salons en heb er voor jullie één gemaakt, met ${contents} erin:`
+    : `Ik bouw websites voor salons en heb een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`;
 
   const plainText = [
-    `Hoi! Ik kwam ${name} ${foundOn} tegen — ${hook}.`,
+    `Hoi! Ik kwam ${name} tegen, ${hook}!`,
     madeLine,
     mockUrl,
-    `Kijk gerust even rond — benieuwd wat je ervan vindt. Niets voor jullie? Ook helemaal prima.`,
-    `Groet, Berend`,
+    `Kijk gerust even rond, benieuwd wat je ervan vindt! Ik hoor graag als je geïnteresseerd bent 😁\nVerdere info kan je op onze eigen website vinden: ${MARKETING_URL}`,
+    `Groetjes, Berend`,
   ].join("\n\n");
 
   const igDmText =
-    `Hoi! Ik kwam ${name} ${foundOn} tegen — ${hook}. ` +
+    `Hoi! Ik kwam ${name} tegen, ${hook}! ` +
     (contents
-      ? `Ik bouw websites voor salons en maakte alvast een voorbeeld met ${contents} erin: `
-      : `Ik bouw websites voor salons en maakte alvast een voorbeeld van hoe jullie eigen site eruit kan zien: `) +
-    `${mockUrl} — benieuwd wat je ervan vindt!`;
+      ? `Ik bouw websites voor salons en maakte een voorbeeld met ${contents} erin: `
+      : `Ik bouw websites voor salons en maakte een voorbeeld van hoe jullie eigen site eruit kan zien: `) +
+    `${mockUrl} — benieuwd wat je ervan vindt! Ik hoor graag als je geïnteresseerd bent 😁 Meer info: ${MARKETING_URL}`;
 
   const emailSubject = `Een website-voorbeeld voor ${name}`;
   const emailBody = [
     `Hoi,`,
-    `Ik kwam ${name} ${foundOn} tegen — ${hook}.`,
+    `Ik kwam ${name} tegen, ${hook}!`,
     contents
-      ? `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik alvast een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien — met ${contents} erin:`
-      : `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik alvast een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`,
+      ? `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik er voor jullie één gemaakt, met ${contents} erin:`
+      : `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`,
     mockUrl,
-    `Kijk gerust even rond. Vragen of feedback hoor ik graag; en is het niets voor jullie, dan ook helemaal prima.`,
-    `Groet,\nBerend`,
+    `Kijk gerust even rond, benieuwd wat je ervan vindt! Ik hoor graag als je geïnteresseerd bent. Meer over ons: ${MARKETING_URL}`,
+    `Groetjes,\nBerend`,
   ].join("\n\n");
 
   // First candidate that is genuinely a Dutch mobile — a landline in
