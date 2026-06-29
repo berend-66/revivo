@@ -10,15 +10,15 @@ revivo/
 │   ├── marketing/          # revivostudios.io — Astro static, Revivo Studios (nl + /en, real i18n routes)
 │   ├── customer-template/  # JSON-driven Astro template (renders any salon)
 │   ├── mockups/            # mock.revivo.nl — Astro SSR, reads Supabase (BUILT — wraps customer-template variants)
-│   └── admin/              # Next.js operator workspace (NOT YET BUILT)
+│   └── admin/              # Next.js operator workspace — outreach funnel + sales pipeline (BUILT — Stage 3; deploy as its own Vercel project w/ Vercel Auth)
 ├── packages/
 │   ├── llm/                # Mockup generator + model-agnostic LLM client (BUILT — manual/places/treatwell + the B3 batch-worker core run-mockup[-job].ts)
 │   ├── sourcing/           # Google Places (New) + Instagram-light → SalonBrief; Treatwell listing scraper + directory crawler (BUILT); KvK is Stage 4
 │   ├── deploy/             # Vercel + TransIP API wrappers (NOT YET BUILT)
-│   ├── db/                 # Supabase client + mockups/leads/jobs table helpers (BUILT)
+│   ├── db/                 # Supabase client + mockups/leads/jobs/lead_events/deals table helpers (BUILT)
 │   └── shared/             # SiteConfig + SalonBrief contracts + pure helpers (slugify, phone, B4 opener builder) (BUILT)
 ├── scripts/                # Hand-run operator scripts (BUILT — crawl-marketplace, generate-pending, build-openers); cron/ scheduled jobs land in Phase C
-├── supabase/migrations/    # SQL migrations (BUILT — mockups, leads, jobs); auto-applied via the GitHub Action on push to main
+├── supabase/migrations/    # SQL migrations (BUILT — mockups, leads, jobs, lead_events, deals); auto-applied via the GitHub Action on push to main
 ├── docs/                   # Living documentation
 └── revivo-proposal.pdf     # Customer-facing proposal — brand & spec reference
 ```

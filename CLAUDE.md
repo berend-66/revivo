@@ -10,6 +10,10 @@ Productized website service for NL hair & beauty salons. **€999 one-time** per
 - `~/.claude/plans/i-want-to-build-peaceful-pumpkin.md` — original staged build plan
 - `revivo-proposal.pdf` — the customer-facing proposal that locked in brand + product spec
 
+Read when working on **outreach / sales / the close** (or the opener copy in `packages/shared/src/opener.ts`):
+- [docs/OUTREACH.md](docs/OUTREACH.md) — the outreach + conversion playbook (legal posture, channels, message, cadence, close, measurement). Note: **do NOT pitch a Treatwell-commission saving** — our site embeds the Treatwell booking link, so there's no saving; lead value on brand / Google-vindbaarheid / ownership (see §6).
+- [docs/OUTREACH-RESEARCH.md](docs/OUTREACH-RESEARCH.md) — the raw per-angle research findings + all sources behind the playbook.
+
 App-level guidance (read when working in that app):
 - [apps/customer-template/CLAUDE.md](apps/customer-template/CLAUDE.md) — variant system rules
 
@@ -56,6 +60,10 @@ pnpm gen-mockup --help
 
 # Mock app (mock.revivo.nl/{slug}) — SSR; reads Supabase, else local example JSON
 cd apps/mockups && pnpm dev            # http://localhost:4321/<slug>
+
+# Operator admin — outreach funnel + sales pipeline (Next.js; needs Supabase env)
+pnpm -F @revivo/admin dev              # http://localhost:3000
+pnpm -F @revivo/admin build            # deploy as its OWN Vercel project + enable Vercel Auth
 
 # Lead sourcing — crawl a Treatwell marketplace directory into the leads table. From repo root.
 pnpm crawl-marketplace --city utrecht --dry-run    # crawl + print, no DB writes
