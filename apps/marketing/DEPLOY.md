@@ -3,6 +3,14 @@
 The site is a **static Astro** app (no server, no env vars). Output: `dist/`.
 NL is served at `/`, EN at `/en/`. `vercel.json` here pins the framework/build/output.
 
+**Images always ship.** Everything in `apps/marketing/public/` (`rijks.jpg`, the
+two `team-*.png` avatars, `og.png`, `favicon.svg`) is copied verbatim into `dist/`
+by `astro build`, and Vercel serves `dist/`. So as long as a file is committed,
+it's in the deploy — verified by a clean build (all references resolve to a real
+`dist/` file). The old revivostudios.io broken image was a *different* deploy that
+referenced `/rijks.png` while never including the file; this build cannot have that
+gap. Step 5 below is the post-deploy check that confirms it.
+
 ## One-time setup (Vercel + DNS)
 
 1. **Create the Vercel project**
@@ -23,23 +31,40 @@ NL is served at `/`, EN at `/en/`. `vercel.json` here pins the framework/build/o
    - Wait for DNS propagation; Vercel auto-provisions TLS.
 
 3. **Cut over from the old site** ⚠️
-   - revivostudios.io currently serves Nelson's **old static HTML** (his separate
-     deploy, tracking his branch — not this repo's `main`). Coordinate with Nelson to
-     retire that deploy / release the domain so it points at this Vercel project.
-     Otherwise you'll have two divergent sites or a DNS conflict.
+   - revivostudios.io currently points at a **separate Vercel deploy** (Nelson's,
+     not this repo's `main`) that serves the **old static HTML** — and it's degraded:
+     the HTML is served stale from edge cache (~a week old) and `/rijks.png` already
+     404s on it. Coordinate with Nelson to retire that deploy / release the domain so
+     it points at this Vercel project. Otherwise you'll have two divergent sites or a
+     DNS conflict.
 
 4. **Activate the contact form** (one-time)
    - The form POSTs to `https://formsubmit.co/ajax/info@revivostudios.io`.
    - The **first** real submission triggers a confirmation email to that address —
      click the link once, or the form silently no-ops.
 
+5. **Verify after deploy — including the images** ✅
+   Run against the deployed URL (the `*.vercel.app` preview first, then the live
+   domain after cutover). Every line must be `200`:
+   ```bash
+   BASE=https://<your-deploy>           # e.g. revivo-marketing.vercel.app, then revivostudios.io
+   for p in / /en/ /rijks.jpg /team-nelson.png /team-berend.png /og.png /favicon.svg; do
+     curl -s -o /dev/null -w "%{http_code}  $p\n" "$BASE$p"
+   done
+   ```
+   A `404` on any image means that asset isn't in the deploy — do **not** consider
+   the deploy done until all are `200`. Also open the page and confirm the About
+   photo and both founder avatars actually render.
+
 ## Re-deploys
 
 Pushes to `main` that touch `apps/marketing/**` auto-deploy once the project is connected.
 No env vars or secrets are required.
 
-## Pending assets (optional polish)
+## Site assets (all committed + shipping — swap anytime)
 
-- `public/rijks.jpg` — About image (currently a licensed Unsplash Rijksmuseum shot). Swap for a custom photo anytime.
-- `public/team-nelson.png`, `public/team-berend.png` — stylized placeholder avatars (DiceBear, CC0). Replace with real portraits when available.
-- `public/og.png` — social share card (generated from the hero). Replace with a designed 1200×630 if desired.
+These are real and deploy with the site today; replacing them is a drop-in (same filename):
+
+- `public/rijks.jpg` — About image. Licensed **Unsplash** Rijksmuseum (reflecting-pond) photo — free for commercial use, no attribution required. Swap for a custom photo anytime.
+- `public/team-nelson.png`, `public/team-berend.png` — stylized **avataaars** founder avatars (free for commercial use). Replace with real portraits when available.
+- `public/og.png` — social share card (1200×630, generated from the hero). Replace with a designed one if desired.
