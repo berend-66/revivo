@@ -3,7 +3,7 @@ import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  site: "https://revivo.nl",
+  site: "https://revivostudios.io",
   integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],
