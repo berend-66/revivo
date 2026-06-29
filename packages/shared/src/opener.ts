@@ -46,6 +46,9 @@ export interface OpenerInput {
   mockUrl: string;
   /** Richer hook material when the lead came from a listing. */
   facts?: ListingFacts | null;
+  /** True when the salon has NO own website — enables the stronger "eerste
+   * website" angle instead of the generic "ik heb een voorbeeld gemaakt". */
+  noWebsite?: boolean;
 }
 
 export interface Opener {
@@ -119,41 +122,76 @@ function encodeWaText(text: string): string {
 }
 
 export function buildOpener(input: OpenerInput): Opener {
-  const { config, mockUrl, facts } = input;
+  const { config, mockUrl, facts, noWebsite } = input;
   const name = config.brand.name;
   const hook = pickHook(config, facts);
 
-  const contents = realContentsClause(config, facts);
-  const madeLine = contents
-    ? `Ik bouw websites voor salons en heb er voor jullie één gemaakt, met ${contents} erin:`
-    : `Ik bouw websites voor salons en heb een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`;
+  let plainText: string;
+  let igDmText: string;
+  let emailSubject: string;
+  let emailBody: string;
 
-  const plainText = [
-    `Hoi! Ik kwam ${name} tegen, ${hook}!`,
-    madeLine,
-    mockUrl,
-    `Kijk gerust even rond, benieuwd wat je ervan vindt! Ik hoor graag als je geïnteresseerd bent 😁\nVerdere info kan je op onze eigen website vinden: ${MARKETING_URL}`,
-    `Groetjes, Berend`,
-  ].join("\n\n");
+  if (noWebsite) {
+    // Stronger angle: this would be their FIRST website, not an upgrade.
+    // Lead with the gap ("nog geen eigen website"), not with discovery ("ik kwam jullie tegen").
+    const contents = realContentsClause(config, facts);
+    const contentsNote = contents ? `, met ${contents} erin,` : "";
 
-  const igDmText =
-    `Hoi! Ik kwam ${name} tegen, ${hook}! ` +
-    (contents
-      ? `Ik bouw websites voor salons en maakte een voorbeeld met ${contents} erin: `
-      : `Ik bouw websites voor salons en maakte een voorbeeld van hoe jullie eigen site eruit kan zien: `) +
-    `${mockUrl} — benieuwd wat je ervan vindt! Ik hoor graag als je geïnteresseerd bent 😁 Meer info: ${MARKETING_URL}`;
+    plainText = [
+      `Hoi! Ik zag dat ${name} nog geen eigen website heeft — maar wel ${hook}!`,
+      `We hebben alvast een complete eerste versie voor jullie gemaakt${contentsNote}:`,
+      mockUrl,
+      `Kijk gerust even rond. Als jullie het mooi vinden: €999 eenmalig, live in 5 werkdagen. Geen aanbetaling, geen risico.\nMeer info: ${MARKETING_URL}`,
+      `Groetjes, Berend`,
+    ].join("\n\n");
 
-  const emailSubject = `Een website-voorbeeld voor ${name}`;
-  const emailBody = [
-    `Hoi,`,
-    `Ik kwam ${name} tegen, ${hook}!`,
-    contents
-      ? `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik er voor jullie één gemaakt, met ${contents} erin:`
-      : `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`,
-    mockUrl,
-    `Kijk gerust even rond, benieuwd wat je ervan vindt! Ik hoor graag als je geïnteresseerd bent. Meer over ons: ${MARKETING_URL}`,
-    `Groetjes,\nBerend`,
-  ].join("\n\n");
+    igDmText =
+      `Hoi! Ik zag dat ${name} nog geen eigen website heeft — maar wel ${hook}! ` +
+      `We maakten alvast een complete eerste versie${contentsNote}: ` +
+      `${mockUrl} — €999 eenmalig, 5 werkdagen live. Geen aanbetaling. Meer info: ${MARKETING_URL}`;
+
+    emailSubject = `Een website voor ${name} — klaar om te bekijken`;
+    emailBody = [
+      `Hoi,`,
+      `Ik zag dat ${name} nog geen eigen website heeft — maar wel ${hook}!`,
+      `We bouwen websites voor kappers en salons. Om te laten zien wat dat voor jullie kan worden, hebben we alvast een complete eerste versie gemaakt${contentsNote}:`,
+      mockUrl,
+      `Kijk gerust even rond. Als jullie het mooi vinden: €999 eenmalig, live in 5 werkdagen. Geen aanbetaling, geen risico. Meer over ons: ${MARKETING_URL}`,
+      `Groetjes,\nBerend`,
+    ].join("\n\n");
+  } else {
+    const contents = realContentsClause(config, facts);
+    const madeLine = contents
+      ? `Ik bouw websites voor salons en heb er voor jullie één gemaakt, met ${contents} erin:`
+      : `Ik bouw websites voor salons en heb een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`;
+
+    plainText = [
+      `Hoi! Ik kwam ${name} tegen, ${hook}!`,
+      madeLine,
+      mockUrl,
+      `Kijk gerust even rond, benieuwd wat je ervan vindt! Ik hoor graag als je geïnteresseerd bent 😁\nVerdere info kan je op onze eigen website vinden: ${MARKETING_URL}`,
+      `Groetjes, Berend`,
+    ].join("\n\n");
+
+    igDmText =
+      `Hoi! Ik kwam ${name} tegen, ${hook}! ` +
+      (contents
+        ? `Ik bouw websites voor salons en maakte een voorbeeld met ${contents} erin: `
+        : `Ik bouw websites voor salons en maakte een voorbeeld van hoe jullie eigen site eruit kan zien: `) +
+      `${mockUrl} — benieuwd wat je ervan vindt! Ik hoor graag als je geïnteresseerd bent 😁 Meer info: ${MARKETING_URL}`;
+
+    emailSubject = `Een website-voorbeeld voor ${name}`;
+    emailBody = [
+      `Hoi,`,
+      `Ik kwam ${name} tegen, ${hook}!`,
+      contents
+        ? `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik er voor jullie één gemaakt, met ${contents} erin:`
+        : `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik een voorbeeld gemaakt van hoe jullie eigen site eruit kan zien:`,
+      mockUrl,
+      `Kijk gerust even rond, benieuwd wat je ervan vindt! Ik hoor graag als je geïnteresseerd bent. Meer over ons: ${MARKETING_URL}`,
+      `Groetjes,\nBerend`,
+    ].join("\n\n");
+  }
 
   // First candidate that is genuinely a Dutch mobile — a landline in
   // contact.phone must not shadow a mobile we know from the listing.

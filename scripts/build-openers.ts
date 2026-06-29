@@ -30,6 +30,7 @@ const { values } = parseArgs({
     out: { type: "string" },
     html: { type: "string" },
     "mark-sent": { type: "boolean", default: false },
+    "no-website": { type: "boolean", default: false },
     help: { type: "boolean", default: false },
   },
 });
@@ -38,12 +39,14 @@ function usage(exitCode: number): never {
   console.log(
     `Usage: pnpm build-openers [options]
 
-  --limit <n>    Max leads to emit (default 50).
-  --out <path>   Also write the openers to a plain-text file.
-  --html <path>  Also write an HTML worksheet (clickable WhatsApp buttons,
-                 copy-to-clipboard, per-salon 'verzonden' checkbox).
-  --mark-sent    Flip the emitted leads to 'outreach_sent' after printing.
-                 Only run with this flag at the moment you actually send.`,
+  --limit <n>      Max leads to emit (default 50).
+  --out <path>     Also write the openers to a plain-text file.
+  --html <path>    Also write an HTML worksheet (clickable WhatsApp buttons,
+                   copy-to-clipboard, per-salon 'verzonden' checkbox).
+  --mark-sent      Flip the emitted leads to 'outreach_sent' after printing.
+                   Only run with this flag at the moment you actually send.
+  --no-website     Only emit leads where has_website = false (salons with no
+                   own site). Uses the stronger "eerste website" opener angle.`,
   );
   process.exit(exitCode);
 }
@@ -66,7 +69,10 @@ const limit = requirePositiveInt(values.limit, "--limit", 50);
 const base = (process.env.REVIVO_MOCK_BASE_URL ?? DEFAULT_MOCK_BASE_URL).replace(/\/$/, "");
 
 const client = createServiceClient();
-const leads = await listLeadsByStatus(client, "mockup_generated", limit);
+const allLeads = await listLeadsByStatus(client, "mockup_generated", limit);
+const leads = values["no-website"]
+  ? allLeads.filter((l) => l.has_website === false)
+  : allLeads;
 
 const blocks: string[] = [];
 const cards: OpenerCard[] = [];
@@ -94,7 +100,12 @@ for (const lead of leads) {
   }
 
   const mockUrl = `${base}/${mockup.slug}`;
-  const opener = buildOpener({ config: parsed.data, mockUrl, facts: lead.listing_facts_json });
+  const opener = buildOpener({
+    config: parsed.data,
+    mockUrl,
+    facts: lead.listing_facts_json,
+    noWebsite: lead.has_website === false,
+  });
 
   blocks.push(
     [
