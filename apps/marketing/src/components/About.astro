@@ -11,9 +11,9 @@ const t = useTranslations(locale);
   <div class="container">
     <div class="about-grid">
       <div class="about-figure reveal">
-        {/* TODO(Berend): drop a real image at apps/marketing/public/rijks.png and
-            replace this placeholder with: <img src="/rijks.png" alt="Amsterdam" loading="lazy" /> */}
-        <div class="arch-frame placeholder" role="img" aria-label="Amsterdam"></div>
+        <div class="arch-frame">
+          <img src="/rijks.jpg" alt="Het Rijksmuseum in Amsterdam" loading="lazy" />
+        </div>
       </div>
       <div class="about-text reveal">
         <span class="eyebrow">{t("about.eyebrow")}</span>
