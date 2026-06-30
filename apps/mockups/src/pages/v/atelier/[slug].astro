@@ -3,11 +3,11 @@
  * its own page (CSS isolation under SSR). Statically imports ONLY atelier. */
 import AtelierLayout from "~/variants/atelier/Layout.astro";
 import NotFound from "../../../components/NotFound.astro";
-import { resolveForVariant, MOCKUP_CACHE_CONTROL } from "../../../lib/render";
+import { resolveForVariant, setMockupHeaders } from "../../../lib/render";
 
 const { slug } = Astro.params;
 const config = await resolveForVariant(Astro.locals.mockupConfig, slug, "atelier");
-if (config) Astro.response.headers.set("Cache-Control", MOCKUP_CACHE_CONTROL);
+if (config) setMockupHeaders(Astro.response);
 else Astro.response.status = 404;
 ---
 

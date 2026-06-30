@@ -1,0 +1,16 @@
+# Next.js
+/.next/
+/out/
+/build
+
+# Vercel
+/.vercel
+
+# env (secrets — never commit)
+.env
+.env.*
+!.env.example
+
+# misc
+*.tsbuildinfo
+.vercel

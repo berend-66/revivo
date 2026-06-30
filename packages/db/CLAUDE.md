@@ -5,16 +5,23 @@ The Supabase data layer. Thin, typed helpers over `@supabase/supabase-js`. Cover
 land in later stages.
 
 ```
-config.ts   → SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY → settings (null when unset, so callers can fall back)
-client.ts   → createServiceClient() / createServiceClientOrNull()  ← service role, SERVER-SIDE ONLY
-mockups.ts  → MockupRow type + upsertMockupBySlug / getMockupBySlug / getMockupsByLeadId / listRecentMockups
-leads.ts    → LeadRow + insertLeadIfNew / getLeadById / listLeadsByStatus / setLeadStatus
-jobs.ts     → JobRow + enqueueJobIfNone / claimNextPendingJob / markJobResult / listJobsByStatus
+config.ts      → SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY → settings (null when unset, so callers can fall back)
+client.ts      → createServiceClient() / createServiceClientOrNull()  ← service role, SERVER-SIDE ONLY
+mockups.ts     → MockupRow type + upsertMockupBySlug / getMockupBySlug / getMockupsByLeadId / listRecentMockups
+leads.ts       → LeadRow + insertLeadIfNew / getLeadById / listLeadsByStatus / setLeadStatus
+                 + outreach transitions (markOutreachSent / markReplied / dropLead / resetToPending / setFollowUp)
+                 + dashboard reads (leadStatusCounts / listLeads)
+jobs.ts        → JobRow + enqueueJobIfNone / claimNextPendingJob / markJobResult / listJobsByStatus
+lead-events.ts → LeadEventRow + appendLeadEvent / listLeadEventsByLead (append-only funnel audit log)
+deals.ts       → DealRow + getDealByLeadId / getOrCreateDealForLead / setDealStage / updateDeal / listDeals
+                 + dealStageCounts / wonRevenueCents (the sales pipeline past 'replied')
 ```
 
 Schema lives in `supabase/migrations/*.sql` (repo root). Row types hand-mirror the
 migrations (`mockups` ↔ `20260603093000`, `leads`/`jobs` ↔ `20260609100000` +
-`20260609100200` for `needs_review`/`review_reason`) — **change both together**.
+`20260609100200` for `needs_review`/`review_reason` + `20260629100000` for the
+outreach-milestone columns; `lead_events` ↔ `20260629100100`; `deals` ↔
+`20260629100200`) — **change both together**.
 The index also re-exports the `SupabaseClient` **type** so consumers (e.g.
 `@revivo/llm`'s worker core) type their handles via this package instead of
 growing a direct supabase-js dependency.

@@ -10,6 +10,15 @@ Productized website service for NL hair & beauty salons. **€999 one-time** per
 - `~/.claude/plans/i-want-to-build-peaceful-pumpkin.md` — original staged build plan
 - `revivo-proposal.pdf` — the customer-facing proposal that locked in brand + product spec
 
+Read when working on **outreach / sales / the close** (or the opener copy in `packages/shared/src/opener.ts`):
+- [docs/OUTREACH.md](docs/OUTREACH.md) — the outreach + conversion playbook (legal posture, channels, message, cadence, close, measurement). Note: **do NOT pitch a Treatwell-commission saving** — our site embeds the Treatwell booking link, so there's no saving; lead value on brand / Google-vindbaarheid / ownership (see §6).
+- [docs/OUTREACH-RESEARCH.md](docs/OUTREACH-RESEARCH.md) — the raw per-angle research findings + all sources behind the playbook.
+- [docs/PRICING.md](docs/PRICING.md) — grounded pricing recommendation (what to charge, the model, the care plan). Key call: **hold €999 fixed for batch one, then raise behind funnel data** — €999 is at the *average (solo) salon's affordability ceiling* (3% of revenue) yet *below value* (2–5× under an agency); the underpricing is the **staffed minority (0,4% of their revenue) + care plan**, not a broad hike. Constraint is build **throughput** (~50–100/yr), not a customer-count cap → optimize **€-per-operator-hour**, not volume.
+
+Read when working on **SEO / discoverability / the customer-template `<head>` / schema / structured data**:
+- [docs/SEO.md](docs/SEO.md) — the SEO + AEO playbook (verified research). Key calls: **local-first**; **structured data = eligibility, not a ranking factor**; **omit self-serving `AggregateRating`/`Review`** (embedded Treatwell widget = self-controlled reviews → star-ineligible); **`robots.txt` default-allow** AI crawlers (never copy block-AI boilerplate); **`llms.txt` deferred — don't sell it**. The map pack is **owner-side** (a GBP runbook you ship); the website wins **local-organic + the entity layer**.
+- [docs/SEO-MASTERPLAN.md](docs/SEO-MASTERPLAN.md) — the phased build plan: template the SEO/schema/meta layer **once** into the customer-template, driven entirely by `SiteConfig`.
+
 App-level guidance (read when working in that app):
 - [apps/customer-template/CLAUDE.md](apps/customer-template/CLAUDE.md) — variant system rules
 
@@ -56,6 +65,10 @@ pnpm gen-mockup --help
 
 # Mock app (mock.revivo.nl/{slug}) — SSR; reads Supabase, else local example JSON
 cd apps/mockups && pnpm dev            # http://localhost:4321/<slug>
+
+# Operator admin — outreach funnel + sales pipeline (Next.js; needs Supabase env)
+pnpm -F @revivo/admin dev              # http://localhost:3000
+pnpm -F @revivo/admin build            # deploy as its OWN Vercel project + enable Vercel Auth
 
 # Lead sourcing — crawl a Treatwell marketplace directory into the leads table. From repo root.
 pnpm crawl-marketplace --city utrecht --dry-run    # crawl + print, no DB writes
