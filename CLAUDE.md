@@ -11,7 +11,8 @@ Productized website service for NL hair & beauty salons. **€999 one-time** per
 - `revivo-proposal.pdf` — the customer-facing proposal that locked in brand + product spec
 
 Read when working on **outreach / sales / the close** (or the opener copy in `packages/shared/src/opener.ts`):
-- [docs/OUTREACH.md](docs/OUTREACH.md) — the outreach + conversion playbook (legal posture, channels, message, cadence, close, measurement). Note: **do NOT pitch a Treatwell-commission saving** — our site embeds the Treatwell booking link, so there's no saving; lead value on brand / Google-vindbaarheid / ownership (see §6).
+- [docs/OUTREACH-PLAN.md](docs/OUTREACH-PLAN.md) — the **masterplan**: strategy + campaign plan (ICP/targeting, batches, funnel gates, reply→close runbook, timeline, pre-flight checklist). Execution plans derive from this. ~20 sent already (old opener = pilot); the new opener starts the first clean batch.
+- [docs/OUTREACH.md](docs/OUTREACH.md) — the outreach + conversion **playbook** / tactics reference (message, cadence, close, psychology, channels, measurement; legal as constraints in §8). Note: **do NOT pitch a Treatwell-commission saving** — our site embeds the Treatwell booking link, so there's none; lead value on brand / Google-vindbaarheid / ownership.
 - [docs/OUTREACH-RESEARCH.md](docs/OUTREACH-RESEARCH.md) — the raw per-angle research findings + all sources behind the playbook.
 - [docs/PRICING.md](docs/PRICING.md) — grounded pricing recommendation (what to charge, the model, the care plan). Key call: **hold €999 fixed for batch one, then raise behind funnel data** — €999 is at the *average (solo) salon's affordability ceiling* (3% of revenue) yet *below value* (2–5× under an agency); the underpricing is the **staffed minority (0,4% of their revenue) + care plan**, not a broad hike. Constraint is build **throughput** (~50–100/yr), not a customer-count cap → optimize **€-per-operator-hour**, not volume.
 
