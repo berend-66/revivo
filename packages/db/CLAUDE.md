@@ -19,7 +19,7 @@ deals.ts       → DealRow + getDealByLeadId / getOrCreateDealForLead / setDealS
 
 Schema lives in `supabase/migrations/*.sql` (repo root). Row types hand-mirror the
 migrations (`mockups` ↔ `20260603093000`, `leads`/`jobs` ↔ `20260609100000` +
-`20260609100200` for `needs_review`/`review_reason` + `20260629100000` for the
+`20260609100200` for `needs_review`/`review_reason` + `20260629100300` for the
 outreach-milestone columns; `lead_events` ↔ `20260629100100`; `deals` ↔
 `20260629100200`) — **change both together**.
 The index also re-exports the `SupabaseClient` **type** so consumers (e.g.

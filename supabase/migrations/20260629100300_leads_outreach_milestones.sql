@@ -1,4 +1,6 @@
--- 20260629100000_leads_outreach_milestones.sql
+-- 20260629100300_leads_outreach_milestones.sql
+-- (renamed from 20260629100000 — that slot collided with main's
+--  20260629100000_leads_has_website.sql, so this never applied; bumped to 100300.)
 -- Outreach-funnel velocity columns on `leads`. The single `updated_at` is
 -- overwritten on every write, so it can't tell us WHEN a lead was contacted or
 -- replied — these per-transition timestamps can. They are written by the new

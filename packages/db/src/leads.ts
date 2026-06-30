@@ -6,7 +6,7 @@ import { getOrCreateDealForLead } from "./deals";
 /**
  * The `leads` table — prospect salons discovered by sourcing (Stage 4). Mirrors
  * supabase/migrations/20260609100000_leads_jobs.sql (+ 20260609100200, which adds
- * the 'needs_review' status and review_reason; + 20260629100000, which adds the
+ * the 'needs_review' status and review_reason; + 20260629100300, which adds the
  * outreach-milestone columns) — change both together.
  *
  * Dedup is per source (partial unique indexes): `listing_url` for marketplace,
