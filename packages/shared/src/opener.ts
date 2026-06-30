@@ -19,6 +19,10 @@ import { dutchMobileToWaNumber, isDutchMobile } from "./phone";
  *   - Two variants by hook strength: a praiseworthy RATING leads the message
  *     (Variant A); a weak hook (menu item / city only) drops the flattery and
  *     lets the artifact be the compliment (Variant B).
+ *   - A no-website variant (`noWebsite`): when the salon has no own site, lead
+ *     with that gap ("nog geen eigen website") — this would be their FIRST site,
+ *     a stronger pitch — and surface the low-risk terms (€999 / 5 werkdagen /
+ *     geen aanbetaling) once. Same one-link / opt-out / question-CTA rules.
  *
  * The whole play is SPECIFICITY, and specificity only works when every claim
  * is TRUE. The cardinal sin applies to the opener even more than the mockup:
@@ -60,6 +64,9 @@ export interface OpenerInput {
   mockUrl: string;
   /** Richer hook material when the lead came from a listing. */
   facts?: ListingFacts | null;
+  /** True when the salon has NO own website — enables the stronger "eerste
+   * website" angle instead of the generic "ik heb een voorbeeld gemaakt". */
+  noWebsite?: boolean;
 }
 
 export interface Opener {
@@ -162,7 +169,7 @@ function encodeWaText(text: string): string {
 }
 
 export function buildOpener(input: OpenerInput): Opener {
-  const { config, mockUrl, facts } = input;
+  const { config, mockUrl, facts, noWebsite } = input;
   const name = config.brand.name;
   const hook = pickHook(config, facts);
   const contents = realContentsClause(config, facts);
@@ -172,52 +179,88 @@ export function buildOpener(input: OpenerInput): Opener {
   // The menu item is only surfaced (in the "Met … erin" clause) on the weak path.
   const made = leadWithHook ? madeClause(undefined, contents) : madeClause(hook.menuItem, contents);
 
-  // --- canonical message (what the WhatsApp link carries) : ONE link, ONE CTA ---
-  const plainText = leadWithHook
-    ? [
-        `Hoi! Ik kwam ${name} tegen — ${hook.text} 🙂`,
-        `Ik bouw websites voor salons en heb er alvast eentje voor ${name} gemaakt.${made} Kijk maar:`,
-        mockUrl,
-        `Benieuwd wat je ervan vindt — wat zou je als eerste anders willen zien?`,
-        `${SIGN_OFF}\n${OPT_OUT}`,
-      ].join("\n\n")
-    : [
-        `Hoi! Ik bouw websites voor salons en heb er voor ${name} alvast eentje gemaakt.${made} Kijk maar:`,
-        mockUrl,
-        `Benieuwd wat je ervan vindt — wat zou je graag anders zien?`,
-        `${SIGN_OFF}\n${OPT_OUT}`,
-      ].join("\n\n");
-
-  // --- Instagram DM : compact one-paragraph form, same one-link/one-CTA rules ---
-  const igIntro = leadWithHook
-    ? `Hoi! Ik kwam ${name} tegen — ${hook.text} 🙂 Ik bouw websites voor salons en heb er alvast eentje voor ${name} gemaakt.${made} Kijk maar: ${mockUrl}`
-    : `Hoi! Ik bouw websites voor salons en heb er voor ${name} alvast eentje gemaakt.${made} Kijk maar: ${mockUrl}`;
-  const igDmText = `${igIntro} — benieuwd wat je ervan vindt, wat zou je als eerste anders willen zien? ${SIGN_OFF}. ${OPT_OUT}`;
-
-  // --- e-mail : the one channel where a brand link belongs (in the signature) ---
-  const emailSubject = `${name}, wat vind je hiervan?`;
+  // The one channel where a brand link belongs (in the signature) — shared by all variants.
   const emailSignature = `Groetjes,\nBerend — Revivo Studios\n${MARKETING_URL}`;
   const emailOptOut = "Geen interesse of liever geen e-mail meer? Eén reply en je hoort niets meer van me.";
-  const emailBody = (
-    leadWithHook
+
+  let plainText: string;
+  let igDmText: string;
+  let emailSubject: string;
+  let emailBody: string;
+
+  if (noWebsite) {
+    // Stronger angle: this would be their FIRST website, not an upgrade. Lead
+    // with the gap ("nog geen eigen website"), weave the hook in as a "maar wel",
+    // and surface the low-risk terms once. Same one-link / opt-out / question-CTA.
+    plainText = [
+      `Hoi! Ik zag dat ${name} nog geen eigen website heeft — maar wel ${hook.text} 🙂`,
+      `Ik bouw websites voor salons en heb er alvast een eerste voor ${name} gemaakt.${made} Kijk maar:`,
+      mockUrl,
+      `Benieuwd wat je ervan vindt — wat zou je als eerste anders willen zien? (Als het bevalt: €999, live in 5 werkdagen, geen aanbetaling.)`,
+      `${SIGN_OFF}\n${OPT_OUT}`,
+    ].join("\n\n");
+
+    igDmText =
+      `Hoi! Ik zag dat ${name} nog geen eigen website heeft — maar wel ${hook.text} 🙂 ` +
+      `Ik bouw websites voor salons en maakte alvast een eerste voor ${name}.${made} Kijk maar: ${mockUrl} ` +
+      `— benieuwd wat je ervan vindt, wat zou je als eerste anders willen zien? (€999, 5 werkdagen live, geen aanbetaling.) ${SIGN_OFF}. ${OPT_OUT}`;
+
+    emailSubject = `Een eerste website voor ${name}`;
+    emailBody = [
+      `Hoi,`,
+      `Ik zag dat ${name} nog geen eigen website heeft — maar wel ${hook.text}!`,
+      `Ik bouw websites voor kappers en salons. Om te laten zien wat dat voor ${name} kan worden, heb ik er alvast een eerste versie gemaakt.${made}`,
+      mockUrl,
+      `Benieuwd wat je ervan vindt — wat zou je als eerste anders willen zien? Als het bevalt: €999 eenmalig, live in 5 werkdagen, geen aanbetaling.`,
+      emailSignature,
+      emailOptOut,
+    ].join("\n\n");
+  } else {
+    // --- canonical message (what the WhatsApp link carries) : ONE link, ONE CTA ---
+    plainText = leadWithHook
       ? [
-          `Hoi,`,
-          `Ik kwam ${name} tegen — ${hook.text}!`,
-          `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik er alvast eentje voor ${name} gemaakt.${made}`,
+          `Hoi! Ik kwam ${name} tegen — ${hook.text} 🙂`,
+          `Ik bouw websites voor salons en heb er alvast eentje voor ${name} gemaakt.${made} Kijk maar:`,
           mockUrl,
           `Benieuwd wat je ervan vindt — wat zou je als eerste anders willen zien?`,
-          emailSignature,
-          emailOptOut,
-        ]
+          `${SIGN_OFF}\n${OPT_OUT}`,
+        ].join("\n\n")
       : [
-          `Hoi,`,
-          `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik er voor ${name} alvast eentje gemaakt.${made}`,
+          `Hoi! Ik bouw websites voor salons en heb er voor ${name} alvast eentje gemaakt.${made} Kijk maar:`,
           mockUrl,
           `Benieuwd wat je ervan vindt — wat zou je graag anders zien?`,
-          emailSignature,
-          emailOptOut,
-        ]
-  ).join("\n\n");
+          `${SIGN_OFF}\n${OPT_OUT}`,
+        ].join("\n\n");
+
+    // --- Instagram DM : compact one-paragraph form, same one-link/one-CTA rules ---
+    const igIntro = leadWithHook
+      ? `Hoi! Ik kwam ${name} tegen — ${hook.text} 🙂 Ik bouw websites voor salons en heb er alvast eentje voor ${name} gemaakt.${made} Kijk maar: ${mockUrl}`
+      : `Hoi! Ik bouw websites voor salons en heb er voor ${name} alvast eentje gemaakt.${made} Kijk maar: ${mockUrl}`;
+    igDmText = `${igIntro} — benieuwd wat je ervan vindt, wat zou je als eerste anders willen zien? ${SIGN_OFF}. ${OPT_OUT}`;
+
+    // --- e-mail : the one channel where a brand link belongs (in the signature) ---
+    emailSubject = `${name}, wat vind je hiervan?`;
+    emailBody = (
+      leadWithHook
+        ? [
+            `Hoi,`,
+            `Ik kwam ${name} tegen — ${hook.text}!`,
+            `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik er alvast eentje voor ${name} gemaakt.${made}`,
+            mockUrl,
+            `Benieuwd wat je ervan vindt — wat zou je als eerste anders willen zien?`,
+            emailSignature,
+            emailOptOut,
+          ]
+        : [
+            `Hoi,`,
+            `Ik bouw websites voor kappers en salons. Om te laten zien wat ik bedoel heb ik er voor ${name} alvast eentje gemaakt.${made}`,
+            mockUrl,
+            `Benieuwd wat je ervan vindt — wat zou je graag anders zien?`,
+            emailSignature,
+            emailOptOut,
+          ]
+    ).join("\n\n");
+  }
 
   // First candidate that is genuinely a Dutch mobile — a landline in
   // contact.phone must not shadow a mobile we know from the listing.

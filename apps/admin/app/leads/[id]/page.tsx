@@ -34,7 +34,9 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
   const parsed = mockup && mockup.model !== "dry-run-stub" ? SiteConfigSchema.safeParse(mockup.config_json) : null;
   const mockUrl = mockup ? mockUrlForSlug(mockup.slug) : null;
   const opener =
-    parsed?.success && mockUrl ? buildOpener({ config: parsed.data, mockUrl, facts: lead.listing_facts_json }) : null;
+    parsed?.success && mockUrl
+      ? buildOpener({ config: parsed.data, mockUrl, facts: lead.listing_facts_json, noWebsite: lead.has_website === false })
+      : null;
   const facts = lead.listing_facts_json;
 
   return (

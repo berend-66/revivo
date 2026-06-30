@@ -30,13 +30,21 @@ gap. Step 5 below is the post-deploy check that confirms it.
      - `www` → `CNAME cname.vercel-dns.com`.
    - Wait for DNS propagation; Vercel auto-provisions TLS.
 
-3. **Cut over from the old site** ⚠️
-   - revivostudios.io currently points at a **separate Vercel deploy** (Nelson's,
-     not this repo's `main`) that serves the **old static HTML** — and it's degraded:
-     the HTML is served stale from edge cache (~a week old) and `/rijks.png` already
-     404s on it. Coordinate with Nelson to retire that deploy / release the domain so
-     it points at this Vercel project. Otherwise you'll have two divergent sites or a
-     DNS conflict.
+3. **Cut over from the old site** ✅ done (Nelson)
+   - Nelson's Vercel project (`revivostudios` · `prj_IkKU2L3o5mmiAdckJbNYbvPgHtSo`,
+     team `nvandommele-timelessnls-projects`) has been reconfigured:
+     - Root Directory set to `apps/marketing` via Vercel API.
+     - Production deployment rebuilt from `main` — new Astro build with all images.
+       Confirmed: `/rijks.jpg`, `/og.png`, `/team-*.png` all return `200` on the
+       deployment alias.
+   - **If the domain still shows the old HTML:** Vercel's team plan is **Hobby** —
+     adding Berend as a member is blocked. To take over serving:
+     1. Berend creates his own Vercel project → import `berend-66/revivo` →
+        Root Directory: `apps/marketing`.
+     2. Berend adds `revivostudios.io` to his project in Vercel Dashboard.
+     3. Nelson removes `revivostudios.io` from `prj_IkKU2L3o5mmiAdckJbNYbvPgHtSo`
+        (Vercel Dashboard → Settings → Domains → Remove).
+     4. DNS propagates (minutes). Berend's project takes over.
 
 4. **Activate the contact form** (one-time)
    - The form POSTs to `https://formsubmit.co/ajax/info@revivostudios.io`.

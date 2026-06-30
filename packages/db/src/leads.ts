@@ -46,6 +46,8 @@ export interface LeadRow {
   /** Google Place details snapshot, when sourced via Places. */
   place_details_json: Record<string, unknown> | null;
   status: LeadStatus;
+  /** true = salon has own website; false = confirmed none; null = not yet checked. */
+  has_website: boolean | null;
   drop_reason: string | null;
   /** Why the lead is parked when status = "needs_review" (gate findings or the
    * terminal job error). Cleared when a later clean run moves the lead on. */
@@ -180,7 +182,11 @@ export async function setLeadStatus(
   const patch: Record<string, unknown> = { status };
   if (opts.dropReason !== undefined) patch.drop_reason = opts.dropReason;
   if (opts.reviewReason !== undefined) patch.review_reason = opts.reviewReason;
-  if (opts.listingFacts !== undefined) patch.listing_facts_json = opts.listingFacts;
+  if (opts.listingFacts !== undefined) {
+    patch.listing_facts_json = opts.listingFacts;
+    // Derive has_website from the facts: absent websiteUrl = confirmed none on this platform.
+    patch.has_website = opts.listingFacts.websiteUrl !== undefined;
+  }
   const { data, error } = await client.from(TABLE).update(patch).eq("id", id).select().single();
   if (error) throw new Error(`setLeadStatus(${id} → ${status}) failed: ${error.message}`);
   return data as LeadRow;

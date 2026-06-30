@@ -24,7 +24,12 @@ export default async function OutreachPage() {
         return { lead, skip: "config_json faalt SiteConfig-validatie" } as const;
       }
       const mockUrl = mockUrlForSlug(mockup.slug);
-      const opener = buildOpener({ config: parsed.data, mockUrl, facts: lead.listing_facts_json });
+      const opener = buildOpener({
+        config: parsed.data,
+        mockUrl,
+        facts: lead.listing_facts_json,
+        noWebsite: lead.has_website === false,
+      });
       return { lead, mockup, mockUrl, opener } as const;
     }),
   );

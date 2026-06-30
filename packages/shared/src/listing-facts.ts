@@ -48,6 +48,9 @@ export const ListingFactsSchema = z.object({
   lng: z.number().optional(),
   /** A real, clickable booking URL (the listing itself). */
   bookingUrl: z.string().url().optional(),
+  /** The salon's own website URL, if listed on the platform.
+   * Absent = confirmed none on this platform (strong no-website signal). */
+  websiteUrl: z.string().url().optional(),
   services: z.array(ServiceCategorySchema).optional(),
   /** Up to 7 day-rows in week order, mirroring SiteConfig.hours. */
   hours: z.array(HoursRowSchema).optional(),
