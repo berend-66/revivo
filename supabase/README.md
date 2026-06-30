@@ -23,7 +23,7 @@ project's Postgres version if you ever run `supabase start`).
 - `migrations/20260609100200_leads_needs_review.sql` — widen `leads.status` with
   `'needs_review'` (the operator parking spot for gate findings / exhausted jobs) +
   add `leads.review_reason`.
-- `migrations/20260629100000_leads_outreach_milestones.sql` — add the outreach-funnel
+- `migrations/20260629100300_leads_outreach_milestones.sql` — add the outreach-funnel
   velocity columns to `leads` (`outreach_sent_at`, `replied_at`, `follow_up_at`,
   `outreach_channel`, `outreach_hook`) for the operator admin (Stage 3).
 - `migrations/20260629100100_lead_events.sql` — the `lead_events` append-only audit log
