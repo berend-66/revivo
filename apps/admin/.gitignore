@@ -13,3 +13,4 @@
 
 # misc
 *.tsbuildinfo
+.vercel

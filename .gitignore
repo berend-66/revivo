@@ -49,3 +49,4 @@ openers*.md
 openers*.html
 
 # Throwaway post-push verification script (delete after the B1 live test)
+.vercel
