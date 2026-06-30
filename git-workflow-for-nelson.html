@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How we work together with Git</title>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #e6e3dd;
+    --paper: #faf8f4;
+    --card: #ffffff;
+    --main: #2563eb;      /* main branch = blue */
+    --branch: #16a34a;    /* your branch = green */
+    --warn: #b45309;
+    --accent: #111;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.5;
+    padding: 48px 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+
+  header { margin-bottom: 36px; }
+  .kicker {
+    font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 10px;
+  }
+  h1 { font-size: 34px; line-height: 1.15; letter-spacing: -0.02em; }
+  .sub { color: var(--muted); font-size: 16px; margin-top: 10px; }
+
+  /* Golden rule */
+  .golden {
+    background: var(--accent); color: #fff; border-radius: 16px;
+    padding: 22px 26px; margin-bottom: 38px; display: flex; gap: 16px; align-items: flex-start;
+  }
+  .golden .star { font-size: 24px; line-height: 1.2; }
+  .golden b { font-size: 17px; }
+  .golden p { color: #d8d8d8; font-size: 14px; margin-top: 4px; }
+  code {
+    font-family: "SF Mono", ui-monospace, "Cascadia Code", Menlo, monospace;
+    background: rgba(255,255,255,0.12); color: #fff;
+    padding: 1px 7px; border-radius: 6px; font-size: 13px;
+  }
+
+  /* Section heads */
+  h2 {
+    font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); font-weight: 700; margin: 0 0 18px;
+  }
+  section { margin-bottom: 42px; }
+
+  /* Branch mental model */
+  .lanes { display: grid; gap: 14px; }
+  .lane {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 18px 20px; display: flex; gap: 16px; align-items: flex-start;
+  }
+  .dot { width: 14px; height: 14px; border-radius: 50%; margin-top: 5px; flex: none; }
+  .dot.main { background: var(--main); }
+  .dot.branch { background: var(--branch); }
+  .lane h3 { font-size: 16px; margin-bottom: 3px; }
+  .lane .tag {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 999px; margin-left: 8px; vertical-align: 2px;
+  }
+  .tag.main { background: #e8efff; color: var(--main); }
+  .tag.branch { background: #e7f6ec; color: var(--branch); }
+  .lane p { color: var(--muted); font-size: 14px; }
+
+  /* Flow */
+  .flow { display: grid; gap: 0; }
+  .step {
+    display: grid; grid-template-columns: 40px 1fr; gap: 18px;
+    padding-bottom: 22px; position: relative;
+  }
+  .step:not(:last-child)::before {
+    content: ""; position: absolute; left: 19px; top: 36px; bottom: -4px;
+    width: 2px; background: var(--line);
+  }
+  .num {
+    width: 38px; height: 38px; border-radius: 50%; flex: none;
+    background: var(--card); border: 2px solid var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px; z-index: 1;
+  }
+  .step .body h3 { font-size: 16px; margin-bottom: 4px; }
+  .step .body p { color: var(--muted); font-size: 14px; margin-bottom: 8px; }
+  .cmd {
+    font-family: "SF Mono", ui-monospace, "Cascadia Code", Menlo, monospace;
+    font-size: 13px; background: #f4f1ec; border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 12px; color: var(--ink); display: inline-block;
+  }
+  .cmd .c { color: #9a4a00; }   /* command keyword */
+  .cmd .g { color: #6b6b6b; }   /* comment */
+
+  /* Why card */
+  .why {
+    background: #fff8ee; border: 1px solid #f0e2c8; border-radius: 14px;
+    padding: 20px 22px; margin-top: 6px;
+  }
+  .why h2 { color: var(--warn); }
+  .why ul { list-style: none; display: grid; gap: 10px; }
+  .why li { font-size: 14px; padding-left: 22px; position: relative; }
+  .why li::before { content: "→"; position: absolute; left: 0; color: var(--warn); font-weight: 700; }
+  .why b { color: var(--ink); }
+
+  footer { text-align: center; color: var(--muted); font-size: 13px; margin-top: 8px; }
+
+  /* ---- Animated git graph ---- */
+  .graph-card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 26px 24px 18px; position: relative; overflow: hidden;
+  }
+  .gitgraph { width: 100%; height: auto; display: block; }
+  .g-line { fill: none; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 1; }
+  .g-line.main { stroke: var(--main); }
+  .g-line.branch { stroke: var(--branch); }
+  .g-dot {
+    stroke: #fff; stroke-width: 3;
+    transform-box: fill-box; transform-origin: center;
+    transition: transform .15s ease; cursor: pointer;
+  }
+  .g-dot.main { fill: var(--main); }
+  .g-dot.branch { fill: var(--branch); }
+  .g-dot:hover { transform: scale(1.35); }
+  .g-label { font: 700 13px -apple-system, BlinkMacSystemFont, sans-serif; }
+  .g-label.main { fill: var(--main); }
+  .g-label.branch { fill: var(--branch); }
+  .g-cap { font: 600 12.5px -apple-system, BlinkMacSystemFont, sans-serif; fill: var(--muted); }
+
+  @keyframes drawLine { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes popDot { from { opacity: 0; transform: scale(0); } 60% { transform: scale(1.25); } to { opacity: 1; transform: scale(1); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  .gitgraph.play .l-main   { animation: drawLine .7s ease .10s both; }
+  .gitgraph.play .d-A      { animation: popDot  .4s ease .25s both; }
+  .gitgraph.play .d-B      { animation: popDot  .4s ease .55s both; }
+  .gitgraph.play .c-pull   { animation: fadeUp  .4s ease .75s both; }
+  .gitgraph.play .l-branch { animation: drawLine .6s ease .95s both; }
+  .gitgraph.play .lbl-br   { animation: fadeUp  .4s ease 1.2s both; }
+  .gitgraph.play .d-F1     { animation: popDot  .4s ease 1.45s both; }
+  .gitgraph.play .c-commit { animation: fadeUp  .4s ease 1.55s both; }
+  .gitgraph.play .l-feat   { animation: drawLine .5s ease 1.65s both; }
+  .gitgraph.play .d-F2     { animation: popDot  .4s ease 2.00s both; }
+  .gitgraph.play .l-merge  { animation: drawLine .6s ease 2.25s both; }
+  .gitgraph.play .d-M      { animation: popDot  .5s ease 2.75s both; }
+  .gitgraph.play .c-merge  { animation: fadeUp  .5s ease 3.00s both; }
+
+  .replay {
+    position: absolute; top: 16px; right: 16px;
+    font: 600 13px -apple-system, BlinkMacSystemFont, sans-serif; color: var(--ink);
+    background: var(--paper); border: 1px solid var(--line); border-radius: 999px;
+    padding: 7px 15px; cursor: pointer; transition: background .15s, transform .15s;
+  }
+  .replay:hover { background: #f0ede7; transform: translateY(-1px); }
+  .replay:active { transform: translateY(0); }
+  .graph-note { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .graph-note b { color: var(--ink); }
+  @media (prefers-reduced-motion: reduce) {
+    .gitgraph * { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="kicker">Revivo · working together</div>
+    <h1>How we collaborate with Git</h1>
+    <p class="sub">The whole thing in one picture. Never work directly on <code style="background:#e8efff;color:#2563eb">main</code> — always branch, then merge back through a Pull Request.</p>
+  </header>
+
+  <div class="golden">
+    <div class="star">⭐</div>
+    <div>
+      <b>The one rule to never forget</b>
+      <p>Before you start <i>anything</i> new: switch to main and pull, so you're up to date with the latest work.
+      Then make a fresh branch. <code>git checkout main</code> → <code>git pull</code></p>
+    </div>
+  </div>
+
+  <section>
+    <h2>Two kinds of branches</h2>
+    <div class="lanes">
+      <div class="lane">
+        <div class="dot main"></div>
+        <div>
+          <h3>main <span class="tag main">protected</span></h3>
+          <p>The single source of truth. It's always working and always deployable. You <b>never</b> edit it directly — code only enters main through a reviewed Pull Request.</p>
+        </div>
+      </div>
+      <div class="lane">
+        <div class="dot branch"></div>
+        <div>
+          <h3>your branch <span class="tag branch">your sandbox</span></h3>
+          <p>A copy of main where you do your work. Break things, experiment, commit freely — main stays safe. Name it for what you're doing, e.g. <code style="background:#e7f6ec;color:#16a34a">add-contact-form</code>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What that looks like over time</h2>
+    <div class="graph-card">
+      <button class="replay" onclick="replayGraph()">↻ Replay</button>
+      <svg class="gitgraph" viewBox="0 0 640 200" role="img" aria-label="A feature branch splits off main, gets two commits, then merges back into main through a pull request">
+        <!-- lines -->
+        <path class="g-line main   l-main"   d="M40,150 H548" pathLength="1"/>
+        <path class="g-line branch l-branch" d="M160,150 C210,150 220,72 270,72" pathLength="1"/>
+        <path class="g-line branch l-feat"   d="M270,72 H380" pathLength="1"/>
+        <path class="g-line branch l-merge"  d="M380,72 C440,72 440,150 490,150" pathLength="1"/>
+        <!-- dots -->
+        <circle class="g-dot main   d-A"  cx="90"  cy="150" r="9"/>
+        <circle class="g-dot main   d-B"  cx="160" cy="150" r="9"/>
+        <circle class="g-dot branch d-F1" cx="270" cy="72"  r="9"/>
+        <circle class="g-dot branch d-F2" cx="380" cy="72"  r="9"/>
+        <circle class="g-dot main   d-M"  cx="490" cy="150" r="10"/>
+        <!-- labels -->
+        <text class="g-label main"          x="556" y="155" text-anchor="start">main</text>
+        <text class="g-label branch lbl-br" x="325" y="42"  text-anchor="middle">add-contact-form</text>
+        <!-- captions -->
+        <text class="g-cap c-pull"   x="160" y="178" text-anchor="middle">① pull latest</text>
+        <text class="g-cap c-commit" x="325" y="102" text-anchor="middle">③ your commits</text>
+        <text class="g-cap c-merge"  x="490" y="178" text-anchor="middle">⑤ merge via PR ✅</text>
+      </svg>
+      <p class="graph-note"><b>Blue = main</b> (always good) · <b>Green = your branch.</b> Steps ② branch and ④ push don't change the shape — they just create the green line and upload it to GitHub.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>The loop — repeat for every new task</h2>
+    <div class="flow">
+
+      <div class="step">
+        <div class="num">1</div>
+        <div class="body">
+          <h3>Get up to date</h3>
+          <p>Start on main and pull the latest. This is the step everyone forgets — don't.</p>
+          <span class="cmd"><span class="c">git</span> checkout main &nbsp; <span class="g">&&</span> &nbsp; <span class="c">git</span> pull</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">2</div>
+        <div class="body">
+          <h3>Make your branch</h3>
+          <p>Branch off main so your work is isolated.</p>
+          <span class="cmd"><span class="c">git</span> checkout -b add-contact-form</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">3</div>
+        <div class="body">
+          <h3>Work &amp; save your progress</h3>
+          <p>Edit files, then save snapshots with commits. Commit often — each one is a checkpoint you can return to.</p>
+          <span class="cmd"><span class="c">git</span> add . &nbsp; <span class="g">&&</span> &nbsp; <span class="c">git</span> commit -m <span class="g">"add contact form"</span></span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">4</div>
+        <div class="body">
+          <h3>Push to GitHub</h3>
+          <p>Upload your branch so it lives online and I can see it.</p>
+          <span class="cmd"><span class="c">git</span> push -u origin add-contact-form</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">5</div>
+        <div class="body">
+          <h3>Open a Pull Request</h3>
+          <p>On GitHub, click <b>“Compare &amp; pull request”</b>. This asks to merge your branch into main. I review it, we discuss if needed, then it gets merged. ✅</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">6</div>
+        <div class="body">
+          <h3>Back to step 1</h3>
+          <p>Once merged, your work is part of main. For the next task, pull main again and make a new branch. Never reuse an old branch.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="why">
+    <h2>Why we bother with all this</h2>
+    <ul>
+      <li><b>main never breaks.</b> The live site builds from main, so it has to always work. Branches keep half-finished work away from it.</li>
+      <li><b>Pull first = no conflicts.</b> Starting from the latest main means you're not building on top of old code, which avoids painful merge messes later.</li>
+      <li><b>Pull Requests are our checkpoint.</b> Nothing reaches main without a second pair of eyes — that's where we catch bugs before customers do.</li>
+      <li><b>Small branches are easy.</b> One task = one branch = one PR. Easy to review, easy to undo if something's off.</li>
+    </ul>
+  </section>
+
+  <footer>Stuck? Just ask before pushing — undoing is always easier than you think. 🙂</footer>
+
+</div>
+
+<script>
+  function replayGraph() {
+    var g = document.querySelector('.gitgraph');
+    if (!g) return;
+    g.classList.remove('play');
+    void g.offsetWidth;            // force reflow so the animation restarts
+    g.classList.add('play');
+  }
+  window.addEventListener('load', function () {
+    var g = document.querySelector('.gitgraph');
+    if (!g) return;
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { replayGraph(); io.disconnect(); }
+        });
+      }, { threshold: 0.4 });
+      io.observe(g);
+    } else {
+      replayGraph();              // older browsers: just play on load
+    }
+  });
+</script>
+</body>
+</html>

@@ -20,38 +20,43 @@
 
 ---
 
-## 1. TL;DR — the recommendation
+## 1. TL;DR — the decision
 
-**€999 is two different things at once: it's at the *affordability ceiling* for the average
-(solo) salon, yet *below the value/market price* for what's delivered (2–5× under an agency
-custom quote). "Underpriced" is true on the value axis — not on the average salon's wallet — so
-the first move is not "charge more across the board," it's to stop leaving the number ambiguous
-and hold it fixed long enough to learn the funnel.** Concretely:
+> **Decided (30 Jun 2026): one price, one tier — €495 one-time — pushed as the default offer,
+> with an optional care plan and an optional monthly-subscription alternative behind it.**
+> §2–§9 below document the reasoning *journey* (including the €999 exploration the decision moved
+> away from) plus the market map and sourced claims that still stand. Read §1 as the decision;
+> read the rest as the evidence and the why.
 
-1. **Now (batch one):** pick **one** headline price and stop oscillating €999 / €1.000. Keep
-   **€999** — it has equity and sits exactly at the solo/ZZP affordability ceiling — and **hold
-   it fixed** through the first ~2–3 outreach batches so you get one clean conversion baseline
-   (this is the same "don't A/B in the first batches" discipline as OUTREACH §7). Fix the
-   proposal PDF (which says €1.000) to match.
-2. **Add the care plan as an *optional, passive* product:** hosting + SSL + domain + ~2 small
-   edits/year at **€15/mo or €149/jr vooruitbetaald**. Not a support retainer. It's your only
-   recurring-revenue lever and it undercuts every competitor's *mandatory* €20–69/mo plan.
-3. **Then — only once the funnel demonstrably *overflows* ~1–2 builds/week at €999 —** the upside
-   is **not** a broad floor hike (€1.250 would push the average solo salon to ~3.8% of revenue /
-   ~6 weeks' profit, past comfort). It's concentrated in two places: (a) a **quote-based "meerdere
-   vestigingen / Pro" upsell (~€1.950–2.450)** for the staffed/multi-location *minority* — where
-   €999 is only 0.4% of revenue; and (b) the **care plan**. A solo-floor bump to ~€1.250 is a
-   *test* to run only if demand is clearly overflowing, not a default.
+The earlier exploration framed €999 as "underpriced vs an agency" — true on the *value* axis, but
+the *average* buyer is a solo/ZZP salon (~€33k revenue) who **won't pay €1k for a website on a
+cold approach**, and the salon market visibly clears at **€375–795 one-time or €20–79/mo**.
+Affordability + conversion beat value-capture while the funnel is unproven, and a two-person side
+project wants simplicity + bulk cash, not a tier ladder or a recurring book to service. So:
 
-**The operating rule is one line: raise price until the funnel just fills capacity.** Your
-*throughput* is capped (~1–2 builds/week, ~50–100/yr) even though your customer base is **not** —
-so whenever demand exceeds the slots you can build, each slot carries a real opportunity cost and
-the expensive error is *under*-pricing a slot, not lost volume. The counterweight is conversion on
-a thin cold funnel, so you raise *behind* funnel data, never ahead of it.
+1. **Lead with €495 eenmalig — one price, one tier, alles inbegrepen.** ~1,5% of a solo salon's
+   revenue / ~1 week of profit — the side of the line they'll actually cross. It sits a notch above
+   the €375–399 template farms (so it reads *custom, not template*) and is 5–10× below an agency.
+   Near-zero marginal cost (mockup ~€0.05) means €495 is essentially all contribution — you're
+   pricing to *what converts*, not discounting into a loss.
+2. **Optional add-on — wijzigingen / onderhoud (the care plan you already had):** ongoing edits +
+   hosting, **~€10–15/mo or €149/jr**, optional, *not* a support retainer. ~88% cash margin (only
+   hard cost = the .nl renewal ~€16,50/jr). Cap included edits (≈2/jr), bill extra hourly.
+3. **Alternative payment model — €20–79/mo subscription instead of the €495** for owners who balk
+   at any upfront sum (the model PlazaXL/StudioLee prove converts cash-thin salons). **Offered,
+   not pushed:** for now you prefer one-time for bulk cash and to avoid servicing recurring/churn
+   as a two-person side project. Set the exact monthly point only when you need it.
 
-**The one genuine strategic fork is §5:** publish 3 tiers (max revenue capture) vs. keep one
-simple published price + a discreet on-call upsell (preserves the "eenmalig, geen verrassingen"
-brand promise). My recommendation is the latter; the reasoning is below.
+**Why one price + one-time (not tiers, not recurring):** one tier is less build/quote/maintenance
+work, and the tier-lift is modest anyway — a higher "Pro" tier triggers only the weaker ~50–60%
+*compromise* effect, not the famous *decoy* effect (which needs a dominated, same-price option).
+One-time gives the two founders bulk cash now with no churn/support treadmill, and keeps the
+"eenmalig, van jou, geen verrassingen" brand intact.
+
+**Revisit upward only on proof.** €495 deliberately leaves money on the table vs the value
+delivered, to win the first customers + testimonials. If the funnel demonstrably fills — or
+*overflows* — at €495, that's the signal to test the one-time higher (€595–795); until then €495
+holds. See §6–§7 for what to measure.
 
 ---
 
@@ -286,3 +291,11 @@ Load-bearing facts, with verdict and key sources. "Bevestigd" = independently co
   their ceiling — so the underpricing is on the *value* axis and concentrated in the **staffed
   minority + care plan**. The solo floor stays €999; a €1.250 bump is a *test* only if the funnel
   overflows, not a broad hike.
+- **2026-06-30 (later)** — **Decision made (operator).** Drop the €999/tier framing. Final =
+  **one price, one tier, €495 one-time, pushed**, + optional care plan (~€10–15/mo · €149/jr) +
+  optional €20–79/mo subscription alternative (not pushed). Rationale: the average solo salon
+  (~€33k revenue) won't pay €1k on a cold approach; the salon market clears at €375–795 one-time /
+  €20–79/mo; tiers = more work for modest lift; one-time = bulk cash + no recurring to service for
+  a two-person side project. €495 is for the proof+learning phase — revisit upward (€595–795) only
+  once the funnel fills. Shareable brief `revivo-pricing-research.html` rewritten to lead with this;
+  §1 updated; §2–§8 retained as the reasoning journey.

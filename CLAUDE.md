@@ -1,6 +1,6 @@
 # revivo — agent context
 
-Productized website service for NL hair & beauty salons. **€999 one-time** per site, **5 working days** delivery, lifestyle scale (~50–200 customers total). Berend builds solo on evenings + weekends.
+Productized website service for NL hair & beauty salons. **€495 one-time** per site (single tier, pushed; + optional care plan ~€10–15/mo and an optional €20–79/mo subscription alternative, neither pushed), **5 working days** delivery, lifestyle scale (~50–200 customers total). Berend builds solo on evenings + weekends.
 
 ## Read first
 
@@ -11,9 +11,10 @@ Productized website service for NL hair & beauty salons. **€999 one-time** per
 - `revivo-proposal.pdf` — the customer-facing proposal that locked in brand + product spec
 
 Read when working on **outreach / sales / the close** (or the opener copy in `packages/shared/src/opener.ts`):
-- [docs/OUTREACH.md](docs/OUTREACH.md) — the outreach + conversion playbook (legal posture, channels, message, cadence, close, measurement). Note: **do NOT pitch a Treatwell-commission saving** — our site embeds the Treatwell booking link, so there's no saving; lead value on brand / Google-vindbaarheid / ownership (see §6).
+- [docs/OUTREACH-PLAN.md](docs/OUTREACH-PLAN.md) — the **masterplan**: strategy + campaign plan (ICP/targeting, batches, funnel gates, reply→close runbook, timeline, pre-flight checklist). Execution plans derive from this. ~20 sent already (old opener = pilot); the new opener starts the first clean batch.
+- [docs/OUTREACH.md](docs/OUTREACH.md) — the outreach + conversion **playbook** / tactics reference (message, cadence, close, psychology, channels, measurement; legal as constraints in §8). Note: **do NOT pitch a Treatwell-commission saving** — our site embeds the Treatwell booking link, so there's none; lead value on brand / Google-vindbaarheid / ownership.
 - [docs/OUTREACH-RESEARCH.md](docs/OUTREACH-RESEARCH.md) — the raw per-angle research findings + all sources behind the playbook.
-- [docs/PRICING.md](docs/PRICING.md) — grounded pricing recommendation (what to charge, the model, the care plan). Key call: **hold €999 fixed for batch one, then raise behind funnel data** — €999 is at the *average (solo) salon's affordability ceiling* (3% of revenue) yet *below value* (2–5× under an agency); the underpricing is the **staffed minority (0,4% of their revenue) + care plan**, not a broad hike. Constraint is build **throughput** (~50–100/yr), not a customer-count cap → optimize **€-per-operator-hour**, not volume.
+- [docs/PRICING.md](docs/PRICING.md) — grounded pricing recommendation + shareable brief `revivo-pricing-research.html`. **Decision (30 Jun 2026): one price, one tier — €495 one-time, pushed** + optional care plan (~€10–15/mo · €149/jr) + optional €20–79/mo subscription alternative (offered, not pushed; one-time preferred for bulk cash). Why: avg solo salon (~€33k rev) won't pay €1k cold; salon market clears at €375–795 one-time / €20–79/mo; one tier = less work; near-zero COGS so €495 is ~all contribution; **revisit upward (€595–795) only on proof**. §2–§8 of the doc = the €999-era reasoning journey.
 
 Read when working on **SEO / discoverability / the customer-template `<head>` / schema / structured data**:
 - [docs/SEO.md](docs/SEO.md) — the SEO + AEO playbook (verified research). Key calls: **local-first**; **structured data = eligibility, not a ranking factor**; **omit self-serving `AggregateRating`/`Review`** (embedded Treatwell widget = self-controlled reviews → star-ineligible); **`robots.txt` default-allow** AI crawlers (never copy block-AI boilerplate); **`llms.txt` deferred — don't sell it**. The map pack is **owner-side** (a GBP runbook you ship); the website wins **local-organic + the entity layer**.
@@ -92,6 +93,7 @@ pnpm build-openers --out openers.txt --mark-sent   # write file + flip leads →
 - **Don't reach for Tailwind v3 patterns.** This repo uses Tailwind v4 with CSS-first theming (`@theme` in `global.css`). No `tailwind.config.js`. `@utility` cannot be nested in `@media` — use a plain `.class` for responsive overrides.
 - **Don't add a `tailwind.config.js`.** v4 reads tokens from `@theme` blocks in CSS only.
 - **Never commit secrets.** `.env` files are gitignored. When adding env vars, document them in `.env.example` (when that file exists) and reference in code via `process.env.X`.
+- **NEVER stage/commit files from other sessions.** Only `git add` the exact files YOU created or modified in the current session — stage by explicit path. Never `git add -A` / `git add .` / `git add <dir>`, and never sweep in pre-existing uncommitted changes (Berend's in-progress work or another agent's). The working tree routinely holds unrelated WIP; a commit must contain only this session's work. If a shared file (e.g. this `CLAUDE.md`) also carries another session's edits, don't fold them in — ask first. When unsure whether a change is yours, ask before committing.
 - **Don't ship new fonts without thinking.** The customer-template variants each have a distinctive font system that defines their DNA — don't accidentally use the same fonts across variants.
 
 ## Project context

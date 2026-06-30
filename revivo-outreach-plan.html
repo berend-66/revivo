@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Revivo — Outreach Masterplan & Research (at a glance)</title>
+<style>
+  :root{
+    --bordeaux:#3d0c0c; --bordeaux-2:#5a1717; --cream:#f5efe0; --paper:#fffdf8;
+    --ink:#2a1410; --muted:#7a6a60; --line:#e7ddcd; --gold:#b8893b;
+    --green:#1f7a4d; --green-bg:#e4f3ea; --amber:#9a6b15; --amber-bg:#f6ecd6;
+    --red:#9b2c2c; --red-bg:#f6e0e0; --blue:#2c5a8c; --blue-bg:#e3edf6;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--cream);color:var(--ink);line-height:1.55;
+       font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+  a{color:var(--bordeaux-2)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 1.25rem}
+  header.top{background:var(--bordeaux);color:var(--cream);padding:2.2rem 0 1.8rem}
+  header.top h1{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;
+       font-size:2.3rem;margin:0 0 .3rem;letter-spacing:.01em}
+  header.top .lead{font-size:1.05rem;color:#f5efe0d9;max-width:62ch;margin:.4rem 0 0}
+  header.top .goal{display:inline-block;margin-top:1rem;background:#f5efe018;border:1px solid #f5efe035;
+       color:var(--cream);padding:.5rem .9rem;border-radius:10px;font-size:.95rem}
+  header.top .goal b{color:#f3d9a6}
+  .meta-sub{color:#f5efe099;font-size:.82rem;margin-top:1rem}
+  section{padding:2rem 0;border-bottom:1px solid var(--line)}
+  h2{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.65rem;margin:0 0 .25rem;color:var(--bordeaux)}
+  h2 .n{color:var(--gold);font-size:1.1rem;font-weight:700;margin-right:.5rem}
+  .sectsub{color:var(--muted);margin:0 0 1.2rem;font-size:.95rem}
+  .grid{display:grid;gap:1rem}
+  .g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.05rem 1.15rem;
+        box-shadow:0 1px 2px rgba(60,30,10,.04)}
+  .card h3{margin:0 0 .35rem;font-size:1.02rem}
+  .card p{margin:.2rem 0;font-size:.92rem}
+  .card .src{color:var(--muted);font-size:.78rem;margin-top:.5rem}
+  .pill{display:inline-block;font-size:.72rem;font-weight:700;padding:.16rem .5rem;border-radius:999px;
+        text-transform:uppercase;letter-spacing:.03em}
+  .ok{background:var(--green-bg);color:var(--green)} .warn{background:var(--amber-bg);color:var(--amber)}
+  .bad{background:var(--red-bg);color:var(--red)} .info{background:var(--blue-bg);color:var(--blue)}
+  .banner{background:#fff8ea;border:1px solid #ecd9ab;border-left:5px solid var(--gold);
+          border-radius:10px;padding:1rem 1.15rem}
+  .banner b{color:var(--bordeaux)}
+  /* funnel */
+  .funnel{display:flex;flex-direction:column;gap:.45rem;margin-top:.4rem}
+  .frow{display:flex;align-items:center;gap:.8rem}
+  .fbar{height:38px;border-radius:8px;background:linear-gradient(90deg,var(--bordeaux),var(--bordeaux-2));
+        color:var(--cream);display:flex;align-items:center;padding:0 .8rem;font-size:.86rem;font-weight:600;
+        white-space:nowrap;min-width:90px}
+  .frow .lbl{flex:none;width:160px;font-size:.86rem;color:var(--ink)}
+  .frow .rate{color:var(--muted);font-size:.8rem;margin-left:.2rem}
+  .mathbox{margin-top:1rem;background:var(--bordeaux);color:var(--cream);border-radius:12px;padding:1rem 1.15rem;font-size:.95rem}
+  .mathbox code{background:#ffffff1c;padding:.05em .4em;border-radius:5px;color:#f3d9a6}
+  /* tier */
+  .tier{border-radius:14px;padding:1.05rem 1.15rem;border:1px solid var(--line);background:var(--paper)}
+  .tier.a{border-top:4px solid var(--green)} .tier.b{border-top:4px solid var(--amber)} .tier.c{border-top:4px solid var(--muted)}
+  .tier h3{margin:0 0 .4rem;display:flex;align-items:center;gap:.5rem}
+  .tier ul{margin:.3rem 0 0;padding-left:1.1rem;font-size:.9rem} .tier li{margin:.15rem 0}
+  /* steps */
+  ol.steps{counter-reset:s;list-style:none;margin:0;padding:0}
+  ol.steps li{position:relative;padding:.55rem 0 .55rem 2.4rem;border-bottom:1px dashed var(--line);font-size:.93rem}
+  ol.steps li:last-child{border-bottom:0}
+  ol.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:.5rem;
+        width:1.7rem;height:1.7rem;border-radius:50%;background:var(--bordeaux);color:var(--cream);
+        display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700}
+  /* checklist */
+  table.chk{width:100%;border-collapse:collapse;font-size:.92rem}
+  table.chk td{padding:.5rem .4rem;border-bottom:1px solid var(--line);vertical-align:top}
+  table.chk td:first-child{width:42px;text-align:center}
+  /* gate */
+  .gate{display:grid;gap:.55rem}
+  .gate .row{display:flex;gap:.7rem;align-items:flex-start;background:var(--paper);border:1px solid var(--line);
+        border-radius:10px;padding:.6rem .8rem;font-size:.9rem}
+  .tag{flex:none;font-size:.72rem;font-weight:700;padding:.2rem .5rem;border-radius:7px;margin-top:.05rem}
+  footer{padding:2rem 0 3rem;color:var(--muted);font-size:.85rem}
+  footer a{display:inline-block;margin-right:1rem}
+  .kbd{font-family:ui-monospace,Menlo,monospace;background:#fff;border:1px solid var(--line);border-radius:5px;padding:.05em .4em;font-size:.85em}
+  .legend{font-size:.8rem;color:var(--muted);margin-top:.6rem}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <h1>Revivo — Outreach Masterplan &amp; Research</h1>
+    <p class="lead">Lead with the live personalized mockup on WhatsApp · ≤4 light touches · the 15-min call is a
+       <em>"we lopen 'm samen door"</em> walkthrough · reveal €999 only after the quality lands · send the iDEAL link in the moment of "ja".</p>
+    <div class="goal">🎯 Goal: <b>first paying customer ASAP</b> — won through <b>conversion quality</b>, not send volume.</div>
+    <div class="meta-sub">Distilled from the 2026-06-29 web-grounded research run · 9 angles · 86 agents · 34 high-stakes claims independently verified · truth-only throughout.</div>
+  </div>
+</header>
+
+<section><div class="wrap">
+  <div class="banner">
+    <b>Where we are.</b> ~20 openers already sent on the <b>old</b> copy → treat them as the <b>pilot / debug batch</b>
+    (the mechanics work end-to-end). At least one reply — <b>Wax and More</b> (4,9★ / 1.230, lukewarm), raising the
+    canonical objection <em>"mijn website wordt weinig gebruikt, mensen vinden mij via Treatwell."</em> The
+    <b>new opener is shipped</b> (one link · opinion-question CTA · opt-out · Variant&nbsp;A/B) →
+    the next sends are <b>Batch&nbsp;1: our first clean baseline.</b> We don't A/B old-vs-new (n far too small) — we reset and measure forward.
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">1</span>The bet &amp; the funnel math</h2>
+  <p class="sectsub">We're not optimising a known-good funnel — we're testing whether it <em>exists</em>. So the priority is a clean read of <b>reply → call → close</b>, not volume.</p>
+  <div class="grid g2">
+    <div>
+      <div class="funnel">
+        <div class="frow"><span class="lbl">Sent</span><div class="fbar" style="width:100%">100%</div></div>
+        <div class="frow"><span class="lbl">Mockup click <span class="rate">(human, bot-filtered)</span></span><div class="fbar" style="width:60%">the early diagnostic</div></div>
+        <div class="frow"><span class="lbl">Reply</span><div class="fbar" style="width:42%"></div></div>
+        <div class="frow"><span class="lbl">Positive reply <span class="rate">~10%*</span></span><div class="fbar" style="width:26%">p</div></div>
+        <div class="frow"><span class="lbl">Call booked <span class="rate">~50% of those</span></span><div class="fbar" style="width:16%"></div></div>
+        <div class="frow"><span class="lbl">Paid <span class="rate">~30% of calls</span></span><div class="fbar" style="width:8%">€999</div></div>
+      </div>
+      <p class="legend">* planning assumption for sizing only — the 20-tally replaces it. The human <b>mockup-click</b> is the signal almost no cold operation has (you own the slug): low click → fix the <b>opener</b>; high click but no reply → fix the <b>offer/mockup</b>.</p>
+    </div>
+    <div>
+      <div class="mathbox">
+        <b>Sizing the path to the first sale</b><br><br>
+        <code>send→close ≈ 10% × 50% × 30% ≈ 1.5%</code><br>
+        → <b>~50–65 well-targeted sends per first close.</b><br><br>
+        You're <b>~20 in</b> → realistic path is <b>~40–60 sharp sends</b> with tight follow-up + a clean close. A small-numbers game: one great-fit salon can land it sooner.
+      </div>
+      <div class="card" style="margin-top:1rem">
+        <h3>Kill / pivot signal</h3>
+        <p>Not a low number (n=20 can't even tell 10% from 30%). The kill signal is a <b>consistent <em>value</em> objection</b> across replies ("ik zie de meerwaarde niet") — not "stuur maar info". One call reaching a genuine "maybe/ja" = the bet is alive.</p>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">2</span>Who we target — the ICP</h2>
+  <p class="sectsub">The targeting call dominates everything. <b>Bias toward salons that feel a gap; away from the ones already winning online</b> (the Wax-and-More lesson: no pain = hardest sell).</p>
+  <div class="grid g3">
+    <div class="tier a"><h3><span class="pill ok">Tier A</span> prioritise</h3>
+      <ul><li><b>No owned website</b> (or dead placeholder)</li><li>Owner-operated</li><li>Reachable on a <b>Dutch mobile</b></li><li><b>4,0–4,8★</b> with a real review base</li></ul>
+      <p class="src">The audit found 3/13 salons with <b>no site at all</b> — bullseye.</p></div>
+    <div class="tier b"><h3><span class="pill warn">Tier B</span> second wave</h3>
+      <ul><li>Dated / thin existing site (Wix-2016, one-pager, FB-only)</li><li>Real upgrade story, slightly harder</li></ul></div>
+    <div class="tier c"><h3><span class="pill" style="background:#eee;color:#555">Tier C</span> skip for now</h3>
+      <ul><li>Strong existing site</li><li>No mobile (landline → no wa.me)</li><li>Mediocre reviews / no honest hook</li><li>Very-successful-and-knows-it</li></ul></div>
+  </div>
+  <p class="legend" style="margin-top:1rem"><b>Cities (recommended):</b> start with <b>Utrecht</b> (already crawled, 66 leads, proven) + <b>one</b> mid-size city — Amersfoort / Nijmegen / Haarlem (<em>not</em> Amsterdam). <b>Inventory target:</b> ~40–60 qualified Tier-A/B leads queued.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">3</span>What the research actually found</h2>
+  <p class="sectsub">The 9 angles, distilled to the load-bearing calls (full evidence + sources in <span class="kbd">docs/OUTREACH-RESEARCH.md</span>).</p>
+  <div class="grid g3">
+    <div class="card"><h3>📣 The message</h3><p>Lead-with-the-artifact = the copy's only jobs are: prove it's about <em>them</em> in 7 words, earn the click, provoke a low-friction reply. <b>One link + one opinion-question CTA.</b> "Ben je geïnteresseerd?" asks for a commitment too early.</p><p class="src">Gong · 30MPC · Belkins · Saleshandy</p></div>
+    <div class="card"><h3>🧠 Persuasion</h3><p><b>Reciprocity</b> (the free personalized gift) is the strongest lever — and honest. The <b>endowment/IKEA</b> effect fires on the <em>call</em> (let them pick the photo/palette), not the opener. Loss-aversion via a <em>true</em> expiry.</p><p class="src">Cialdini · HBS · The Decision Lab</p></div>
+    <div class="card"><h3>🎁 The free-mockup play</h3><p>It's the Loom-teardown / free-audit tactic + the <b>puppy-dog close</b>. Converts via reciprocity + show-don't-tell. Give the full visual wow, <b>withhold the deployable asset.</b></p><p class="src">HubSpot · AIGA/NoSpec · Loom</p></div>
+    <div class="card"><h3>📲 Channels</h3><p>The payload is a clickable link → <b>WhatsApp/IG beat email</b> (a <span class="kbd">*.vercel.app</span> link is an email spam signal). The metric that kills the channel is <b>block/report rate</b>, not reply rate.</p><p class="src">deliverability + Meta policy research</p></div>
+    <div class="card"><h3>🤝 Objections &amp; close</h3><p>Validate, don't argue. The differentiated line: <em>"je hebt 'm trouwens al gezien — dit staat er nú al."</em> Price <b>after</b> quality; separate the "ja" from the payment; send the iDEAL link in the moment.</p><p class="src">PClub · Highspot · Salesforce</p></div>
+    <div class="card"><h3>📊 Measurement</h3><p><b>n=20 is a debug run, not an estimate</b> (3/20 → 95% CrI ≈ [5%, 36%]). Don't A/B copy at this n. Track <b>bot-filtered human clicks</b> + read every reply's text. Derive the go/no-go floor from build capacity, not a made-up number.</p><p class="src">rule of three · Beta posterior</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">4</span>Legal &amp; compliance — the constraints</h2>
+  <p class="sectsub"><b>Mitigate, don't pretend exempt.</b> NL's spam ban (art. 11.7 Tw) is opt-in, channel-neutral, and covers businesses — "only email BV salons" is false comfort. But the <b>real risk isn't a fine</b> (ACM only ever fined bulk spammers) — it's WhatsApp number bans + the GDPR/IP exposure of publicly republishing a salon's photos/team/reviews.</p>
+  <div class="grid g2">
+    <div>
+      <div class="grid" style="gap:.5rem">
+        <div class="card" style="display:flex;justify-content:space-between;align-items:center"><span>📧 <b>Email</b></span><span class="pill warn">amber</span></div>
+        <div class="card" style="display:flex;justify-content:space-between;align-items:center"><span>📸 <b>Instagram DM</b></span><span class="pill warn">amber</span></div>
+        <div class="card" style="display:flex;justify-content:space-between;align-items:center"><span>💬 <b>WhatsApp</b> — the danger is number bans</span><span class="pill bad">amber→red</span></div>
+        <div class="card" style="display:flex;justify-content:space-between;align-items:center"><span>📞 <b>Cold calling</b> — most salons = natural persons</span><span class="pill bad">red</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="card"><h3>The mitigations (all cheap, do them)</h3>
+        <p>✓ <b>noindex + robots.txt</b> on every mockup <span class="pill ok">done</span> · unguessable slug · ~30-day auto-unpublish · instant takedown</p>
+        <p>✓ opt-out line on every message <span class="pill ok">done</span> · a 1-page LIA + privacy note · a suppression list · a send-log</p>
+        <p>✓ a <b>dedicated, warmed, burnable</b> WhatsApp number; ramp 5→10→20/day; rotate at &gt;2–3% block/report</p>
+      </div>
+      <div class="banner" style="margin-top:.8rem;border-left-color:var(--red)">
+        <b>⛔ Do NOT pitch a Treatwell-commission saving.</b> The 35% is only a <em>marketplace new-client</em> fee; Treatwell is also their booking software (direct/repeat already 0%), and <b>our site embeds their Treatwell booking link</b> → it saves zero commission. Claiming a saving is a checkable falsehood. Lead value on <b>brand / Google-vindbaarheid / ownership.</b>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">5</span>Reply → call → close runbook</h2>
+  <p class="sectsub">The send is just the trigger; this is where the first €999 is won. (Full copy in <span class="kbd">docs/OUTREACH.md §4</span>.)</p>
+  <ol class="steps">
+    <li><b>Reply lands → respond same day.</b> A cooling warm reply is the biggest leak. Offer the call as a "samen doorlopen" walkthrough: <em>"Zal ik 'm even met je doorlopen — hoe 't werkt en wat 't kost? 15 min."</em></li>
+    <li><b>The "Treatwell brengt mij klanten" reply</b> (you'll get it a lot): validate → reframe to <b>visitekaartje / Google / van jóu</b>. No commission claim. If they're truly thriving &amp; uninterested, let them go gracefully.</li>
+    <li><b>The 15-min call:</b> agenda → walk <em>their</em> live mockup &amp; invite 2 small edits (the real endowment lever) → light true-yeses → <b>price only now</b> (€999 eenmalig, eigen .nl, 5 werkdagen; care plan after) → trial-close.</li>
+    <li><b>On a clear "ja":</b> confirm, then <b>send the iDEAL link in the moment</b> (don't "mail it later") → asset-collection list → schedule the build.</li>
+    <li><b>Build &amp; deliver</b> in 5 werkdagen → customer #1 becomes your <b>first real social proof</b> (a named local quote beats any vague claim).</li>
+  </ol>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">6</span>Pre-flight checklist (before Batch 1, send #1)</h2>
+  <table class="chk">
+    <tr><td>✅</td><td><b>New opener deployed</b> — one link, question-CTA, opt-out, Variant A/B</td><td><span class="pill ok">done</span></td></tr>
+    <tr><td>✅</td><td><b>Mockups noindex + robots.txt</b></td><td><span class="pill ok">done</span></td></tr>
+    <tr><td>◻︎</td><td><b>A place to log</b> sends / replies / objections / clicks (admin "outreach" view)</td><td><span class="pill info">confirm</span></td></tr>
+    <tr><td>◻︎</td><td><b>Dedicated WhatsApp number</b> — start warming now (~1 week)</td><td><span class="pill warn">start now</span></td></tr>
+    <tr><td>◻︎</td><td><b>Cal.com intro-call link</b> live — <em>a reply can't convert without it</em></td><td><span class="pill bad">blocker</span></td></tr>
+    <tr><td>◻︎</td><td><b>Stripe iDEAL link</b> ready to paste — <em>can't take payment without it</em></td><td><span class="pill bad">blocker</span></td></tr>
+    <tr><td>◻︎</td><td><b>Privacy / opt-out note</b> on revivostudios.io (the opener links it)</td><td><span class="pill info">cheap</span></td></tr>
+    <tr><td>◻︎</td><td><b>~40–60 qualified Tier-A/B leads</b> with mockups generated + spot-checked</td><td><span class="pill warn">the M1 work</span></td></tr>
+  </table>
+  <p class="legend">The two <span class="pill bad">blocker</span> items (Cal.com + Stripe) are the highest-priority operator tasks — a reply literally can't convert to cash without them.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">7</span>The decision gate (run after every batch)</h2>
+  <p class="sectsub">Bayesian, per channel: posterior <span class="kbd">Beta(1+positives, 1+N−positives)</span>; report <span class="kbd">P(p&gt;0.10)</span>, not a point estimate. Don't pool across channels.</p>
+  <div class="gate">
+    <div class="row"><span class="tag ok">SCALE</span><span><b>P(p&gt;0.10) ≥ 0.80</b> and ≥1 reply reached the call stage → more of the same, accumulate toward ~100–150 sends.</span></div>
+    <div class="row"><span class="tag info">KEEP GOING</span><span>Posterior straddles 0.10 and N &lt; ~50 → just thin data; send another batch, no change.</span></div>
+    <div class="row"><span class="tag warn">CHANGE MESSAGE</span><span>Good human-click but <b>P(p&gt;0.10) ≤ 0.20</b> → opener earns looks, offer/CTA doesn't convert → fix mockup/CTA.</span></div>
+    <div class="row"><span class="tag warn">CHANGE CHANNEL</span><span>Low delivered/click across 2 batches, <b>or block/report &gt; 2–3%</b> → rotate number / next channel.</span></div>
+    <div class="row"><span class="tag bad">RETHINK PRODUCT</span><span>Only after <b>~100+ sends across ≥2 channels</b> with a consistent <em>value</em> objection — never on early noise.</span></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <b>The full docs (in the repo):</b><br>
+  <a href="docs/OUTREACH-PLAN.md">docs/OUTREACH-PLAN.md</a> — the masterplan (strategy + campaign)<br>
+  <a href="docs/OUTREACH.md">docs/OUTREACH.md</a> — the tactics playbook (message · cadence · close · psychology · channels · measurement · legal constraints)<br>
+  <a href="docs/OUTREACH-RESEARCH.md">docs/OUTREACH-RESEARCH.md</a> — the raw per-angle findings + all sources<br><br>
+  <span style="color:var(--muted)">When in doubt, the order of operations is always: <b>get the call → protect the call → close the call.</b> Everything upstream exists to produce one good call with a real-fit salon.</span>
+</div></footer>
+
+</body>
+</html>

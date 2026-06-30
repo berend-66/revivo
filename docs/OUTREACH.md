@@ -5,7 +5,9 @@
 > with 34 high-stakes claims independently verified (legal = 3 voters each). Pairs with
 > [PROGRESS.md](PROGRESS.md) / [ROADMAP.md](ROADMAP.md). This is the *outreach + conversion*
 > reference; the opener code lives in `packages/shared/src/opener.ts`. The **raw per-angle
-> findings + all sources** behind this playbook are in [OUTREACH-RESEARCH.md](OUTREACH-RESEARCH.md).
+> findings + all sources** behind this playbook are in [OUTREACH-RESEARCH.md](OUTREACH-RESEARCH.md);
+> the **campaign masterplan** that operationalizes it (ICP, batches, gates, timeline) is
+> [OUTREACH-PLAN.md](OUTREACH-PLAN.md).
 
 > **Practical operator guidance — not formal legal advice.** Where the research genuinely disagreed or was low-confidence, it's flagged inline, and the load-bearing facts (especially legal) are listed with sources in §10 so you can check them yourself. Anchors: ~50–200 lifetime customers, €999, mockup-first, **truth-only**, Berend solo on evenings/weekends.
 >
