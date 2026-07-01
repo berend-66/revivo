@@ -1,0 +1,73 @@
+---
+import type { SiteConfig } from "@revivo/shared";
+interface Props { config: SiteConfig }
+const { config } = Astro.props;
+
+const { location, hours, contact } = config;
+
+const days = ["Zondag","Maandag","Dinsdag","Woensdag","Donderdag","Vrijdag","Zaterdag"];
+const todayIdx = new Date().getDay();
+const todayName = days[todayIdx];
+
+const mapQuery = encodeURIComponent(
+  [location.address, location.postcode, location.city].filter(Boolean).join(" ")
+);
+const mapUrl = `https://maps.google.com/?q=${mapQuery}`;
+---
+
+<section class="lotus-location section" id="contact">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Bezoek ons</span>
+      <h2>Openingstijden &amp; <em>locatie</em></h2>
+      <span class="gold-rule"></span>
+    </div>
+
+    <div class="location-grid reveal">
+      {hours && hours.length > 0 && (
+        <div>
+          <table class="hours-table" aria-label="Openingstijden">
+            <tbody>
+              {hours.map((row) => (
+                <tr class={row.day === todayName ? "today" : ""}>
+                  <td>{row.day}</td>
+                  {row.closed
+                    ? <td class="closed" colspan="1">Gesloten</td>
+                    : <td>{row.open} – {row.close}</td>
+                  }
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <div class="address-block">
+        <div class="address-text">
+          <strong>Adres</strong>
+          {location.address}<br />
+          {location.postcode && <>{location.postcode} </>}
+          {location.city}
+        </div>
+
+        {contact?.phone && (
+          <div class="address-text">
+            <strong>Telefoon</strong>
+            <a href={`tel:${contact.phone}`} style="color:var(--gold)">
+              {contact.phone.replace(/^\+31/, "0").replace(/(\d{3})(\d{3})(\d{4})/, "$1 $2 $3")}
+            </a>
+          </div>
+        )}
+
+        <a
+          href={mapUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="map-link"
+        >
+          Bekijk op kaart →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

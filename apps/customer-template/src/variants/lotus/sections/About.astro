@@ -1,0 +1,49 @@
+---
+import type { SiteConfig } from "@revivo/shared";
+interface Props { config: SiteConfig }
+const { config } = Astro.props;
+
+const { about } = config;
+if (!about) return;
+---
+
+<section class="lotus-about section" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <span class="eyebrow">Over ons</span>
+        <h2>{about.heading}</h2>
+        <span class="gold-rule"></span>
+        {about.body && (
+          <div class="about-body">
+            {about.body.map((p) => <p>{p}</p>)}
+          </div>
+        )}
+        {about.stats && about.stats.length > 0 && (
+          <div class="about-stats">
+            {about.stats.map((s) => (
+              <div class="stat-item">
+                <span class="stat-value">{s.value}</span>
+                <span class="stat-label">{s.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {about.portrait && (
+        <div class="about-image-wrap reveal">
+          <div class="about-image-frame">
+            <img
+              src={about.portrait}
+              alt={config.brand.name}
+              width="600"
+              height="800"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+</section>

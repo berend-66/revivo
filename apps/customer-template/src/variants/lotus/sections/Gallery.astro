@@ -1,0 +1,30 @@
+---
+import type { SiteConfig } from "@revivo/shared";
+interface Props { config: SiteConfig }
+const { config } = Astro.props;
+
+const items = config.gallery ?? [];
+if (items.length === 0) return;
+---
+
+<section class="lotus-gallery" id="gallery" aria-label="Galerij">
+  <div class="gallery-head reveal">
+    <div class="container">
+      <span class="eyebrow">Galerij</span>
+      <h2>De <em>sfeer</em></h2>
+    </div>
+  </div>
+  <div class="gallery-scroll-wrap" tabindex="0" role="region" aria-label="Foto galerij, horizontaal scrollbaar">
+    <div class="gallery-strip">
+      {items.map((item) => (
+        <div class={`gallery-item ${item.aspect ?? "landscape"}`}>
+          <img
+            src={item.url}
+            alt={item.caption ?? config.brand.name}
+            loading="lazy"
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -10,7 +10,8 @@
     "astro": "astro",
     "dev:atelier": "REVIVO_CONFIG=examples/lume-atelier.json astro dev",
     "dev:studio": "REVIVO_CONFIG=examples/mast-studio.json astro dev",
-    "dev:neon": "REVIVO_CONFIG=examples/spark-hair.json astro dev"
+    "dev:neon": "REVIVO_CONFIG=examples/spark-hair.json astro dev",
+    "dev:lotus": "REVIVO_CONFIG=examples/lotus-leelawadee.json astro dev"
   },
   "dependencies": {
     "@revivo/shared": "workspace:*",

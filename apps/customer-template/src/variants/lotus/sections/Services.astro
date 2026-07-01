@@ -1,0 +1,65 @@
+---
+import type { SiteConfig } from "@revivo/shared";
+interface Props { config: SiteConfig }
+const { config } = Astro.props;
+
+const categories = config.services ?? [];
+const multiCat   = categories.length > 1;
+
+function fmtPrice(item: (typeof categories)[0]["items"][0]): string {
+  if (item.price === null || item.price === undefined) return "Op aanvraag";
+  const cents = Math.round(item.price * 100);
+  const euros = Math.floor(cents / 100);
+  const rest  = cents % 100;
+  const num   = rest === 0 ? `${euros}` : `${euros},${String(rest).padStart(2, "0")}`;
+  return `${item.from ? "vanaf " : ""}€ ${num}`;
+}
+---
+
+<section class="lotus-services section" id="services">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Behandelingen</span>
+      <h2>Onze <em>massages</em></h2>
+      <span class="gold-rule"></span>
+    </div>
+
+    {multiCat && (
+      <div class="services-tabs" role="tablist">
+        {categories.map((cat, i) => (
+          <button
+            class={`tab${i === 0 ? " active" : ""}`}
+            role="tab"
+            aria-selected={i === 0 ? "true" : "false"}
+            data-tab={cat.category}
+          >
+            {cat.category}
+          </button>
+        ))}
+      </div>
+    )}
+
+    {categories.map((cat, i) => (
+      <div
+        class={`panel${!multiCat || i === 0 ? " active" : ""}`}
+        data-panel={cat.category}
+        role="tabpanel"
+      >
+        <div class="services-grid">
+          {cat.items.map((item) => (
+            <div class="svc-card">
+              <div class="svc-name">{item.name}</div>
+              {item.description && <p class="svc-desc">{item.description}</p>}
+              <div class="svc-meta">
+                <span class="svc-price">{fmtPrice(item)}</span>
+                {item.durationMin && (
+                  <span class="svc-duration">{item.durationMin} min</span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</section>

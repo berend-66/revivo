@@ -79,7 +79,7 @@ export const ReputationSchema = z.object({
   source: z.string().optional(),
 });
 
-export const LAYOUT_VARIANTS = ["atelier", "studio", "neon"] as const;
+export const LAYOUT_VARIANTS = ["atelier", "studio", "neon", "lotus"] as const;
 
 export const SiteConfigSchema = z.object({
   slug: z.string().regex(/^[a-z0-9-]+$/, "lowercase kebab-case"),

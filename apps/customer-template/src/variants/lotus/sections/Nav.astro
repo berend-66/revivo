@@ -1,0 +1,52 @@
+---
+import type { SiteConfig } from "@revivo/shared";
+interface Props { config: SiteConfig }
+const { config } = Astro.props;
+const bookUrl = config.booking.externalUrl;
+const hasTeam         = config.team        && config.team.length        > 0;
+const hasTestimonials = config.testimonials && config.testimonials.length > 0;
+---
+
+<nav class="lotus-nav" id="lotus-nav" aria-label="Hoofdnavigatie">
+  <div class="nav-inner">
+    <a href="#top" class="nav-logo" aria-label={config.brand.name}>
+      {config.brand.logoUrl
+        ? <img src={config.brand.logoUrl} alt={config.brand.name} />
+        : <span class="nav-wordmark">{config.brand.name}</span>
+      }
+    </a>
+
+    <ul class="nav-links" role="list">
+      <li><a href="#about">Over ons</a></li>
+      <li><a href="#services">Behandelingen</a></li>
+      <li><a href="#gallery">Galerij</a></li>
+      {hasTeam         && <li><a href="#team">Team</a></li>}
+      {hasTestimonials && <li><a href="#reviews">Reviews</a></li>}
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+
+    {bookUrl && (
+      <a href={bookUrl} target="_blank" rel="noopener" class="nav-cta">
+        Boek nu
+      </a>
+    )}
+
+    <button class="hamburger-btn" id="hamburger" aria-label="Menu openen" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div id="mobile-menu" role="navigation" aria-label="Mobiel menu">
+    <a href="#about">Over ons</a>
+    <a href="#services">Behandelingen</a>
+    <a href="#gallery">Galerij</a>
+    {hasTeam         && <a href="#team">Team</a>}
+    {hasTestimonials && <a href="#reviews">Reviews</a>}
+    <a href="#contact">Contact</a>
+    {bookUrl && (
+      <a href={bookUrl} target="_blank" rel="noopener" class="nav-cta-mobile">
+        Boek een behandeling
+      </a>
+    )}
+  </div>
+</nav>

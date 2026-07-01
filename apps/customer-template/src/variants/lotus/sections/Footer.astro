@@ -1,0 +1,57 @@
+---
+import type { SiteConfig } from "@revivo/shared";
+interface Props { config: SiteConfig }
+const { config } = Astro.props;
+
+const { brand, location, contact, booking, services } = config;
+
+const serviceLinks = (services?.[0]?.items ?? []).slice(0, 5).map((s) => s.name);
+---
+
+<footer class="lotus-footer" aria-label="Footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        {brand.logoUrl
+          ? <img src={brand.logoUrl} alt={brand.name} />
+          : <div class="footer-brand-name">{brand.name}</div>
+        }
+        {brand.tagline && <p class="footer-tagline">{brand.tagline}</p>}
+      </div>
+
+      <div class="footer-col">
+        <h4>Behandelingen</h4>
+        <ul>
+          {serviceLinks.map((name) => (
+            <li><a href="#services">{name}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <div class="footer-contact-item">
+          {location.address}<br />
+          {location.postcode && <>{location.postcode} </>}{location.city}
+        </div>
+        {contact?.phone && (
+          <div class="footer-contact-item">
+            <a href={`tel:${contact.phone}`}>{contact.phone}</a>
+          </div>
+        )}
+        {booking.externalUrl && (
+          <div class="footer-contact-item" style="margin-top:1rem">
+            <a href={booking.externalUrl} target="_blank" rel="noopener" style="color:var(--gold)">
+              {booking.label ?? "Boek online"} →
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© {new Date().getFullYear()} {brand.name}. Alle rechten voorbehouden.</p>
+      <p style="color:var(--cream-faint);font-size:0.65rem">Website by Revivo Studios</p>
+    </div>
+  </div>
+</footer>

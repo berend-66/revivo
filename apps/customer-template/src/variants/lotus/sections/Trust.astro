@@ -1,0 +1,23 @@
+---
+import type { SiteConfig } from "@revivo/shared";
+interface Props { config: SiteConfig }
+const { config } = Astro.props;
+
+const stats = config.about?.stats ?? [];
+---
+
+{stats.length > 0 && (
+  <div class="lotus-trust">
+    <div class="trust-inner">
+      {stats.map((stat, i) => (
+        <>
+          {i > 0 && <div class="trust-divider" aria-hidden="true"></div>}
+          <div class="trust-item">
+            <span class="trust-value">{stat.value}</span>
+            <span class="trust-label">{stat.label}</span>
+          </div>
+        </>
+      ))}
+    </div>
+  </div>
+)}

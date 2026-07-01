@@ -52,7 +52,7 @@ const config: SiteConfig = {
       "Onze specialiteit is de traditionele Thaise massage: een eeuwenoude methode die werkt op spieren, gewrichten én energiebanen. Warme oliën, traditionele Thaise balsems en verwarmde massagetafels zorgen voor een omgeving waarin je écht tot rust komt.",
       "Wij verwelkomen mannen, vrouwen en koppels, en bieden uitsluitend professionele gezondheidsmassages aan.",
     ],
-    portrait: "https://leelawadee.nl/wp-content/uploads/2023/05/BE062EC5-AAF2-4C61-B9ED-14A35ECD57C0-400x865.jpeg",
+    portrait: "https://images.unsplash.com/photo-1639162906614-0603b0ae95fd?w=800&q=80&fit=crop",
     stats: [
       { label: "Jaar ervaring", value: "18+" },
       { label: "Dagen per week open", value: "7" },
@@ -148,6 +148,15 @@ const config: SiteConfig = {
     externalUrl: "https://www.fresha.com/nl/lvp/leelawadee-health-massage-van-heenvlietlaan-amsterdam-ovEwrx",
     label:       "Boek via Fresha",
   },
+
+  team: [
+    {
+      name: "Ons team",
+      role: "Zes ervaren therapeuten",
+      specialty: "Al meer dan 18 jaar bieden wij vakkundige traditionele Thaise massage door gediplomeerde therapeuten — zeven dagen per week.",
+      photoUrl: "https://leelawadee.nl/wp-content/uploads/2021/04/03CEB067-D22C-4EFC-A73D-2B315BC54388-400x300.jpeg",
+    },
+  ],
 
   contact: {
     phone: "+31207723889",

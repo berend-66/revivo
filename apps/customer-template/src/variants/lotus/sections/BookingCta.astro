@@ -1,0 +1,23 @@
+---
+import type { SiteConfig } from "@revivo/shared";
+interface Props { config: SiteConfig }
+const { config } = Astro.props;
+
+const bookUrl  = config.booking.externalUrl;
+const label    = config.booking.label ?? "Boek een behandeling";
+if (!bookUrl) return;
+---
+
+<div class="lotus-booking-cta">
+  <div class="container">
+    <div class="booking-cta-inner reveal">
+      <div class="booking-cta-text">
+        <h2>Klaar voor ontspanning?</h2>
+        <p>Reserveer eenvoudig online — binnen een minuut geregeld.</p>
+      </div>
+      <a href={bookUrl} target="_blank" rel="noopener" class="btn-cta-dark">
+        {label} →
+      </a>
+    </div>
+  </div>
+</div>

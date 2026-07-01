@@ -1,0 +1,67 @@
+---
+import type { SiteConfig, TeamMember } from "@revivo/shared";
+interface Props { config: SiteConfig }
+const { config } = Astro.props;
+
+const team: TeamMember[] = config.team ?? [];
+if (team.length === 0) return;
+
+// If the first member has a photo AND no other members have photos,
+// render as a wide group card; otherwise render individual circles.
+const photoed = team.filter((m) => m.photoUrl);
+const hasGroupOnly = photoed.length === 1 && team.length === 1;
+const bookUrl = config.booking.externalUrl;
+---
+
+<section class="lotus-team section" id="team">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Het team</span>
+      <h2>Onze <em>therapeuten</em></h2>
+      <span class="gold-rule"></span>
+    </div>
+
+    {hasGroupOnly
+      ? (
+        /* Group-photo layout */
+        <div class="team-group-card reveal">
+          <div class="team-group-img">
+            <img
+              src={team[0].photoUrl}
+              alt={team[0].name}
+              loading="lazy"
+            />
+          </div>
+          <div class="team-group-text">
+            {team[0].role && <span class="eyebrow">{team[0].role}</span>}
+            <h3>{team[0].name}</h3>
+            {team[0].specialty && <p style="color:var(--cream-muted)">{team[0].specialty}</p>}
+            {bookUrl && (
+              <a href={bookUrl} target="_blank" rel="noopener" class="btn-outline" style="align-self:flex-start;margin-top:0.5rem">
+                Boek een behandeling
+              </a>
+            )}
+          </div>
+        </div>
+      )
+      : (
+        /* Individual member grid */
+        <div class="team-grid">
+          {team.map((m) => (
+            <div class="team-member reveal">
+              <div class="team-photo-wrap">
+                {m.photoUrl
+                  ? <img src={m.photoUrl} alt={m.name} loading="lazy" />
+                  : <div class="team-initial">{m.name.trim().charAt(0).toUpperCase()}</div>
+                }
+              </div>
+              <div class="team-name">{m.name}</div>
+              {m.role      && <span class="team-role">{m.role}</span>}
+              {m.specialty && <p class="team-specialty">{m.specialty}</p>}
+            </div>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</section>

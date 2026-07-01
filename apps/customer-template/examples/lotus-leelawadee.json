@@ -1,0 +1,103 @@
+{
+  "slug": "leeleewadee-massage",
+  "layout": "lotus",
+  "brand": {
+    "name": "Leeleewadee Massage",
+    "tagline": "Authentieke Thaise massage in Amsterdam",
+    "logoUrl": "https://leelawadee.nl/wp-content/uploads/2019/05/leelawadee-middel-e1558710824729.png",
+    "colors": {
+      "primary": "#1d4e3a",
+      "accent":  "#c8923a",
+      "ink":     "#1a1109",
+      "surface": "#ede4cd"
+    }
+  },
+  "hero": {
+    "headline": "Herstel. Rust. Balans.",
+    "subheadline": "Traditionele Thaise massage in Amsterdam — al meer dan 18 jaar door gediplomeerde therapeuten.",
+    "images": [
+      "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4368-HR.jpeg"
+    ],
+    "cta": {
+      "label": "Boek een behandeling",
+      "href": "https://www.fresha.com/nl/lvp/leelawadee-health-massage-van-heenvlietlaan-amsterdam-ovEwrx"
+    }
+  },
+  "about": {
+    "heading": "Professionele massage, precies zoals het hoort",
+    "body": [
+      "Leelawadee opende haar deuren in 2006 met één doel: echte, therapeutische massage beschikbaar maken voor iedereen in Amsterdam. Geen franje — alleen vakkundige behandelingen door gediplomeerde therapeuten.",
+      "Onze specialiteit is de traditionele Thaise massage: een eeuwenoude methode die werkt op spieren, gewrichten én energiebanen. Verwarmde massagetafels en traditionele Thaise technieken zorgen voor een omgeving waarin je écht tot rust komt.",
+      "Wij verwelkomen mannen, vrouwen en koppels, en bieden uitsluitend professionele gezondheidsmassages aan."
+    ],
+    "portrait": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4562-HR.jpeg",
+    "stats": [
+      { "label": "Jaar ervaring", "value": "18+" },
+      { "label": "Dagen per week open", "value": "7" },
+      { "label": "Open tot", "value": "22:00" }
+    ]
+  },
+  "services": [
+    {
+      "category": "Massages",
+      "items": [
+        { "name": "Traditionele Thaise Massage", "description": "Druk- en stretchtechnieken op spieren, gewrichten én energiebanen.", "price": 70, "durationMin": 60 },
+        { "name": "Traditionele Thaise Massage", "description": "Uitgebreide sessie voor volledig herstel.", "price": 95, "durationMin": 90 },
+        { "name": "Aromamassage", "description": "Ontspannende massage met warme aromatische oliën.", "price": 70, "durationMin": 60 },
+        { "name": "Aromamassage", "description": "Uitgebreide aromamassage voor diepe ontspanning.", "price": 95, "durationMin": 90 },
+        { "name": "Voetmassage", "description": "Reflexologie en drukpuntmassage op voeten en onderbenen.", "price": 70, "durationMin": 60 },
+        { "name": "Voet, Nek & Schouder", "description": "Gecombineerde behandeling van voeten, nek en schouders.", "price": 95, "durationMin": 90 },
+        { "name": "Nek & Schouder Massage", "description": "Gerichte behandeling voor spanning in nek en schouders.", "price": 45, "durationMin": 30 },
+        { "name": "Duo Massage", "description": "Samen genieten — twee behandelingen tegelijkertijd.", "price": null }
+      ]
+    }
+  ],
+  "gallery": [
+    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4395-HR.jpeg", "aspect": "landscape" },
+    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4467-HR.jpeg", "aspect": "landscape" },
+    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4378-HR.jpeg", "aspect": "landscape" },
+    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4411-HR.jpeg", "aspect": "landscape" },
+    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4492-HR.jpeg", "aspect": "square" },
+    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4540-HR.jpeg", "aspect": "square" },
+    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4525-HR.jpeg", "aspect": "square" },
+    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4562-HR.jpeg", "aspect": "portrait" },
+    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4473-HR.jpeg", "aspect": "landscape" },
+    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4501-HR.jpeg", "aspect": "landscape" }
+  ],
+  "hours": [
+    { "day": "Maandag",   "open": "10:00", "close": "22:00" },
+    { "day": "Dinsdag",   "open": "10:00", "close": "22:00" },
+    { "day": "Woensdag",  "open": "10:00", "close": "22:00" },
+    { "day": "Donderdag", "open": "10:00", "close": "22:00" },
+    { "day": "Vrijdag",   "open": "10:00", "close": "22:00" },
+    { "day": "Zaterdag",  "open": "10:00", "close": "22:00" },
+    { "day": "Zondag",    "open": "10:00", "close": "22:00" }
+  ],
+  "location": {
+    "address":  "Van Heenvlietlaan 9",
+    "postcode": "1083 CK",
+    "city":     "Amsterdam",
+    "country":  "Nederland"
+  },
+  "booking": {
+    "provider":    "custom",
+    "externalUrl": "https://www.fresha.com/nl/lvp/leelawadee-health-massage-van-heenvlietlaan-amsterdam-ovEwrx",
+    "label":       "Boek via Fresha"
+  },
+  "team": [
+    {
+      "name": "Ons team",
+      "role": "Zes ervaren therapeuten",
+      "specialty": "Al meer dan 18 jaar bieden wij vakkundige traditionele Thaise massage door gediplomeerde therapeuten — zeven dagen per week.",
+      "photoUrl": "https://leelawadee.nl/wp-content/uploads/2021/04/03CEB067-D22C-4EFC-A73D-2B315BC54388-400x300.jpeg"
+    }
+  ],
+  "contact": {
+    "phone": "+31207723889"
+  },
+  "meta": {
+    "title":       "Leeleewadee Massage Amsterdam",
+    "description": "Authentieke Thaise massage in Amsterdam. Gediplomeerde therapeuten, 7 dagen open, 10:00–22:00.",
+    "locale":      "nl-NL"
+  }
+}
