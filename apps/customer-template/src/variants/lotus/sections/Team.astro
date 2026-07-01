@@ -6,14 +6,12 @@ const { config } = Astro.props;
 const team: TeamMember[] = config.team ?? [];
 if (team.length === 0) return;
 
-// If the first member has a photo AND no other members have photos,
-// render as a wide group card; otherwise render individual circles.
-const photoed = team.filter((m) => m.photoUrl);
+const photoed      = team.filter((m) => m.photoUrl);
 const hasGroupOnly = photoed.length === 1 && team.length === 1;
-const bookUrl = config.booking.externalUrl;
+const bookUrl      = config.booking.externalUrl;
 ---
 
-<section class="lotus-team section" id="team">
+<section class="lotus-team section section-light" id="team">
   <div class="container">
     <div class="section-head reveal">
       <span class="eyebrow">Het team</span>
@@ -23,14 +21,9 @@ const bookUrl = config.booking.externalUrl;
 
     {hasGroupOnly
       ? (
-        /* Group-photo layout */
         <div class="team-group-card reveal">
           <div class="team-group-img">
-            <img
-              src={team[0].photoUrl}
-              alt={team[0].name}
-              loading="lazy"
-            />
+            <img src={team[0].photoUrl} alt={team[0].name} loading="lazy" />
           </div>
           <div class="team-group-text">
             {team[0].role && <span class="eyebrow">{team[0].role}</span>}
@@ -45,7 +38,6 @@ const bookUrl = config.booking.externalUrl;
         </div>
       )
       : (
-        /* Individual member grid */
         <div class="team-grid">
           {team.map((m) => (
             <div class="team-member reveal">

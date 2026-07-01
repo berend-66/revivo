@@ -5,18 +5,38 @@ const { config } = Astro.props;
 
 const categories = config.services ?? [];
 const multiCat   = categories.length > 1;
+const bookUrl    = config.booking.externalUrl;
 
-function fmtPrice(item: (typeof categories)[0]["items"][0]): string {
+type RawItem = (typeof categories)[0]["items"][0];
+
+function fmtPrice(item: RawItem): string {
   if (item.price === null || item.price === undefined) return "Op aanvraag";
   const cents = Math.round(item.price * 100);
   const euros = Math.floor(cents / 100);
   const rest  = cents % 100;
   const num   = rest === 0 ? `${euros}` : `${euros},${String(rest).padStart(2, "0")}`;
-  return `${item.from ? "vanaf " : ""}€ ${num}`;
+  return `${item.from ? "vanaf " : ""}€${num}`;
 }
+
+type EnrichedItem = RawItem & { photoUrl: string | null };
+type EnrichedCategory = { category: string; items: EnrichedItem[]; isFirst: boolean };
+
+let galleryOffset = 0;
+const processedCategories: EnrichedCategory[] = categories.map((cat, ci) => {
+  const offset = galleryOffset;
+  galleryOffset += cat.items.length;
+  return {
+    category: cat.category,
+    isFirst:  ci === 0,
+    items: cat.items.map((item, ii) => ({
+      ...item,
+      photoUrl: config.gallery[offset + ii]?.url ?? null,
+    })),
+  };
+});
 ---
 
-<section class="lotus-services section" id="services">
+<section class="lotus-services section section-light" id="services">
   <div class="container">
     <div class="section-head reveal">
       <span class="eyebrow">Behandelingen</span>
@@ -26,11 +46,11 @@ function fmtPrice(item: (typeof categories)[0]["items"][0]): string {
 
     {multiCat && (
       <div class="services-tabs" role="tablist">
-        {categories.map((cat, i) => (
+        {processedCategories.map((cat) => (
           <button
-            class={`tab${i === 0 ? " active" : ""}`}
+            class={`tab${cat.isFirst ? " active" : ""}`}
             role="tab"
-            aria-selected={i === 0 ? "true" : "false"}
+            aria-selected={cat.isFirst ? "true" : "false"}
             data-tab={cat.category}
           >
             {cat.category}
@@ -39,21 +59,33 @@ function fmtPrice(item: (typeof categories)[0]["items"][0]): string {
       </div>
     )}
 
-    {categories.map((cat, i) => (
+    {processedCategories.map((cat) => (
       <div
-        class={`panel${!multiCat || i === 0 ? " active" : ""}`}
+        class={`panel${!multiCat || cat.isFirst ? " active" : ""}`}
         data-panel={cat.category}
         role="tabpanel"
       >
         <div class="services-grid">
           {cat.items.map((item) => (
-            <div class="svc-card">
-              <div class="svc-name">{item.name}</div>
-              {item.description && <p class="svc-desc">{item.description}</p>}
-              <div class="svc-meta">
-                <span class="svc-price">{fmtPrice(item)}</span>
-                {item.durationMin && (
-                  <span class="svc-duration">{item.durationMin} min</span>
+            <div class={`svc-card${item.photoUrl ? " has-photo" : ""}`}>
+              {item.photoUrl && (
+                <div class="svc-photo-wrap">
+                  <img src={item.photoUrl} alt={item.name} loading="lazy" />
+                </div>
+              )}
+              <div class="svc-card-body">
+                <div class="svc-name">{item.name}</div>
+                {item.description && <p class="svc-desc">{item.description}</p>}
+                <div class="svc-meta">
+                  <span class="svc-price">{fmtPrice(item)}</span>
+                  {item.durationMin && (
+                    <span class="svc-duration">{item.durationMin} min</span>
+                  )}
+                </div>
+                {bookUrl && (
+                  <a href={bookUrl} target="_blank" rel="noopener" class="svc-book-link">
+                    Boek deze massage →
+                  </a>
                 )}
               </div>
             </div>

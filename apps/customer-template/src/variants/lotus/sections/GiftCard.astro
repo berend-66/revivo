@@ -1,0 +1,34 @@
+---
+import type { SiteConfig } from "@revivo/shared";
+interface Props { config: SiteConfig }
+const { config } = Astro.props;
+
+const bookUrl   = config.booking.externalUrl;
+const brandName = config.brand.name;
+---
+
+<section class="lotus-giftcard" id="giftcard">
+  <div class="container">
+    <div class="giftcard-inner reveal">
+      <div class="giftcard-text">
+        <span class="eyebrow">Cadeaubon</span>
+        <h2>Geef ontspanning cadeau</h2>
+        <p>
+          Verras iemand met een moment van echte rust — een authentieke Thaise massage van {brandName}.
+          Verkrijgbaar voor alle behandelingen en elke gelegenheid.
+        </p>
+        {bookUrl && (
+          <a href={bookUrl} target="_blank" rel="noopener" class="btn-giftcard">
+            Vraag een cadeaubon aan →
+          </a>
+        )}
+      </div>
+      <div class="giftcard-visual" aria-hidden="true">
+        <div class="giftcard-visual-line"></div>
+        <div class="giftcard-visual-name">{brandName}</div>
+        <div class="giftcard-visual-line"></div>
+        <div class="giftcard-visual-label">Cadeaubon</div>
+      </div>
+    </div>
+  </div>
+</section>

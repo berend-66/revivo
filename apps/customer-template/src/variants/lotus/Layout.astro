@@ -9,6 +9,7 @@ import Services from "./sections/Services.astro";
 import Gallery from "./sections/Gallery.astro";
 import Team from "./sections/Team.astro";
 import Testimonials from "./sections/Testimonials.astro";
+import GiftCard from "./sections/GiftCard.astro";
 import BookingCta from "./sections/BookingCta.astro";
 import LocationHours from "./sections/LocationHours.astro";
 import Footer from "./sections/Footer.astro";
@@ -72,6 +73,7 @@ const splashRest  = nameWords.length > 1 ? nameWords.slice(1).join(" ") : config
       <Services config={config} />
       <Gallery config={config} />
       {config.team        && config.team.length        > 0 && <Team         config={config} />}
+      <GiftCard config={config} />
       {config.testimonials && config.testimonials.length > 0 && <Testimonials config={config} />}
       <BookingCta    config={config} />
       <LocationHours config={config} />

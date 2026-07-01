@@ -6,11 +6,38 @@ const { config } = Astro.props;
 const list = config.testimonials ?? [];
 if (list.length === 0) return;
 
-const stars = (n?: number) => n ? "★".repeat(n) + "☆".repeat(5 - n) : "★★★★★";
+const stars = (n?: number) => "★".repeat(n ?? 5) + "☆".repeat(5 - (n ?? 5));
+const rep   = config.reputation;
+const bgImg = config.hero.images[0];
 ---
 
 <section class="lotus-testimonials section" id="reviews">
+  {bgImg && (
+    <div
+      class="testimonials-bg-img"
+      style={`background-image: url('${bgImg}')`}
+      aria-hidden="true"
+    ></div>
+  )}
   <div class="container">
+    {rep && (
+      <div class="testimonials-aggregate reveal">
+        <span class="agg-stars">★★★★★</span>
+        <span class="agg-score">{rep.rating.toFixed(1).replace(".", ",")}</span>
+        {rep.reviewCount && (
+          <>
+            <span class="agg-sep">·</span>
+            <span class="agg-count">{rep.reviewCount}+ beoordelingen</span>
+          </>
+        )}
+        {rep.source && (
+          <>
+            <span class="agg-sep">·</span>
+            <span class="agg-count">{rep.source}</span>
+          </>
+        )}
+      </div>
+    )}
     <div class="section-head reveal">
       <span class="eyebrow">Reviews</span>
       <h2>Wat klanten <em>zeggen</em></h2>

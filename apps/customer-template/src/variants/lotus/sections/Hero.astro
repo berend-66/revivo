@@ -3,10 +3,10 @@ import type { SiteConfig } from "@revivo/shared";
 interface Props { config: SiteConfig }
 const { config } = Astro.props;
 
-const { hero, brand, booking } = config;
-const bgImage    = hero.images[0];
-const ctaLabel   = hero.cta?.label ?? "Boek een behandeling";
-const ctaHref    = hero.cta?.href  ?? booking.externalUrl ?? "#services";
+const { hero, brand, booking, reputation } = config;
+const bgImage  = hero.images[0];
+const ctaLabel = hero.cta?.label ?? "Boek Direct";
+const ctaHref  = hero.cta?.href  ?? booking.externalUrl ?? "#services";
 ---
 
 <section class="lotus-hero" id="top" aria-label="Hero">
@@ -19,6 +19,24 @@ const ctaHref    = hero.cta?.href  ?? booking.externalUrl ?? "#services";
   <div class="hero-overlay" aria-hidden="true"></div>
 
   <div class="hero-content">
+    {reputation && (
+      <div class="hero-rating" aria-label={`${reputation.rating} van 5 sterren op ${reputation.source ?? "Google"}`}>
+        <span class="hero-rating-stars">★★★★★</span>
+        <span class="hero-rating-score">{reputation.rating.toFixed(1).replace(".", ",")}</span>
+        {reputation.reviewCount && (
+          <>
+            <span class="hero-rating-sep">·</span>
+            <span class="hero-rating-count">{reputation.reviewCount}+ beoordelingen</span>
+          </>
+        )}
+        {reputation.source && (
+          <>
+            <span class="hero-rating-sep">·</span>
+            <span class="hero-rating-source">{reputation.source}</span>
+          </>
+        )}
+      </div>
+    )}
     {brand.tagline && <span class="eyebrow">{brand.tagline}</span>}
     <h1>{hero.headline}</h1>
     {hero.subheadline && <p class="hero-subtitle">{hero.subheadline}</p>}

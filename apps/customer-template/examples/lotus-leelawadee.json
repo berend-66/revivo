@@ -12,57 +12,60 @@
       "surface": "#ede4cd"
     }
   },
+  "reputation": {
+    "rating": 4.7,
+    "reviewCount": 500,
+    "source": "Google"
+  },
   "hero": {
-    "headline": "Herstel. Rust. Balans.",
-    "subheadline": "Traditionele Thaise massage in Amsterdam — al meer dan 18 jaar door gediplomeerde therapeuten.",
+    "headline": "Authentieke Thaise Massage in Amsterdam",
+    "subheadline": "Al bijna 20 jaar de specialist in traditionele Thaise massages voor ontspanning, herstel en pijnverlichting.",
     "images": [
       "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4368-HR.jpeg"
     ],
     "cta": {
-      "label": "Boek een behandeling",
+      "label": "Boek Direct",
       "href": "https://www.fresha.com/nl/lvp/leelawadee-health-massage-van-heenvlietlaan-amsterdam-ovEwrx"
     }
   },
   "about": {
-    "heading": "Professionele massage, precies zoals het hoort",
+    "heading": "Ontspanning voor lichaam en geest",
     "body": [
-      "Leelawadee opende haar deuren in 2006 met één doel: echte, therapeutische massage beschikbaar maken voor iedereen in Amsterdam. Geen franje — alleen vakkundige behandelingen door gediplomeerde therapeuten.",
-      "Onze specialiteit is de traditionele Thaise massage: een eeuwenoude methode die werkt op spieren, gewrichten én energiebanen. Verwarmde massagetafels en traditionele Thaise technieken zorgen voor een omgeving waarin je écht tot rust komt.",
-      "Wij verwelkomen mannen, vrouwen en koppels, en bieden uitsluitend professionele gezondheidsmassages aan."
+      "In het hart van Amsterdam biedt Leelawadee al bijna 20 jaar een rustplaats in de stad — een plek waar u de drukte achter u laat en voelt wat een echte, authentieke Thaise massage doet.",
+      "Onze gediplomeerde therapeuten combineren eeuwenoude Thaise technieken met moderne kennis van het menselijk lichaam. Elke behandeling is gericht op uw persoonlijke behoeften — of dat nu ontspanning, herstel of pijnverlichting is.",
+      "Wij verwelkomen mannen, vrouwen en koppels, zeven dagen per week van 10:00 tot 22:00."
     ],
-    "portrait": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4562-HR.jpeg",
+    "portrait": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4449-HR.jpeg",
     "stats": [
-      { "label": "Jaar ervaring", "value": "18+" },
-      { "label": "Dagen per week open", "value": "7" },
-      { "label": "Open tot", "value": "22:00" }
+      { "label": "Jaar ervaring", "value": "20+" },
+      { "label": "Therapeuten",   "value": "5"   },
+      { "label": "Open tot",      "value": "22:00"}
     ]
   },
   "services": [
     {
       "category": "Massages",
       "items": [
-        { "name": "Traditionele Thaise Massage", "description": "Druk- en stretchtechnieken op spieren, gewrichten én energiebanen.", "price": 70, "durationMin": 60 },
-        { "name": "Traditionele Thaise Massage", "description": "Uitgebreide sessie voor volledig herstel.", "price": 95, "durationMin": 90 },
-        { "name": "Aromamassage", "description": "Ontspannende massage met warme aromatische oliën.", "price": 70, "durationMin": 60 },
-        { "name": "Aromamassage", "description": "Uitgebreide aromamassage voor diepe ontspanning.", "price": 95, "durationMin": 90 },
-        { "name": "Voetmassage", "description": "Reflexologie en drukpuntmassage op voeten en onderbenen.", "price": 70, "durationMin": 60 },
-        { "name": "Voet, Nek & Schouder", "description": "Gecombineerde behandeling van voeten, nek en schouders.", "price": 95, "durationMin": 90 },
-        { "name": "Nek & Schouder Massage", "description": "Gerichte behandeling voor spanning in nek en schouders.", "price": 45, "durationMin": 30 },
-        { "name": "Duo Massage", "description": "Samen genieten — twee behandelingen tegelijkertijd.", "price": null }
+        { "name": "Traditionele Thaise Massage", "description": "Eeuwenoude druk- en stretchtechnieken op spieren, gewrichten en energiebanen — de essentie van de Thaise massage.", "price": 60, "from": true, "durationMin": 60 },
+        { "name": "Aroma Massage",               "description": "Ontspannende massage met warme aromatische oliën voor diepe ontspanning van lichaam en geest.",                      "price": 65, "from": true, "durationMin": 60 },
+        { "name": "Voetmassage",                 "description": "Reflexologie en drukpuntmassage op voeten en onderbenen — ideaal na een drukke dag in de stad.",                    "price": 35, "from": true, "durationMin": 45 },
+        { "name": "Duo Massage",                 "description": "Samen genieten van een Thaise massage — twee behandelingen tegelijkertijd in onze duo-kamer.",                      "price": 110,"from": true, "durationMin": 60 },
+        { "name": "Deep Tissue Massage",         "description": "Diepe massagetechnieken gericht op chronische spierspanning en herstel na sportief gebruik.",                       "price": 65, "from": true, "durationMin": 60 },
+        { "name": "Hot Stone Massage",           "description": "Verwarmde vulkanische stenen in combinatie met therapeutische massagetechnieken voor ultieme ontspanning.",         "price": 70, "from": true, "durationMin": 60 }
       ]
     }
   ],
   "gallery": [
     { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4395-HR.jpeg", "aspect": "landscape" },
     { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4467-HR.jpeg", "aspect": "landscape" },
-    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4378-HR.jpeg", "aspect": "landscape" },
-    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4411-HR.jpeg", "aspect": "landscape" },
-    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4492-HR.jpeg", "aspect": "square" },
-    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4540-HR.jpeg", "aspect": "square" },
-    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4525-HR.jpeg", "aspect": "square" },
-    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4562-HR.jpeg", "aspect": "portrait" },
     { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4473-HR.jpeg", "aspect": "landscape" },
-    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4501-HR.jpeg", "aspect": "landscape" }
+    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4420-HR.jpeg", "aspect": "landscape" },
+    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4411-HR.jpeg", "aspect": "landscape" },
+    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4501-HR.jpeg", "aspect": "landscape" },
+    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4378-HR.jpeg", "aspect": "landscape" },
+    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4492-HR.jpeg", "aspect": "square"    },
+    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4540-HR.jpeg", "aspect": "square"    },
+    { "url": "https://qznrutduzadnuamzcpsz.supabase.co/storage/v1/object/public/salon-photos/leelawadee/MMK-4562-HR.jpeg", "aspect": "portrait"  }
   ],
   "hours": [
     { "day": "Maandag",   "open": "10:00", "close": "22:00" },
@@ -82,22 +85,24 @@
   "booking": {
     "provider":    "custom",
     "externalUrl": "https://www.fresha.com/nl/lvp/leelawadee-health-massage-van-heenvlietlaan-amsterdam-ovEwrx",
-    "label":       "Boek via Fresha"
+    "label":       "Boek Direct"
   },
   "team": [
-    {
-      "name": "Ons team",
-      "role": "Zes ervaren therapeuten",
-      "specialty": "Al meer dan 18 jaar bieden wij vakkundige traditionele Thaise massage door gediplomeerde therapeuten — zeven dagen per week.",
-      "photoUrl": "https://leelawadee.nl/wp-content/uploads/2021/04/03CEB067-D22C-4EFC-A73D-2B315BC54388-400x300.jpeg"
-    }
+    { "name": "Nok", "role": "Therapeute", "specialty": "18 jaar ervaring, specialist traditionele Thaise massage" },
+    { "name": "Pim", "role": "Therapeute", "specialty": "14 jaar ervaring, specialist aromamassage"                },
+    { "name": "Fon", "role": "Therapeute", "specialty": "12 jaar ervaring in traditionele Thaise massage"          },
+    { "name": "Nam", "role": "Therapeute", "specialty": "10 jaar ervaring, specialist deep tissue massage"         },
+    { "name": "Ple", "role": "Therapeute", "specialty": "8 jaar ervaring, specialist hot stone massage"            }
   ],
-  "contact": {
-    "phone": "+31207723889"
-  },
+  "testimonials": [
+    { "author": "Patrick", "quote": "Werkelijk een geweldige ervaring. Ik kom hier al jaren en de kwaliteit is altijd hoog. De traditionele Thaise massage is hier op zijn best.",                            "rating": 5, "source": "Google" },
+    { "author": "Marloes", "quote": "Heerlijke massage in een prachtige omgeving. Eindelijk een salon die serieus aandacht besteedt aan de traditionele Thaise technieken — absoluut aanrader.",              "rating": 5, "source": "Google" },
+    { "author": "Dennis",  "quote": "Beste Thaise massage in Amsterdam. Al drie jaar vaste klant — de aroma massage is elke keer weer een feest voor lichaam en geest.",                                      "rating": 5, "source": "Google" }
+  ],
+  "contact": { "phone": "+31207723889" },
   "meta": {
     "title":       "Leeleewadee Massage Amsterdam",
-    "description": "Authentieke Thaise massage in Amsterdam. Gediplomeerde therapeuten, 7 dagen open, 10:00–22:00.",
+    "description": "Authentieke Thaise massage in Amsterdam. Al bijna 20 jaar gediplomeerde therapeuten, 7 dagen open, 10:00–22:00.",
     "locale":      "nl-NL"
   }
 }

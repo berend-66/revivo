@@ -497,12 +497,19 @@ body.menu-open #mobile-menu { display: flex; }
 }
 .svc-card {
   background: var(--surface-2);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  transition: background 0.2s;
+}
+.svc-card-body {
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  position: relative;
-  transition: background 0.2s;
+  flex: 1;
 }
 .svc-card::before {
   content: '';
@@ -822,4 +829,216 @@ body.menu-open #mobile-menu { display: flex; }
 }
 @media (max-width: 480px) {
   .footer-inner { grid-template-columns: 1fr; }
+}
+
+/* ─── Service card photo ─────────────────────────────────────────── */
+.svc-photo-wrap {
+  aspect-ratio: 3/2;
+  overflow: hidden;
+  flex-shrink: 0;
+  width: 100%;
+}
+.svc-photo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.55s var(--ease);
+}
+.svc-card:hover .svc-photo-wrap img { transform: scale(1.04); }
+.svc-card.has-photo::before { display: none; }
+.svc-card.has-photo .svc-card-body { border-top: 1px solid var(--gold); }
+
+/* "Boek" text link in service card */
+.svc-book-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding-top: 0.25rem;
+  transition: gap 0.2s var(--ease);
+}
+.svc-book-link:hover { gap: 0.6rem; }
+
+/* ─── Hero rating badge ──────────────────────────────────────────── */
+.hero-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: color-mix(in oklab, var(--ground) 78%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in oklab, var(--gold) 28%, transparent);
+  padding: 0.45rem 0.9rem;
+  margin-bottom: 1.25rem;
+}
+.hero-rating-stars { color: #F59E0B; font-size: 0.85rem; letter-spacing: 0.04em; }
+.hero-rating-score {
+  font-family: var(--serif);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--cream);
+}
+.hero-rating-sep { color: var(--cream-faint); font-size: 0.8rem; }
+.hero-rating-count { font-size: 0.7rem; color: var(--cream-muted); }
+.hero-rating-source { font-size: 0.7rem; color: var(--gold); }
+
+/* ─── Light sections (cream background) ─────────────────────────── */
+.lotus-about.section-light,
+.lotus-services.section-light,
+.lotus-team.section-light { background: var(--cream); }
+
+.section-light h2,
+.section-light h3,
+.section-light h4 { color: var(--ink); }
+.section-light h2 em { color: var(--gold-deep); }
+.section-light .eyebrow { color: var(--gold-deep); }
+.section-light .gold-rule { background: var(--gold-deep); }
+
+/* About — light */
+.section-light .about-body { color: color-mix(in oklab, var(--ink) 65%, transparent); }
+.section-light .about-stats { border-top-color: color-mix(in oklab, var(--ink) 14%, transparent); }
+.section-light .stat-value { color: var(--gold-deep); }
+.section-light .stat-label { color: color-mix(in oklab, var(--ink) 55%, transparent); }
+.section-light .about-image-frame::after { border-color: var(--gold-deep); }
+
+/* Services — light */
+.section-light .services-tabs { border-bottom-color: color-mix(in oklab, var(--ink) 14%, transparent); }
+.section-light .tab { color: color-mix(in oklab, var(--ink) 50%, transparent); }
+.section-light .tab:hover { color: var(--ink); }
+.section-light .tab.active { color: var(--gold-deep); border-bottom-color: var(--gold-deep); }
+.section-light .services-grid { background: color-mix(in oklab, var(--gold-deep) 18%, var(--cream)); }
+.section-light .svc-card { background: white; }
+.section-light .svc-card:hover { background: color-mix(in oklab, white 94%, var(--ink)); }
+.section-light .svc-card::before { background: var(--gold-deep); }
+.section-light .svc-card.has-photo .svc-card-body { border-top-color: var(--gold-deep); }
+.section-light .svc-name { color: var(--ink); }
+.section-light .svc-desc { color: color-mix(in oklab, var(--ink) 58%, transparent); }
+.section-light .svc-meta { border-top-color: color-mix(in oklab, var(--ink) 10%, transparent); }
+.section-light .svc-price { color: var(--gold-deep); }
+.section-light .svc-duration { color: color-mix(in oklab, var(--ink) 42%, transparent); }
+.section-light .svc-book-link { color: var(--gold-deep); }
+
+/* Team — light */
+.section-light .team-photo-wrap {
+  border-color: var(--gold-deep);
+  box-shadow: 0 0 0 5px color-mix(in oklab, var(--gold-deep) 12%, var(--cream));
+}
+.section-light .team-initial {
+  background: color-mix(in oklab, var(--cream) 82%, var(--ink));
+  color: var(--gold-deep);
+}
+.section-light .team-name { color: var(--ink); }
+.section-light .team-role { color: var(--gold-deep); }
+.section-light .team-specialty { color: color-mix(in oklab, var(--ink) 58%, transparent); }
+
+/* ─── Testimonials — atmospheric dark ───────────────────────────── */
+.lotus-testimonials { position: relative; overflow: hidden; }
+.testimonials-bg-img {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.09;
+  pointer-events: none;
+}
+.lotus-testimonials .container { position: relative; z-index: 1; }
+
+.testimonials-aggregate {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 1.1rem;
+  border: 1px solid var(--gold-line);
+  background: var(--surface-2);
+  margin-bottom: 2rem;
+}
+.agg-stars { color: #F59E0B; font-size: 0.95rem; }
+.agg-score { font-family: var(--serif); font-size: 1.05rem; font-weight: 500; color: var(--gold); }
+.agg-sep { color: var(--cream-faint); font-size: 0.75rem; }
+.agg-count { font-size: 0.72rem; color: var(--cream-muted); }
+
+/* ─── Gift card section ──────────────────────────────────────────── */
+.lotus-giftcard {
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--gold-deep) 85%, black) 0%,
+    var(--gold-deep) 55%,
+    color-mix(in oklab, var(--gold) 72%, white) 100%
+  );
+  padding-block: clamp(4rem, 7vw, 6rem);
+}
+.giftcard-inner {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 3rem;
+  align-items: center;
+}
+.giftcard-text .eyebrow { color: color-mix(in oklab, var(--ground) 65%, transparent); }
+.giftcard-text h2 {
+  color: var(--ground);
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  margin-bottom: 0.75rem;
+}
+.giftcard-text p {
+  color: color-mix(in oklab, var(--ground) 68%, transparent);
+  font-size: 1rem;
+  max-width: 50ch;
+  margin-bottom: 1.75rem;
+}
+.btn-giftcard {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.85rem 2rem;
+  background: var(--ground);
+  color: var(--gold);
+  transition: background 0.2s var(--ease);
+}
+.btn-giftcard:hover { background: color-mix(in oklab, var(--ground) 82%, var(--gold)); }
+.giftcard-visual {
+  width: clamp(150px, 17vw, 210px);
+  aspect-ratio: 1.586;
+  background: color-mix(in oklab, var(--ground) 80%, transparent);
+  border: 1px solid color-mix(in oklab, var(--cream) 30%, transparent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  flex-shrink: 0;
+}
+.giftcard-visual-line {
+  width: 2rem;
+  height: 1px;
+  background: color-mix(in oklab, var(--gold) 50%, transparent);
+  margin-block: 0.15rem;
+}
+.giftcard-visual-name {
+  font-family: var(--serif);
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--cream);
+  text-align: center;
+  line-height: 1.3;
+}
+.giftcard-visual-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-top: 0.1rem;
+}
+@media (max-width: 640px) {
+  .giftcard-inner { grid-template-columns: 1fr; }
+  .giftcard-visual { display: none; }
 }
