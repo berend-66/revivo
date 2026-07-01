@@ -37,7 +37,13 @@ const links = [
     <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
-    <a href="#top" class="nav-brand">{lead && <em>{lead}</em>}{lead ? ` ${rest}` : rest}</a>
+    {config.brand.logoUrl ? (
+      <a href="#top" class="nav-brand nav-brand-logo">
+        <img src={config.brand.logoUrl} alt={config.brand.name} height="40" />
+      </a>
+    ) : (
+      <a href="#top" class="nav-brand">{lead && <em>{lead}</em>}{lead ? ` ${rest}` : rest}</a>
+    )}
     <div class="nav-links">
       {links.map((l) => <a href={l.href}>{l.label}</a>)}
     </div>

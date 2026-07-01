@@ -330,6 +330,16 @@ p {
 .nav.scrolled .nav-brand {
   color: var(--bordeaux);
 }
+.nav-brand-logo img {
+  height: 40px;
+  width: auto;
+  display: block;
+  filter: brightness(0) invert(1);
+  transition: filter 0.35s var(--ease);
+}
+.nav.scrolled .nav-brand-logo img {
+  filter: none;
+}
 .nav-links {
   display: none;
   gap: 36px;
