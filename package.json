@@ -16,7 +16,9 @@
     "verify-mockup": "pnpm -F @revivo/verify verify",
     "crawl-marketplace": "tsx scripts/crawl-marketplace.ts",
     "generate-pending": "tsx scripts/generate-pending.ts",
-    "build-openers": "tsx scripts/build-openers.ts"
+    "build-openers": "tsx scripts/build-openers.ts",
+    "send-outreach-emails": "tsx scripts/send-outreach-emails.ts",
+    "find-store-emails": "tsx scripts/find-store-emails.ts"
   },
   "devDependencies": {
     "@revivo/db": "workspace:*",
@@ -27,5 +29,9 @@
     "dotenv": "^16.4.5",
     "tsx": "^4.19.0",
     "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@types/nodemailer": "^8.0.1",
+    "nodemailer": "^9.0.1"
   }
 }

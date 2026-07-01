@@ -17,7 +17,7 @@ import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 import dotenv from "dotenv";
-import { SiteConfigSchema, buildOpener, DEFAULT_MOCK_BASE_URL } from "@revivo/shared";
+import { SiteConfigSchema, buildOpener, DEFAULT_MOCK_BASE_URL, isDutchMobile, type OpenerCampaign } from "@revivo/shared";
 import { createServiceClient, getMockupsByLeadId, listLeadsByStatus, setLeadStatus } from "@revivo/db";
 import { renderOpenersHtml, type OpenerCard } from "./openers-html.ts";
 
@@ -26,12 +26,14 @@ dotenv.config({ path: resolve(fileURLToPath(import.meta.url), "../../.env") });
 
 const { values } = parseArgs({
   options: {
-    limit: { type: "string" },
-    out: { type: "string" },
-    html: { type: "string" },
-    "mark-sent": { type: "boolean", default: false },
+    limit:      { type: "string" },
+    out:        { type: "string" },
+    html:       { type: "string" },
+    campaign:   { type: "string" },   // e.g. "wk-nl-ma"
+    top:          { type: "boolean", default: false },
+    "mark-sent":  { type: "boolean", default: false },
     "no-website": { type: "boolean", default: false },
-    help: { type: "boolean", default: false },
+    help:         { type: "boolean", default: false },
   },
 });
 
@@ -46,12 +48,18 @@ function usage(exitCode: number): never {
   --mark-sent      Flip the emitted leads to 'outreach_sent' after printing.
                    Only run with this flag at the moment you actually send.
   --no-website     Only emit leads where has_website = false (salons with no
-                   own site). Uses the stronger "eerste website" opener angle.`,
+                   own site). Uses the stronger "eerste website" opener angle.
+  --campaign <id>  Use a named campaign opener (e.g. "wk-nl-ma" for NL-Marokko
+                   match day). Replaces the generic intro; same factual grounding.
+  --top            Sort by quality score (rating × reviews) and take the best
+                   --limit leads. WhatsApp-available leads rank higher.`,
   );
   process.exit(exitCode);
 }
 
 if (values.help) usage(0);
+
+const campaign = values.campaign as OpenerCampaign | undefined;
 
 function requirePositiveInt(raw: string | undefined, flag: string, fallback: number): number {
   if (raw === undefined) return fallback;
@@ -69,10 +77,35 @@ const limit = requirePositiveInt(values.limit, "--limit", 50);
 const base = (process.env.REVIVO_MOCK_BASE_URL ?? DEFAULT_MOCK_BASE_URL).replace(/\/$/, "");
 
 const client = createServiceClient();
-const allLeads = await listLeadsByStatus(client, "mockup_generated", limit);
-const leads = values["no-website"]
+// When --top: over-fetch everything so we can sort before slicing.
+const fetchLimit = values.top ? 500 : limit;
+const allLeads = await listLeadsByStatus(client, "mockup_generated", fetchLimit);
+
+function qualityScore(lead: (typeof allLeads)[0]): number {
+  const rep = lead.listing_facts_json?.reputation;
+  if (!rep?.rating || !rep?.reviewCount) return 0;
+  // rating (4–5) × log10(reviews) — gives a score roughly 4–10
+  return rep.rating * Math.log10(rep.reviewCount + 1);
+}
+
+let leads = values["no-website"]
   ? allLeads.filter((l) => l.has_website === false)
   : allLeads;
+
+if (values.top) {
+  // Sort: WhatsApp-able leads (confirmed Dutch mobile) first, then by quality score.
+  leads = leads
+    .slice()
+    .sort((a, b) => {
+      const scoreA = qualityScore(a);
+      const scoreB = qualityScore(b);
+      const waA = isDutchMobile(a.listing_facts_json?.phone ?? undefined) ? 10 : 0;
+      const waB = isDutchMobile(b.listing_facts_json?.phone ?? undefined) ? 10 : 0;
+      return (scoreB + waB) - (scoreA + waA);
+    })
+    .slice(0, limit);
+  console.log(`\n--top: ${allLeads.length} leads gesorteerd op kwaliteit, top ${leads.length} geselecteerd.\n`);
+}
 
 const blocks: string[] = [];
 const cards: OpenerCard[] = [];
@@ -105,6 +138,7 @@ for (const lead of leads) {
     mockUrl,
     facts: lead.listing_facts_json,
     noWebsite: lead.has_website === false,
+    campaign,
   });
 
   blocks.push(
@@ -122,6 +156,7 @@ for (const lead of leads) {
       ``,
     ].join("\n"),
   );
+  const rawFacts = lead.listing_facts_json as Record<string, unknown> | null;
   cards.push({
     slug: mockup.slug,
     name,
@@ -134,6 +169,8 @@ for (const lead of leads) {
     phone: parsed.data.contact.phone ?? lead.listing_facts_json?.phone ?? undefined,
     listingUrl: lead.listing_url ?? undefined,
     instagram: lead.listing_facts_json?.instagram ?? undefined,
+    email: (rawFacts?.email as string | undefined) ?? undefined,
+    noWebsite: lead.has_website === false,
   });
   emittedLeadIds.push(lead.id);
 }

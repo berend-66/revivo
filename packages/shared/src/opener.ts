@@ -57,6 +57,11 @@ export const DEFAULT_MOCK_BASE_URL = "https://revivo-mockups.vercel.app";
  * Brand constant, not env-configurable. */
 export const MARKETING_URL = "https://revivostudios.io/";
 
+/** Named campaign variants for the opener intro.
+ *  "wk-nl-ma" = NL vs Marokko WK match day — references the game
+ *  as a casual reason to share the mockup. */
+export type OpenerCampaign = "wk-nl-ma";
+
 export interface OpenerInput {
   config: SiteConfig;
   /** Full public mockup URL (e.g. https://mock.revivo.nl/utrecht-hairstyle) —
@@ -67,6 +72,10 @@ export interface OpenerInput {
   /** True when the salon has NO own website — enables the stronger "eerste
    * website" angle instead of the generic "ik heb een voorbeeld gemaakt". */
   noWebsite?: boolean;
+  /** Optional named campaign that replaces the generic intro with a
+   * timely hook (e.g. a match day). Copy stays factual — only the
+   * framing changes; the mockup link + contents clause are unchanged. */
+  campaign?: OpenerCampaign;
 }
 
 export interface Opener {
@@ -169,7 +178,7 @@ function encodeWaText(text: string): string {
 }
 
 export function buildOpener(input: OpenerInput): Opener {
-  const { config, mockUrl, facts, noWebsite } = input;
+  const { config, mockUrl, facts, noWebsite, campaign } = input;
   const name = config.brand.name;
   const hook = pickHook(config, facts);
   const contents = realContentsClause(config, facts);
@@ -188,7 +197,34 @@ export function buildOpener(input: OpenerInput): Opener {
   let emailSubject: string;
   let emailBody: string;
 
-  if (noWebsite) {
+  if (campaign === "wk-nl-ma") {
+    // Match-day campaign: NL vs Marokko WK. Football-themed framing, same
+    // mockup link + sign-off. "finale versie" is an intentional double meaning.
+    // noWebsite distinction kept for the subject line only — body is unified.
+    plainText = [
+      `Hoi! Jij ook NL-Marokko aan het kijken? 👀`,
+      `Ik maak websites voor salons zodat jullie ook op het hoogste niveau kunnen spelen. Om ervoor te zorgen dat je in de rust wat kan kijken om je wakker te houden heb ik alvast een eerste versie gemaakt voor ${name}:`,
+      mockUrl,
+      `Neem alvast een kijkje en laat me weten wat je ervan vindt :)\nIk kijk graag met je mee zodat we over een week een finale versie kunnen hebben in jouw stijl!`,
+      `Groetjes, Nelson\n${MARKETING_URL}`,
+    ].join("\n\n");
+
+    igDmText =
+      `Hoi! Jij ook NL-Marokko? 👀 Ik maak websites voor salons zodat jullie ook op het hoogste niveau kunnen spelen — kijk even in de rust naar wat ik voor ${name} gemaakt heb: ${mockUrl} — laat me weten wat je ervan vindt, zodat we over een week een finale versie hebben in jouw stijl! ${MARKETING_URL}`;
+
+    emailSubject = noWebsite
+      ? `Een website voor ${name} — even bekijken in de rust`
+      : `Een website-voorbeeld voor ${name} — even bekijken in de rust`;
+
+    emailBody = [
+      `Hoi,`,
+      `Jij ook NL-Marokko aan het kijken? 👀`,
+      `Ik maak websites voor salons zodat jullie ook op het hoogste niveau kunnen spelen. Om ervoor te zorgen dat je in de rust wat kan kijken heb ik alvast een eerste versie gemaakt voor ${name}:`,
+      mockUrl,
+      `Neem alvast een kijkje en laat me weten wat je ervan vindt :)\nIk kijk graag met je mee zodat we over een week een finale versie kunnen hebben in jouw stijl!`,
+      `Groetjes,\nNelson\n${MARKETING_URL}`,
+    ].join("\n\n");
+  } else if (noWebsite) {
     // Stronger angle: this would be their FIRST website, not an upgrade. Lead
     // with the gap ("nog geen eigen website"), weave the hook in as a "maar wel",
     // and surface the low-risk terms once. Same one-link / opt-out / question-CTA.

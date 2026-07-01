@@ -28,6 +28,10 @@ export interface OpenerCard {
   listingUrl?: string;
   /** verified Instagram handle (no @) or full profile URL — the IG-DM route. */
   instagram?: string;
+  /** contact email address found via web search or listing. */
+  email?: string;
+  /** true when the salon has no own website (eerste-website angle). */
+  noWebsite?: boolean;
 }
 
 /** Normalize a stored handle/URL into { handle, url } for the IG button. */
@@ -85,6 +89,19 @@ function renderCard(c: OpenerCard): string {
           : ""
       }. Kopieer het bericht hieronder en plak het in de DM.</p>`;
 
+  // Email section — shown when an address is known
+  const emailBtn = c.email
+    ? (() => {
+        const emailSubject = encodeURIComponent(
+          c.noWebsite
+            ? `Een website voor ${c.name} — klaar om te bekijken`
+            : `Een nieuw voorbeeld voor ${c.name}`,
+        );
+        const emailBody = encodeURIComponent(c.igDmText + `\n\nBekijk hier: ${c.mockUrl}\n\nGroetjes,\nNelson`);
+        return `<a class="btn email" href="mailto:${escAttr(c.email)}?subject=${emailSubject}&body=${emailBody}" target="_blank" rel="noopener">Stuur e-mail</a>`;
+      })()
+    : `<span class="btn ghost no-email" title="Geen e-mailadres gevonden">Geen e-mail</span>`;
+
   // WhatsApp carries the full text; IG/DM uses the compact one-paragraph variant.
   const copyText = c.whatsappUrl ? c.plainText : c.igDmText;
   const copyLabel = c.whatsappUrl ? "Kopieer bericht" : "Kopieer IG-bericht";
@@ -106,6 +123,7 @@ function renderCard(c: OpenerCard): string {
   <div class="actions">
     ${waBtn}
     ${igBtn}
+    ${emailBtn}
     <a class="btn ghost" href="${escAttr(c.mockUrl)}" target="_blank" rel="noopener">Bekijk mockup</a>
     <button class="btn ghost copy-btn" data-copy="${escAttr(copyText)}">${copyLabel}</button>
   </div>
@@ -115,8 +133,9 @@ function renderCard(c: OpenerCard): string {
 export function renderOpenersHtml(cards: OpenerCard[], opts?: { title?: string; baseHost?: string }): string {
   const title = opts?.title ?? "Revivo — outreach openers";
   const waCount = cards.filter((c) => c.whatsappUrl).length;
+  const emailCount = cards.filter((c) => c.email).length;
   const subtitle =
-    `${cards.length} salons · ${waCount} via WhatsApp · ${cards.length - waCount} zonder mobiel` +
+    `${cards.length} salons · ${waCount} via WhatsApp · ${emailCount} met e-mail · ${cards.length - waCount} zonder mobiel` +
     (opts?.baseHost ? ` · links: ${escHtml(opts.baseHost)}` : "");
 
   const cardsHtml = cards.map(renderCard).join("\n");
@@ -169,7 +188,10 @@ export function renderOpenersHtml(cards: OpenerCard[], opts?: { title?: string; 
   .btn.wa:hover { background:var(--wa-d); color:#fff; }
   .btn.ig { background:linear-gradient(45deg,#f09433,#dc2743,#bc1888); border-color:#bc1888; color:#fff; font-weight:600; }
   .btn.ig:hover { filter:brightness(1.08); }
+  .btn.email { background:#1a56db; border-color:#1340a8; color:#fff; font-weight:600; }
+  .btn.email:hover { background:#1340a8; }
   .btn.ghost:hover { background:var(--cream); }
+  .no-email { opacity:.4; cursor:default; }
   footer { max-width:720px; margin:0 auto; padding:0 1.25rem 2.5rem; color:var(--muted); font-size:.82rem; }
   footer code { background:#fff; border:1px solid var(--line); border-radius:5px; padding:.1em .4em; }
 </style>
